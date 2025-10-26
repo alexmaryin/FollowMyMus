@@ -25,28 +25,26 @@ class SupabaseSessionManager(
 
     override fun sessionEvents(): Flow<AuthEvent> = auth.events
 
-    override suspend fun signIn(credentials: Credentials): Result<Boolean> = try {
+    override suspend fun signIn(credentials: Credentials): Result<Unit> = safeCall {
         auth.signInWith(Email) {
             email = "${credentials.nickname}${Credentials.SUFFIX}"
             password = credentials.password
         }
-        Result.Success(true)
-    } catch (e: AuthRestException) {
-        Result.Error(SessionError.AuthError, e.errorDescription)
-    } catch (e: RestException) {
-        Result.Error(SessionError.RestError, e.error)
-    } catch (e: IOException) {
-        Result.Error(SessionError.NetworkError, e.message ?: "Network error without message")
     }
 
-    override suspend fun signOut() = auth.signOut()
+    override suspend fun signOut(): Result<Unit> = safeCall {
+        auth.signOut()
+    }
 
-    override suspend fun signUp(credentials: Credentials): Result<UserInfo?> = try {
-        val user = auth.signUpWith(Email) {
+    override suspend fun signUp(credentials: Credentials): Result<UserInfo?> = safeCall {
+        auth.signUpWith(Email) {
             email = "${credentials.nickname}${Credentials.SUFFIX}"
             password = credentials.password
         }
-        Result.Success(user)
+    }
+
+    private suspend fun <T> safeCall(call: suspend () -> T): Result<T> = try {
+        Result.Success(call())
     } catch (e: AuthRestException) {
         Result.Error(SessionError.AuthError, e.errorDescription)
     } catch (e: RestException) {

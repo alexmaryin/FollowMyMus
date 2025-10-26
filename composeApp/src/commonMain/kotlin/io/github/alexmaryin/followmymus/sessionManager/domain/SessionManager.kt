@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface SessionManager {
     fun sessionStatus(): Flow<SessionStatus>
     fun sessionEvents(): Flow<AuthEvent>
-    suspend fun signIn(credentials: Credentials): Result<Boolean>
-    suspend fun signOut()
+    suspend fun signIn(credentials: Credentials): Result<Unit>
+    suspend fun signOut(): Result<Unit>
     suspend fun signUp(credentials: Credentials): Result<UserInfo?>
 }
