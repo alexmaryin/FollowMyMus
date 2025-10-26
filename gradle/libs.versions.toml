@@ -20,6 +20,7 @@ koin-annotations = "2.3.0"
 ksp = "2.3.0"
 supabase-bom = "3.2.5"
 ktor = "3.3.1"
+qrcode = "4.5.0"
 # app versions
 android-versionCode = "1"
 packageVersion = "1.0.0"
@@ -48,6 +49,9 @@ koin-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-an
 
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase-bom" }
 supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
+supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
+
+qrcode = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcode" }
 
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

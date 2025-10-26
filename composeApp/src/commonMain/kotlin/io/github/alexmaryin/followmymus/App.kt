@@ -23,6 +23,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,10 +39,24 @@ import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.getNickname
+import io.github.jan.supabase.annotations.SupabaseExperimental
+import io.github.jan.supabase.auth.event.AuthEvent
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.broadcast
+import io.github.jan.supabase.realtime.broadcastFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(SupabaseExperimental::class, ExperimentalUuidApi::class)
 @Composable
 fun App(sessionManager: SessionManager = koinInject()) {
 
@@ -58,6 +73,28 @@ fun App(sessionManager: SessionManager = koinInject()) {
 
             val sessionStatus = sessionManager.sessionStatus()
                 .collectAsStateWithLifecycle(SessionStatus.Initializing)
+
+
+            LaunchedEffect(Unit) {
+
+                sessionManager.sessionStatus().collect {
+                    println("SESSION STATUS CHANGED:\n")
+                    println(when (it) {
+                        is SessionStatus.Authenticated -> "Session: ${it.session}\nSource: ${it.source}"
+                        SessionStatus.Initializing -> "Initializing"
+                        is SessionStatus.NotAuthenticated -> "Not authenticated: user logoff - ${it.isSignOut}"
+                        is SessionStatus.RefreshFailure -> "Refresh failure"
+                    })
+                }
+
+                sessionManager.sessionEvents().collect {
+                    println("SESSION EVENT:\n")
+                    println(when(it) {
+                        is AuthEvent.OtpError -> "One time pass error - ${it.errorCode}: ${it.errorDescription} .errorDescription}"
+                        is AuthEvent.RefreshFailure -> "Refresh failure - ${it.cause}"
+                    })
+                }
+            }
 
             var userInfo by remember { mutableStateOf("") }
 
@@ -156,7 +193,31 @@ fun App(sessionManager: SessionManager = koinInject()) {
                     modifier = Modifier.padding(12.dp).fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
+
+                QRCodeBlock()
             }
+
+//            val transferId = Uuid.random().toString()
+//            val channel = koinInject<RealtimeChannel> { parametersOf(transferId) }
+//
+//            LaunchedEffect(Unit) {
+//                channel.subscribe(true)
+//                val broadcast = channel.broadcastFlow<String>(event = "transfer_request")
+//                broadcast.collect {
+//                    val session = sessionManager.currentSession()
+//                    session.forSuccess {
+//                        channel.broadcast("session_payload", buildJsonObject {
+//                            put("accessToken", it.accessToken)
+//                            put("refreshToken", it.refreshToken)
+//                            put("expiresIn", it.expiresIn)
+//                            put("tokenType", it.tokenType)
+//                        })
+//                        channel.unsubscribe()
+//                    }
+//                }
+//            }
         }
     }
 }
+
+@Composable expect fun QRCodeBlock(modifier: Modifier = Modifier)
