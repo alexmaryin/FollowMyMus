@@ -6,6 +6,7 @@ import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.auth.event.AuthEvent
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
+import io.github.jan.supabase.auth.user.UserSession
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(SupabaseExperimental::class)
@@ -15,4 +16,5 @@ interface SessionManager {
     suspend fun signIn(credentials: Credentials): Result<Boolean>
     suspend fun signOut()
     suspend fun signUp(credentials: Credentials): Result<UserInfo?>
+    fun currentSession(): Result<UserSession>
 }

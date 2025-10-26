@@ -11,6 +11,7 @@ import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
+import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.exceptions.RestException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.io.IOException
@@ -53,5 +54,11 @@ class SupabaseSessionManager(
         Result.Error(SessionError.RestError, e.error)
     } catch (e: IOException) {
         Result.Error(SessionError.NetworkError, e.message ?: "Network error without message")
+    }
+
+    override fun currentSession(): Result<UserSession> {
+        val session = auth.currentSessionOrNull()
+        return if (session != null) Result.Success(session)
+        else Result.Error(SessionError.SessionExpired)
     }
 }
