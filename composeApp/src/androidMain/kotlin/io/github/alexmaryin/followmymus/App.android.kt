@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.alexmaryin.followmymus.qrScanner.QRCodeScannerScreen
-import io.github.alexmaryin.followmymus.qrScanner.transferSession
+import io.github.alexmaryin.followmymus.sessionManager.data.transferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.launch
