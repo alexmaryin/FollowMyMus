@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FollowMyMus</string>
+<!--    Errors definitions-->
+    <string name="network_error">Сетевая ошибка без описания</string>
+</resources>

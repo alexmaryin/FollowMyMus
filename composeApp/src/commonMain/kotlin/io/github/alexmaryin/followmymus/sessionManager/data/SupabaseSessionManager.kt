@@ -1,21 +1,28 @@
 package io.github.alexmaryin.followmymus.sessionManager.data
 
+import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.network_error
 import io.github.alexmaryin.followmymus.core.Result
+import io.github.alexmaryin.followmymus.core.UndefinedError
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionError
+import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionPayload
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.event.AuthEvent
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.status.SessionSource
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.exceptions.RestException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.io.IOException
+import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.Single
+import kotlin.time.ExperimentalTime
 
 @OptIn(SupabaseExperimental::class)
 @Single
@@ -51,12 +58,31 @@ class SupabaseSessionManager(
     } catch (e: RestException) {
         Result.Error(SessionError.RestError, e.error)
     } catch (e: IOException) {
-        Result.Error(SessionError.NetworkError, e.message ?: "Network error without message")
+        Result.Error(SessionError.NetworkError, e.message ?: getString(Res.string.network_error))
     }
 
     override fun currentSession(): Result<UserSession> {
         val session = auth.currentSessionOrNull()
         return if (session != null) Result.Success(session)
         else Result.Error(SessionError.SessionExpired)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    override suspend fun transferSession(sessionPayload: SessionPayload): Result<Unit> = try {
+        auth.importSession(
+            session = UserSession(
+                accessToken = sessionPayload.accessToken,
+                refreshToken = sessionPayload.refreshToken,
+                expiresIn = sessionPayload.expiresIn,
+                tokenType = sessionPayload.tokenType,
+                user = sessionPayload.user
+            ),
+            source = SessionSource.External
+        )
+        Result.Success(Unit)
+    } catch (e: AuthRestException) {
+        Result.Error(SessionError.AuthError, e.errorDescription)
+    } catch (e: Exception) {
+        Result.Error(UndefinedError, e.message)
     }
 }

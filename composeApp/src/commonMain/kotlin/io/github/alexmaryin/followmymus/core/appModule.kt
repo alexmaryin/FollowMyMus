@@ -33,9 +33,7 @@ class AppModule() {
     fun provideSessionTransferChannel(
         supabase: SupabaseClient,
         @InjectedParam transferId: String
-        ) = supabase.channel("session_transfer:$transferId") {
-        isPrivate = true
-    }
+        ) = supabase.channel("session_transfer:$transferId") { isPrivate = false }
 
     companion object {
         fun supabaseUrl(projectId: String) = "https://$projectId.supabase.co"

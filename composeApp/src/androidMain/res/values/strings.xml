@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FollowMyMus</string>
+    <string name="session_transfer_deep_link">session_transfer</string>
+    <string name="project_id">xuysjvbdbmrfssopydxk.supabase.co</string>
 </resources>

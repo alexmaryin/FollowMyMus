@@ -1,34 +1,12 @@
 package io.github.alexmaryin.followmymus
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SecureTextField
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -42,19 +20,9 @@ import io.github.alexmaryin.followmymus.sessionManager.domain.model.getNickname
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.auth.event.AuthEvent
 import io.github.jan.supabase.auth.status.SessionStatus
-import io.github.jan.supabase.realtime.RealtimeChannel
-import io.github.jan.supabase.realtime.broadcast
-import io.github.jan.supabase.realtime.broadcastFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(SupabaseExperimental::class, ExperimentalUuidApi::class)
 @Composable
@@ -194,28 +162,8 @@ fun App(sessionManager: SessionManager = koinInject()) {
                     textAlign = TextAlign.Center
                 )
 
-                QRCodeBlock()
+                QRCodeBlock(Modifier.padding(16.dp))
             }
-
-//            val transferId = Uuid.random().toString()
-//            val channel = koinInject<RealtimeChannel> { parametersOf(transferId) }
-//
-//            LaunchedEffect(Unit) {
-//                channel.subscribe(true)
-//                val broadcast = channel.broadcastFlow<String>(event = "transfer_request")
-//                broadcast.collect {
-//                    val session = sessionManager.currentSession()
-//                    session.forSuccess {
-//                        channel.broadcast("session_payload", buildJsonObject {
-//                            put("accessToken", it.accessToken)
-//                            put("refreshToken", it.refreshToken)
-//                            put("expiresIn", it.expiresIn)
-//                            put("tokenType", it.tokenType)
-//                        })
-//                        channel.unsubscribe()
-//                    }
-//                }
-//            }
         }
     }
 }

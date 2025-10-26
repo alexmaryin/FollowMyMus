@@ -2,7 +2,6 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.getLocalProperty
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -49,6 +48,11 @@ kotlin {
             // KTOR client
             implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.android)
+            // Camera & ML Kit to recognize QR
+            implementation(libs.camera2)
+            implementation(libs.camera2.lifecycle)
+            implementation(libs.camera2.view)
+            implementation(libs.mlkit.barcode)
         }
 
         iosMain.dependencies {
