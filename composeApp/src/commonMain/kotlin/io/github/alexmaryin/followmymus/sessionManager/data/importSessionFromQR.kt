@@ -9,6 +9,8 @@ import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.broadcast
 import io.github.jan.supabase.realtime.broadcastFlow
 
+const val DEEP_LINK_URL_PREFIX = "https://alexmaryin.ru/session-transfer?id="
+
 suspend fun RealtimeChannel.transferSession(sessionManager: SessionManager) {
     subscribe(true)
     broadcast("transfer_request", ChannelMessage("start"))

@@ -25,7 +25,7 @@ import org.koin.mp.KoinPlatform
 actual fun QRCodeBlock(modifier: Modifier) {
     val sessionManager = koinInject<SessionManager>()
     val scope = rememberCoroutineScope()
-    var showCamera by remember { mutableStateOf(true) }
+    var showCamera by remember { mutableStateOf(false) }
 
     if (showCamera) {
         QRCodeScannerScreen(

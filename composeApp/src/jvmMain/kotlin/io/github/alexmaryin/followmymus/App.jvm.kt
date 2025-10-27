@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.sessionManager.data.DEEP_LINK_URL_PREFIX
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.ChannelMessage
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionPayload
@@ -24,7 +25,7 @@ import kotlin.uuid.Uuid
 @Composable
 actual fun QRCodeBlock(modifier: Modifier) {
     val transferId = Uuid.random().toString()
-    val deepLink = "https://alexmaryin.ru/session-transfer?id=$transferId"
+    val deepLink = "$DEEP_LINK_URL_PREFIX$transferId"
     val painter = QRCode.ofCircles()
         .withSize(15)
         .build(deepLink)
