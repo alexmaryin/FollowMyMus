@@ -2,6 +2,8 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.getLocalProperty
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -110,7 +112,7 @@ kotlin {
 }
 
 ksp {
-    arg("KOIN_CONFIG_CHECK", "true")
+//    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 android {

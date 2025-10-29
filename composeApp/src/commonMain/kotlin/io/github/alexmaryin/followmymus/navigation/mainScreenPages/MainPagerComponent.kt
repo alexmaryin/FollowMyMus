@@ -24,8 +24,8 @@ class MainPagerComponent(
         handleBackButton = true
     ) { page, context ->
         when (page) {
-            PagerConfig.Favorites -> TODO()
-            PagerConfig.Releases -> TODO()
+            PagerConfig.Favorites -> {}
+            PagerConfig.Releases -> {}
         }
     }
 

@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
+import com.arkivanov.decompose.defaultComponentContext
+import io.github.alexmaryin.followmymus.navigation.MainRootComponent
+import io.github.alexmaryin.followmymus.navigation.ui.RootContent
 import io.github.alexmaryin.followmymus.sessionManager.data.transferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.jan.supabase.realtime.RealtimeChannel
@@ -26,10 +29,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        val root = MainRootComponent(defaultComponentContext())
+
         handleDeepLink(intent)
 
         setContent {
-            App()
+            RootContent(root)
         }
     }
 }

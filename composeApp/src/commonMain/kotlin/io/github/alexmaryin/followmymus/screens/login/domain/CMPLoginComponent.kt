@@ -7,7 +7,7 @@ import org.koin.core.annotation.Factory
 class CMPLoginComponent(
     private val qrCode: String?,
     private val componentContext: ComponentContext,
-    private val onSighUpClick: () -> Unit
+    private val onSignUpClick: () -> Unit
 ) : LoginComponent, ComponentContext by componentContext {
 
 }
