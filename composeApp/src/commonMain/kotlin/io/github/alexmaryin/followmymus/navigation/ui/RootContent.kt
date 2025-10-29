@@ -2,24 +2,27 @@ package io.github.alexmaryin.followmymus.navigation.ui
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
-import io.github.alexmaryin.followmymus.App
 import io.github.alexmaryin.followmymus.navigation.RootComponent
 import io.github.alexmaryin.followmymus.navigation.RootComponent.Child
-import org.koin.compose.koinInject
+import io.github.alexmaryin.followmymus.screens.login.ui.LoginScreen
+import io.github.alexmaryin.followmymus.screens.mainScreen.ui.MainScreen
+import io.github.alexmaryin.followmymus.screens.signUp.ui.SignUpScreen
+import io.github.alexmaryin.followmymus.screens.splash.SplashScreen
 
 @Composable
 fun RootContent(component: RootComponent) {
     Children(
         stack = component.childStack,
-        animation = stackAnimation(fade())
+        animation = stackAnimation(slide())
     ) {
         when (val child = it.instance) {
-            is Child.LoginChild -> App()
-            is Child.MainScreenPager -> App()
-            is Child.SettingsChild -> App()
-            is Child.SignUpChild -> App()
+            is Child.Splash -> SplashScreen()
+            is Child.LoginChild -> LoginScreen(child.component)
+            is Child.MainScreenPager -> MainScreen(child.component)
+            is Child.SettingsChild -> {}
+            is Child.SignUpChild -> SignUpScreen(child.component)
         }
     }
 }

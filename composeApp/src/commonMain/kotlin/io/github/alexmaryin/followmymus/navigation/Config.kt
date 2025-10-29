@@ -15,4 +15,7 @@ sealed class Config {
 
     @Serializable
     data object MainScreen : Config()
+
+    @Serializable
+    data object Splash : Config()
 }

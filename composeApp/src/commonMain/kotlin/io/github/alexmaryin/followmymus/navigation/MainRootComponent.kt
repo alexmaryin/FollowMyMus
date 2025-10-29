@@ -19,6 +19,7 @@ import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.ComponentScan
@@ -46,10 +47,12 @@ class MainRootComponent(
     override val childStack: Value<ChildStack<*, Child>> = childStack(
         source = navigation,
         serializer = Config.serializer(),
-        initialConfiguration = Config.Login(),
+        initialConfiguration = Config.Splash,
         handleBackButton = true
     ) { config, context ->
         when (config) {
+            is Config.Splash -> Child.Splash
+
             is Config.Login -> Child.LoginChild(
                 login(config.qrCode, context) { navigation.replaceCurrent(Config.SignUp) }
             )
@@ -76,6 +79,7 @@ class MainRootComponent(
     ) = get<SignUpComponent> { parametersOf(componentContext, onLoginClick) }
 
     private fun observeSessionStatus() = scope.launch {
+        delay(3000L)
         sessionManager.sessionStatus().collectLatest { sessionStatus ->
             when (sessionStatus) {
                 is SessionStatus.Authenticated -> navigation.replaceAll(Config.MainScreen)
