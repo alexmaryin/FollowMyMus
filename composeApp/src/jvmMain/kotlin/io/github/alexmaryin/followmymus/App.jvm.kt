@@ -53,7 +53,6 @@ actual fun QRCodeBlock(modifier: Modifier) {
                         refreshToken = it.refreshToken,
                         expiresIn = it.expiresIn,
                         tokenType = it.tokenType,
-                        user = it.user
                     )
                     channel.broadcast("session_payload", payload)
                 }

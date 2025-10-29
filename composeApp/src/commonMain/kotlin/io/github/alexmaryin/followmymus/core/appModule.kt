@@ -3,6 +3,7 @@ package io.github.alexmaryin.followmymus.core
 import io.github.alexmaryin.followmymus.BuildKonfig
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.FlowType
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.realtime.Realtime

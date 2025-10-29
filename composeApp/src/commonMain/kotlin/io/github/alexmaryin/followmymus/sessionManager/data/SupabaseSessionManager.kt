@@ -68,18 +68,18 @@ class SupabaseSessionManager(
     }
 
     @OptIn(ExperimentalTime::class)
-    override suspend fun transferSession(sessionPayload: SessionPayload): Result<Unit> = try {
+    override suspend fun transferSession(sessionPayload: SessionPayload): Result<UserInfo> = try {
         auth.importSession(
             session = UserSession(
                 accessToken = sessionPayload.accessToken,
                 refreshToken = sessionPayload.refreshToken,
                 expiresIn = sessionPayload.expiresIn,
-                tokenType = sessionPayload.tokenType,
-                user = sessionPayload.user
+                tokenType = sessionPayload.tokenType
             ),
             source = SessionSource.External
         )
-        Result.Success(Unit)
+        val user = auth.retrieveUserForCurrentSession(true)
+        Result.Success(user)
     } catch (e: AuthRestException) {
         Result.Error(SessionError.AuthError, e.errorDescription)
     } catch (e: Exception) {

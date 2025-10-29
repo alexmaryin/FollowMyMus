@@ -86,6 +86,10 @@ kotlin {
             implementation(libs.supabase.realtime)
             // QR Kit
             implementation(libs.qrcode)
+            // Decompose
+            implementation(libs.decompose)
+            implementation(libs.decompose.cmp)
+            implementation(libs.essenity)
         }
 
         commonTest.dependencies {

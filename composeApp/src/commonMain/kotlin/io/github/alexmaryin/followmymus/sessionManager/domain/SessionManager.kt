@@ -18,5 +18,5 @@ interface SessionManager {
     suspend fun signOut(): Result<Unit>
     suspend fun signUp(credentials: Credentials): Result<UserInfo?>
     fun currentSession(): Result<UserSession>
-    suspend fun transferSession(sessionPayload: SessionPayload): Result<Unit>
+    suspend fun transferSession(sessionPayload: SessionPayload): Result<UserInfo>
 }

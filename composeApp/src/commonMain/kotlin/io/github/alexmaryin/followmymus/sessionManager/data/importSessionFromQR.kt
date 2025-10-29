@@ -17,7 +17,8 @@ suspend fun RealtimeChannel.transferSession(sessionManager: SessionManager) {
     val broadcast = broadcastFlow<SessionPayload>(event = "session_payload")
     broadcast.collect { payload ->
         val result = sessionManager.transferSession(payload)
-        result.forSuccess {
+        result.forSuccess { userInfo ->
+            println("\nSESSION TRANSFERRED AND UPDATED FOR USER:\n\n$userInfo")
             broadcast("transfer_request", ChannelMessage("success"))
         }
         result.forError {
