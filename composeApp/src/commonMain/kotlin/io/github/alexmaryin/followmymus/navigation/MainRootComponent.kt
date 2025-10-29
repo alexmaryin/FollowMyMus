@@ -71,7 +71,7 @@ class MainRootComponent(
         qrCode: String? = null,
         componentContext: ComponentContext,
         onSignUpClick: () -> Unit
-    ) = CMPLoginComponent(qrCode, componentContext, onSignUpClick)
+    ) = get<LoginComponent> { parametersOf(qrCode, componentContext, onSignUpClick) }
 
     private fun signUp(
         componentContext: ComponentContext,
@@ -81,6 +81,7 @@ class MainRootComponent(
     private fun observeSessionStatus() = scope.launch {
         delay(3000L)
         sessionManager.sessionStatus().collectLatest { sessionStatus ->
+            println(sessionStatus)
             when (sessionStatus) {
                 is SessionStatus.Authenticated -> navigation.replaceAll(Config.MainScreen)
 

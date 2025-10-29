@@ -2,8 +2,6 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.getLocalProperty
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -35,6 +33,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            export(libs.decompose)
+            export(libs.essenity)
         }
     }
     
@@ -89,9 +89,9 @@ kotlin {
             // QR Kit
             implementation(libs.qrcode)
             // Decompose
-            implementation(libs.decompose)
+            api(libs.decompose)
             implementation(libs.decompose.cmp)
-            implementation(libs.essenity)
+            api(libs.essenity)
         }
 
         commonTest.dependencies {

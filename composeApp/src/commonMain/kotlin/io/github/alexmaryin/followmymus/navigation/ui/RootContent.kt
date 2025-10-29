@@ -2,6 +2,8 @@ package io.github.alexmaryin.followmymus.navigation.ui
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import io.github.alexmaryin.followmymus.navigation.RootComponent
@@ -15,7 +17,7 @@ import io.github.alexmaryin.followmymus.screens.splash.SplashScreen
 fun RootContent(component: RootComponent) {
     Children(
         stack = component.childStack,
-        animation = stackAnimation(slide())
+        animation = stackAnimation(slide() + fade())
     ) {
         when (val child = it.instance) {
             is Child.Splash -> SplashScreen()
