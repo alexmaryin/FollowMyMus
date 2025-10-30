@@ -2,4 +2,7 @@
     <string name="app_name">FollowMyMus</string>
 <!--    Errors definitions-->
     <string name="network_error">Network error without message</string>
+<!--    Pages titles-->
+    <string name="releases_page_title">Releases</string>
+    <string name="favorites_page_title">Favorites</string>
 </resources>

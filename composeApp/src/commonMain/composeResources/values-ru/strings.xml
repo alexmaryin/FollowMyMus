@@ -2,4 +2,7 @@
     <string name="app_name">FollowMyMus</string>
 <!--    Errors definitions-->
     <string name="network_error">Сетевая ошибка без описания</string>
+<!--    Pages titles-->
+    <string name="releases_page_title">Релизы</string>
+    <string name="favorites_page_title">Избранное</string>
 </resources>

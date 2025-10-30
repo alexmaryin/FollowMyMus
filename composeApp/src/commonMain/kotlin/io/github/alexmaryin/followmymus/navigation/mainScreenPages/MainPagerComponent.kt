@@ -7,18 +7,19 @@ import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
 
 class MainPagerComponent(
-    private val componentContext: ComponentContext
+    private val componentContext: ComponentContext,
+    val nickName: String
 ) : ComponentContext by componentContext {
 
     private val navigation = PagesNavigation<PagerConfig>()
 
-    private val pages = childPages(
+    val pages = childPages(
         source = navigation,
         serializer = PagerConfig.serializer(),
         initialPages = {
             Pages(
                 items = listOf(PagerConfig.Releases, PagerConfig.Favorites),
-                selectedIndex = PagerConfig.RELEASES_PAGE
+                selectedIndex = MainPages.RELEASES.index
             )
         },
         handleBackButton = true
