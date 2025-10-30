@@ -5,15 +5,22 @@ import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
+import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Single
 
+@Factory(binds = [PagerComponent::class])
 class MainPagerComponent(
     private val componentContext: ComponentContext,
-    val nickName: String
-) : ComponentContext by componentContext {
+    nickName: String
+) : PagerComponent, ComponentContext by componentContext {
 
     private val navigation = PagesNavigation<PagerConfig>()
+    private val _state = MutableValue(MainScreenState(nickName))
+    override val state: Value<MainScreenState> get() = _state
 
-    val pages = childPages(
+    override val pages = childPages(
         source = navigation,
         serializer = PagerConfig.serializer(),
         initialPages = {
@@ -25,11 +32,16 @@ class MainPagerComponent(
         handleBackButton = true
     ) { page, context ->
         when (page) {
-            PagerConfig.Favorites -> {}
-            PagerConfig.Releases -> {}
-            PagerConfig.Account -> {}
+            PagerConfig.Favorites -> object : Page {}
+            PagerConfig.Releases -> object : Page {}
+            PagerConfig.Account -> object : Page {}
         }
     }
 
-    fun selectPage(index: Int) = navigation.select(index)
+    override fun onAction(action: MainScreenAction) {
+        when (action) {
+            is MainScreenAction.SelectPage -> navigation.select(action.index)
+        }
+
+    }
 }

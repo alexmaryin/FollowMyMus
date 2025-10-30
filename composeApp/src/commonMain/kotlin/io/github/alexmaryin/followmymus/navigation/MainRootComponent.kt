@@ -6,6 +6,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.navigation.RootComponent.Child
 import io.github.alexmaryin.followmymus.navigation.mainScreenPages.MainPagerComponent
+import io.github.alexmaryin.followmymus.navigation.mainScreenPages.PagerComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
@@ -50,7 +51,7 @@ class MainRootComponent(
             )
 
             is Config.MainScreen -> Child.MainScreenPager(
-                MainPagerComponent(context, config.nickname)
+                mainScreen(context, config.nickname)
             )
 
             Config.Settings -> TODO()
@@ -71,6 +72,11 @@ class MainRootComponent(
         componentContext: ComponentContext,
         onLoginClick: () -> Unit
     ) = get<SignUpComponent> { parametersOf(componentContext, onLoginClick) }
+
+    private fun mainScreen(
+        componentContext: ComponentContext,
+        nickName: String
+    ) = get<PagerComponent> { parametersOf(componentContext, nickName) }
 
     private fun observeSessionStatus() = scope.launch {
 //        delay(3000L)

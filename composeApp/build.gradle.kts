@@ -171,5 +171,6 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.STRING, "projectId", project.getLocalProperty("projectId"))
         buildConfigField(FieldSpec.Type.STRING, "publishableKey", project.getLocalProperty("publishableKey"))
         buildConfigField(FieldSpec.Type.STRING, "secretKey", project.getLocalProperty("secretKey"))
+        buildConfigField(FieldSpec.Type.STRING, "appVersion", libs.versions.packageVersion.get())
     }
 }
