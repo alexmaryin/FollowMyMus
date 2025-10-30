@@ -18,7 +18,7 @@ class MainPagerComponent(
         serializer = PagerConfig.serializer(),
         initialPages = {
             Pages(
-                items = listOf(PagerConfig.Releases, PagerConfig.Favorites),
+                items = listOf(PagerConfig.Releases, PagerConfig.Favorites, PagerConfig.Account),
                 selectedIndex = MainPages.RELEASES.index
             )
         },
@@ -27,6 +27,7 @@ class MainPagerComponent(
         when (page) {
             PagerConfig.Favorites -> {}
             PagerConfig.Releases -> {}
+            PagerConfig.Account -> {}
         }
     }
 

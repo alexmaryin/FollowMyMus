@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
 import io.github.alexmaryin.followmymus.navigation.mainScreenPages.MainPagerComponent
@@ -29,7 +30,7 @@ fun MainScreen(
     component: MainPagerComponent
 ) {
     val scope = rememberCoroutineScope()
-    var activePage by remember { mutableStateOf(MainPages.RELEASES.index) }
+    val activePage by component.pages.subscribeAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -37,7 +38,7 @@ fun MainScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(Res.string.app_name))
+                    Text(stringResource(Res.string.app_name) + " ${activePage.selectedIndex}")
                 },
                 navigationIcon = {
 
@@ -48,11 +49,14 @@ fun MainScreen(
             NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                 MainPages.entries.forEach { page ->
                     NavigationBarItem(
-                        selected = page.index == activePage,
+                        selected = page.index == activePage.selectedIndex,
                         onClick = { component.selectPage(page.index) },
                         icon = {
                             Icon(
-                                painter = painterResource(page.iconRes),
+                                painter = painterResource(
+                                    if (page.index == activePage.selectedIndex)
+                                        page.iconActiveRes else page.iconRes
+                                ),
                                 contentDescription = page.name
                             )
                         },
@@ -62,12 +66,6 @@ fun MainScreen(
             }
         }
     ) { paddingValues ->
-        NavigationRailContent(
-            modifier = Modifier.padding(paddingValues),
-            nickname = component.nickName,
-            onSettingsClick = { /*TODO*/ },
-            onSignOutClick = { /*TODO*/ }
-        )
 
         Box(modifier = Modifier.padding(paddingValues)) {
             ChildPages(
@@ -76,7 +74,6 @@ fun MainScreen(
                 onPageSelected = { component.selectPage(it) },
                 scrollAnimation = PagesScrollAnimation.Default
             ) { page, childComponent ->
-                activePage = page
                 Box(modifier = Modifier.fillMaxSize().background(color = Color(Random.nextLong()))) {
                     Text(
                         text = "PAGE #$page",

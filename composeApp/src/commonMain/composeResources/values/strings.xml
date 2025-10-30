@@ -5,4 +5,5 @@
 <!--    Pages titles-->
     <string name="releases_page_title">Releases</string>
     <string name="favorites_page_title">Favorites</string>
+    <string name="account_page_title">Account</string>
 </resources>
