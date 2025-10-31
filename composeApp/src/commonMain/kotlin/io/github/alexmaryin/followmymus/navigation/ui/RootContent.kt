@@ -6,6 +6,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import io.github.alexmaryin.followmymus.core.ui.theme.FollowMyMusTheme
 import io.github.alexmaryin.followmymus.navigation.RootComponent
 import io.github.alexmaryin.followmymus.navigation.RootComponent.Child
 import io.github.alexmaryin.followmymus.screens.login.ui.LoginScreen
@@ -14,7 +15,7 @@ import io.github.alexmaryin.followmymus.screens.signUp.ui.SignUpScreen
 import io.github.alexmaryin.followmymus.screens.splash.SplashScreen
 
 @Composable
-fun RootContent(component: RootComponent) {
+fun RootContent(component: RootComponent) = FollowMyMusTheme {
     Children(
         stack = component.childStack,
         animation = stackAnimation(slide() + fade())
