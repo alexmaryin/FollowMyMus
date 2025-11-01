@@ -10,4 +10,5 @@ import platform.UIKit.UIViewController
 fun MainViewController(root: RootComponent): UIViewController =
     ComposeUIViewController {
         RootContent(component = root)
+//        App()
     }

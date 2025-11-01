@@ -16,9 +16,9 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
 import io.github.alexmaryin.followmymus.BuildKonfig
-import io.github.alexmaryin.followmymus.navigation.mainScreenPages.MainPages
-import io.github.alexmaryin.followmymus.navigation.mainScreenPages.MainScreenAction
-import io.github.alexmaryin.followmymus.navigation.mainScreenPages.PagerComponent
+import io.github.alexmaryin.followmymus.navigation.mainScreenPager.MainPages
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
+import io.github.alexmaryin.followmymus.navigation.mainScreenPager.PagerComponent
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.random.Random
@@ -67,21 +67,19 @@ fun MainScreen(
         }
     ) { paddingValues ->
 
-        Box(modifier = Modifier.padding(paddingValues)) {
-            ChildPages(
-                pages = component.pages,
-                modifier = Modifier.fillMaxSize(),
-                onPageSelected = { component.onAction(MainScreenAction.SelectPage(it)) },
-                scrollAnimation = PagesScrollAnimation.Default
-            ) { page, childComponent ->
-                Box(modifier = Modifier.fillMaxSize().background(color = Color(Random.nextLong()))) {
-                    Text(
-                        text = "Hello, ${state.nickname}!\nThis is PAGE #$page",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+        ChildPages(
+            pages = component.pages,
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            onPageSelected = { component.onAction(MainScreenAction.SelectPage(it)) },
+            scrollAnimation = PagesScrollAnimation.Default
+        ) { page, childComponent ->
+            Box(modifier = Modifier.fillMaxSize().background(color = Color(Random.nextLong()))) {
+                Text(
+                    text = "Hello, ${state.nickname}!\nThis is PAGE #$page",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }

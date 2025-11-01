@@ -6,4 +6,37 @@
     <string name="releases_page_title">Releases</string>
     <string name="favorites_page_title">Favorites</string>
     <string name="account_page_title">Account</string>
+<!--    Sign up screen-->
+    <string name="sign_up_title">SIGN UP</string>
+    <string name="nickname_signup_label">Make nickname (no need to use real name):</string>
+    <string name="nickname_signup_support">Letters, digits, underscore or dot only</string>
+    <string name="password_signup_label">Make password (could not be restored later):</string>
+    <string name="password_signup_support">Consider to save in the password manager</string>
+    <string name="sign_up_button">SIGN UP</string>
+    <string name="label_to_login">Already have account?</string>
+    <string name="link_to_login">Login!</string>
+    <string name="mbrz_logo_support">powered with</string>
+<!--    Login screen-->
+    <string name="login_title">LOGIN</string>
+    <string name="nickname_login_label">Enter your nickname:</string>
+    <string name="password_login_label">Enter your password:</string>
+    <string name="login_button">LOGIN</string>
+    <string name="login_qr_text">Scan QR code to login</string>
+    <string name="label_to_sign_up">Don't have account?</string>
+    <string name="link_to_sign_up">Sign up!</string>
+<!--    Account & preferences page-->
+    <string name="account_page_label">Account</string>
+    <string name="app_section_label">App</string>
+    <string name="language_preferences_label">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_russian">Russian</string>
+    <string name="language_system">System</string>
+    <string name="theme_preferences_label">Theme</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_system">System</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="about">About</string>
+    <string name="current_version">Current Version</string>
+    <string name="qr_gen_support_text">Scan QR code or download to login on another device</string>
 </resources>

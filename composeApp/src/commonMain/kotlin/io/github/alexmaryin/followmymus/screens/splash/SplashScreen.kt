@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen() {
@@ -26,13 +25,13 @@ fun SplashScreen() {
         modifier = Modifier.fillMaxSize()
             .background(color = MaterialTheme.colorScheme.primaryContainer)
     ) {
-        val text = "Loading..."
-        val charAnimatables = remember(text) {
+        val text = "FollowMyMus"
+        val charAnimates = remember(text) {
             List(text.length) { Animatable(0f) }
         }
 
         LaunchedEffect(key1 = text) {
-            charAnimatables.forEach { animatable ->
+            charAnimates.forEach { animatable ->
                 animatable.animateTo(
                     targetValue = 1f,
                     animationSpec = spring(
@@ -45,7 +44,7 @@ fun SplashScreen() {
 
         Row(Modifier.align(Alignment.Center)) {
             text.forEachIndexed { index, char ->
-                val animatable = charAnimatables[index]
+                val animatable = charAnimates[index]
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle()) { append(char) }

@@ -5,8 +5,7 @@ import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.navigation.RootComponent.Child
-import io.github.alexmaryin.followmymus.navigation.mainScreenPages.MainPagerComponent
-import io.github.alexmaryin.followmymus.navigation.mainScreenPages.PagerComponent
+import io.github.alexmaryin.followmymus.navigation.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
@@ -15,6 +14,7 @@ import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -79,7 +79,7 @@ class MainRootComponent(
     ) = get<PagerComponent> { parametersOf(componentContext, nickName) }
 
     private fun observeSessionStatus() = scope.launch {
-//        delay(3000L)
+        delay(2000L)
         sessionManager.sessionStatus().collectLatest { sessionStatus ->
             println(sessionStatus)
             when (sessionStatus) {

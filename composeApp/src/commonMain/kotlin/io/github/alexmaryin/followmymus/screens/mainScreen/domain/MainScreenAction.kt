@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation.mainScreenPages
+package io.github.alexmaryin.followmymus.screens.mainScreen.domain
 
 sealed class MainScreenAction {
 

@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation.mainScreenPages
+package io.github.alexmaryin.followmymus.navigation.mainScreenPager
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.pages.Pages
@@ -7,8 +7,9 @@ import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.Single
 
 @Factory(binds = [PagerComponent::class])
 class MainPagerComponent(
