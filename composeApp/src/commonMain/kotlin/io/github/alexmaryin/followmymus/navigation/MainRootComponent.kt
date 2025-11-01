@@ -3,6 +3,7 @@ package io.github.alexmaryin.followmymus.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.navigation.RootComponent.Child
 import io.github.alexmaryin.followmymus.navigation.mainScreenPager.PagerComponent
@@ -17,6 +18,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
@@ -27,11 +29,11 @@ class MainRootComponent(
 ) : RootComponent, ComponentContext by componentContext, KoinComponent {
 
     private val sessionManager by inject<SessionManager>()
-    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val scope = componentContext.coroutineScope() + SupervisorJob()
 
     init {
         lifecycle.doOnStart {
-            observeSessionStatus()
+//            observeSessionStatus()
         }
     }
 
@@ -40,7 +42,7 @@ class MainRootComponent(
     override val childStack: Value<ChildStack<*, Child>> = childStack(
         source = navigation,
         serializer = Config.serializer(),
-        initialConfiguration = Config.Splash,
+        initialConfiguration = Config.SignUp,
         handleBackButton = true
     ) { config, context ->
         when (config) {

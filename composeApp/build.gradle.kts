@@ -34,7 +34,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
             export(libs.decompose)
-            export(libs.essenity)
+            export(libs.decompose.essenity)
         }
     }
     
@@ -91,7 +91,7 @@ kotlin {
             // Decompose
             api(libs.decompose)
             implementation(libs.decompose.cmp)
-            api(libs.essenity)
+            api(libs.decompose.essenity)
         }
 
         commonTest.dependencies {
