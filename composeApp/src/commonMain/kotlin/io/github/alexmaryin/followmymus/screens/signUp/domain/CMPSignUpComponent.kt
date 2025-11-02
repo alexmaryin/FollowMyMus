@@ -6,10 +6,11 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.forError
-import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
@@ -25,6 +26,9 @@ class CMPSignUpComponent(
     private val _state = MutableValue(SignUpState())
     override val state: Value<SignUpState> get() = _state
 
+    private val eventChannel = Channel<SignUpEvent>()
+    override val events = eventChannel.receiveAsFlow()
+
     private val scope = componentContext.coroutineScope() + SupervisorJob()
 
     private val sessionManager by inject<SessionManager>()
@@ -37,9 +41,14 @@ class CMPSignUpComponent(
                     password = _state.value.password.text.toString()
                 )
             }
+
             SignUpAction.OnOpenLogin -> onLoginClick()
-            SignUpAction.TogglePasswordVisibility -> _state.update {
-                it.copy(isPasswordVisible = !it.isPasswordVisible)
+            is SignUpAction.NicknameChange -> if (!state.value.isNicknameValid) _state.update {
+                it.copy(isNicknameValid = true)
+            }
+
+            is SignUpAction.PasswordChange -> if (!state.value.isPasswordValid) _state.update {
+                it.copy(isPasswordValid = true)
             }
         }
     }
@@ -59,12 +68,8 @@ class CMPSignUpComponent(
         val result = sessionManager.signUp(Credentials(nickname, password))
         _state.update { it.copy(isLoading = false) }
 
-        result.forError {
-
-        }
-        result.forSuccess {
-
+        result.forError { error, message ->
+            eventChannel.send(SignUpEvent.ShowError(message ?: "Unknown error with type $error"))
         }
     }
-
 }

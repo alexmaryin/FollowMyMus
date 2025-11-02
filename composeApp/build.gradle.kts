@@ -93,6 +93,8 @@ kotlin {
             api(libs.decompose)
             implementation(libs.decompose.cmp)
             api(libs.decompose.essenity)
+            implementation(libs.decompose.essenity.coroutines)
+
         }
 
         commonTest.dependencies {

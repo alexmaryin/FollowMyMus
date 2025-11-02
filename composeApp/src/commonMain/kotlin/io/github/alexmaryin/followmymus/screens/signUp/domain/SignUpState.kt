@@ -6,7 +6,6 @@ data class SignUpState(
     val nickname: TextFieldState = TextFieldState(),
     val password: TextFieldState = TextFieldState(),
     val isLoading: Boolean = false,
-    val isPasswordVisible: Boolean = false,
     val isNicknameValid: Boolean = true,
     val isPasswordValid: Boolean = true
 ) {

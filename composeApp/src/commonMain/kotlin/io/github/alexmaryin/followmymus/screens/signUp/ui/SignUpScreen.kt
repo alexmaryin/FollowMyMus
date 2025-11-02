@@ -1,23 +1,20 @@
 package io.github.alexmaryin.followmymus.screens.signUp.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import followmymus.composeapp.generated.resources.Res
-import followmymus.composeapp.generated.resources.mbrz_logo_support
-import followmymus.composeapp.generated.resources.music_brainz
 import io.github.alexmaryin.followmymus.core.ui.DeviceConfiguration
+import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpAction
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
-import io.github.alexmaryin.followmymus.screens.signUp.ui.parts.*
-import org.jetbrains.compose.resources.stringResource
+import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpEvent
 
 @Composable
 fun SignUpScreen(
@@ -26,6 +23,7 @@ fun SignUpScreen(
     val windowSize = currentWindowAdaptiveInfo().windowSizeClass
     val deviceConfiguration = DeviceConfiguration.fromWindowSize(windowSize)
     val autofillManager = LocalAutofillManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     fun actionHandler(action: SignUpAction) {
         when (action) {
@@ -35,17 +33,28 @@ fun SignUpScreen(
                 component(SignUpAction.OnSignUp)
             }
 
-            SignUpAction.TogglePasswordVisibility -> component(SignUpAction.TogglePasswordVisibility)
+            is SignUpAction.NicknameChange -> component(SignUpAction.NicknameChange(action.new))
+            is SignUpAction.PasswordChange -> component(SignUpAction.PasswordChange(action.new))
+        }
+    }
+
+    ObserveEvents(component.events) { event ->
+        when (event) {
+            is SignUpEvent.ShowError -> snackbarHostState.showSnackbar(
+                message = event.message,
+                duration = SnackbarDuration.Short
+            )
         }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
-            .windowInsetsPadding(WindowInsets.navigationBars)
+            .windowInsetsPadding(WindowInsets.navigationBars),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
 
         when (deviceConfiguration) {
-            DeviceConfiguration.MOBILE_PORTRAIT, DeviceConfiguration.TABLET_PORTRAIT -> {
+            DeviceConfiguration.MOBILE_PORTRAIT -> {
                 SignUpPortrait(
                     modifier = Modifier.fillMaxSize()
                         .padding(paddingValues).consumeWindowInsets(WindowInsets.safeContent),
@@ -54,6 +63,15 @@ fun SignUpScreen(
                 )
             }
 
+            DeviceConfiguration.MOBILE_LANDSCAPE -> {
+                SignUpPhoneLandscape(
+                    modifier = Modifier.fillMaxSize()
+                        .padding(paddingValues).consumeWindowInsets(WindowInsets.safeContent),
+                    stateValue = component.state,
+                    onAction = ::actionHandler
+                )
+            }
+            // Desktop and any other wide screens
             else -> {
                 SignUpLandscape(
                     modifier = Modifier.fillMaxSize()
@@ -63,7 +81,5 @@ fun SignUpScreen(
                 )
             }
         }
-
-
     }
 }

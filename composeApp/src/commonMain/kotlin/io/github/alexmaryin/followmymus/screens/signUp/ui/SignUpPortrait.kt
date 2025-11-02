@@ -13,6 +13,7 @@ import com.arkivanov.decompose.value.Value
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.mbrz_logo_support
 import followmymus.composeapp.generated.resources.music_brainz
+import io.github.alexmaryin.followmymus.screens.commonUi.LogoAnimation
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpAction
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpState
 import io.github.alexmaryin.followmymus.screens.signUp.ui.parts.*
@@ -37,17 +38,16 @@ fun SignUpPortrait(
             NicknameField(
                 nickname = state.value.nickname,
                 isNicknameValid = state.value.isNicknameValid
-            )
+            ) { onAction(SignUpAction.NicknameChange(it)) }
             PasswordField(
                 password = state.value.password,
-                isPasswordVisible = state.value.isPasswordVisible,
-                isPasswordValid = state.value.isPasswordValid
-            ) { onAction(SignUpAction.TogglePasswordVisibility) }
+                isPasswordValid = state.value.isPasswordValid,
+            ) { onAction(SignUpAction.PasswordChange(it)) }
             SignUpButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 isEnabled = !state.value.isLoading
             ) { onAction(SignUpAction.OnSignUp) }
-            LoginLInk { onAction(SignUpAction.OnOpenLogin) }
+            LoginLink { onAction(SignUpAction.OnOpenLogin) }
         }
         LogoAnimation(
             imageRes = Res.drawable.music_brainz,

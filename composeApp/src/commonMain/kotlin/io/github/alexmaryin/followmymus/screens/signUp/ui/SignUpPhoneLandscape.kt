@@ -18,7 +18,7 @@ import io.github.alexmaryin.followmymus.screens.signUp.ui.parts.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SignUpLandscape(
+fun SignUpPhoneLandscape(
     modifier: Modifier = Modifier,
     stateValue: Value<SignUpState>,
     onAction: (SignUpAction) -> Unit
@@ -32,36 +32,46 @@ fun SignUpLandscape(
             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SignUpTitle(Modifier.align(Alignment.CenterHorizontally))
+            SignUpTitle(Modifier.align(Alignment.Start), wideSize = false)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Top
             ) {
-                NicknameField(
-                nickname = state.value.nickname,
-                isNicknameValid = state.value.isNicknameValid
-            ) { onAction(SignUpAction.NicknameChange(it)) }
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    NicknameField(
+                        nickname = state.value.nickname,
+                        isNicknameValid = state.value.isNicknameValid
+                    ) { onAction(SignUpAction.NicknameChange(it)) }
+                }
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    PasswordField(
+                        password = state.value.password,
+                        isPasswordValid = state.value.isPasswordValid,
+                    ) { onAction(SignUpAction.PasswordChange(it)) }
+                }
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
-                PasswordField(
-                password = state.value.password,
-                isPasswordValid = state.value.isPasswordValid,
-            ) { onAction(SignUpAction.PasswordChange(it)) }
+                SignUpButton(
+                    modifier = Modifier.weight(1f),
+                    isEnabled = !state.value.isLoading
+                ) { onAction(SignUpAction.OnSignUp) }
+                LoginLink(Modifier.weight(1f)) { onAction(SignUpAction.OnOpenLogin) }
             }
-            SignUpButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                isEnabled = !state.value.isLoading
-            ) { onAction(SignUpAction.OnSignUp) }
-            LoginLink { onAction(SignUpAction.OnOpenLogin) }
         }
-        LogoAnimation(
-            imageRes = Res.drawable.music_brainz,
-            text = stringResource(Res.string.mbrz_logo_support)
-        )
+        Box(Modifier.align(Alignment.BottomEnd).fillMaxSize(0.5f)) {
+            LogoAnimation(
+                imageRes = Res.drawable.music_brainz,
+                text = stringResource(Res.string.mbrz_logo_support)
+            )
+        }
     }
 }

@@ -14,12 +14,14 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SignUpTitle(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    wideSize: Boolean = true
 ) {
     Text(
         text = stringResource(Res.string.sign_up_title),
-        style = MaterialTheme.typography.displayLarge,
+        style = if (wideSize) MaterialTheme.typography.displayMedium
+        else MaterialTheme.typography.displayLarge,
         modifier = modifier.padding(horizontal = 20.dp, vertical = 10.dp)
     )
-    Spacer(Modifier.height(24.dp))
+    if (wideSize) Spacer(Modifier.height(24.dp))
 }

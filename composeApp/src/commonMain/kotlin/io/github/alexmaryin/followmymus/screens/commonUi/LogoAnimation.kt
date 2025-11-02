@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.signUp.ui
+package io.github.alexmaryin.followmymus.screens.commonUi
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource

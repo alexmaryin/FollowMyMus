@@ -15,6 +15,7 @@
     <string name="nickname_signup_support">Letters, digits, underscore or dot only</string>
     <string name="password_signup_label">Make password (could not be restored later):</string>
     <string name="password_signup_support">Consider to save in the password manager</string>
+    <string name="password_signup_error">At least six symbols including at least one lowercase, uppercase letters and digits</string>
     <string name="sign_up_button">SIGN UP</string>
     <string name="label_to_login">Already have account?</string>
     <string name="link_to_login">Login!</string>

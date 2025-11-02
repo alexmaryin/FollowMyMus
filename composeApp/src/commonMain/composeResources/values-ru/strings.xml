@@ -15,6 +15,7 @@
     <string name="nickname_signup_support">Только буквы, цифры, подчеркивание и точка</string>
     <string name="password_signup_label">Придумайте пароль (восстановить позже нельзя)</string>
     <string name="password_signup_support">Рекомендуем сохранить в менеджере паролей</string>
+    <string name="password_signup_error">Не менее шести символов, включая строчные и заглавные буквы, а также цифры</string>
     <string name="sign_up_button">ЗАРЕГИСТРИРОВАТЬСЯ</string>
     <string name="label_to_login">Уже зарегистрированы?</string>
     <string name="link_to_login">Войти!</string>

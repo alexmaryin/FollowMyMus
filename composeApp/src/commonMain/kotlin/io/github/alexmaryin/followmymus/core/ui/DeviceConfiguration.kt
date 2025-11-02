@@ -10,11 +10,19 @@ enum class DeviceConfiguration {
 
     companion object {
         fun fromWindowSize(windowsSize: WindowSizeClass): DeviceConfiguration {
-            return when  {
-                windowsSize.isWidthAtLeastBreakpoint(1199) -> DESKTOP
-                windowsSize.isWidthAtLeastBreakpoint(840) -> MOBILE_LANDSCAPE
-                windowsSize.isWidthAtLeastBreakpoint(600) -> TABLET_PORTRAIT
-                else -> MOBILE_PORTRAIT
+            return when {
+                isDesktop() -> DESKTOP
+
+                windowsSize.isAtLeastBreakpoint(
+                    WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND,
+                    WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND
+                ) -> TABLET_PORTRAIT
+
+                windowsSize.isHeightAtLeastBreakpoint(
+                    WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                ) -> MOBILE_PORTRAIT
+
+                else -> MOBILE_LANDSCAPE
             }
         }
     }
