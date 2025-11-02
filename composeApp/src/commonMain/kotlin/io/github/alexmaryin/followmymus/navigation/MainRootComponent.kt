@@ -15,6 +15,7 @@ import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -81,9 +82,11 @@ class MainRootComponent(
     ) = get<PagerComponent> { parametersOf(componentContext, nickName) }
 
     private fun observeSessionStatus() = scope.launch {
-        delay(2000L)
+
+        val splashDelay = async { delay(2500L) }
         sessionManager.sessionStatus().collectLatest { sessionStatus ->
             println(sessionStatus)
+            splashDelay.await()
             when (sessionStatus) {
                 is SessionStatus.Authenticated -> navigation.replaceAll(
                     Config.MainScreen(

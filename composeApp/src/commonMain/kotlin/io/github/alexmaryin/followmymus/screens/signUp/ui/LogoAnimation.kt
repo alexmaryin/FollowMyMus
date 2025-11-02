@@ -8,21 +8,19 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
@@ -63,13 +61,19 @@ fun BoxScope.LogoAnimation(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(
+                shadow = Shadow(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    offset = Offset(3f, 3f),
+                    blurRadius = 6f
+                )
+            ),
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Italic,
             color = MaterialTheme.colorScheme.tertiary,
             textAlign = TextAlign.End,
             modifier = Modifier
-                .offset(y = (-30).dp / 1.35f)
+                .offset(y = (-41).dp / 1.2f)
                 .fillMaxWidth()
         )
     }
@@ -91,7 +95,7 @@ fun BoxScope.LogoAnimation(
         Image(
             painter = painterResource(imageRes),
             contentDescription = null,
-            modifier = Modifier.size(191.dp, 30.dp)
+            modifier = Modifier.size(202.dp, 41.dp)
         )
     }
 }
