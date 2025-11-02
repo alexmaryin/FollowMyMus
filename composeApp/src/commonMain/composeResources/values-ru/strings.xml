@@ -1,22 +1,25 @@
 <resources>
     <string name="app_name">FollowMyMus</string>
-<!--    Errors definitions-->
+    <!--    Errors definitions-->
     <string name="network_error">Сетевая ошибка без описания</string>
-<!--    Pages titles-->
+    <!--    Pages titles-->
     <string name="releases_page_title">Релизы</string>
     <string name="favorites_page_title">Избранное</string>
     <string name="account_page_title">Аккаунт</string>
-<!--    Sign up screen-->
+    <!--    Sign up / Login common-->
+    <string name="nickname">Никнейм:</string>
+    <string name="password">Пароль:</string>
+    <!--    Sign up screen-->
     <string name="sign_up_title">РЕГИСТРАЦИЯ</string>
-    <string name="nickname_signup_label">Придумайте ник (не обязательно реальное имя):</string>
+    <string name="nickname_signup_label">Придумайте ник (не обязательно реальное имя)</string>
     <string name="nickname_signup_support">Только буквы, цифры, подчеркивание и точка</string>
-    <string name="password_signup_label">Придумайте пароль (восстановить позже нельзя):</string>
+    <string name="password_signup_label">Придумайте пароль (восстановить позже нельзя)</string>
     <string name="password_signup_support">Рекомендуем сохранить в менеджере паролей</string>
     <string name="sign_up_button">ЗАРЕГИСТРИРОВАТЬСЯ</string>
     <string name="label_to_login">Уже зарегистрированы?</string>
     <string name="link_to_login">Войти!</string>
     <string name="mbrz_logo_support">содержит в себе</string>
-<!--    Login screen-->
+    <!--    Login screen-->
     <string name="login_title">ВХОД</string>
     <string name="nickname_login_label">Введите ващ ник:</string>
     <string name="password_login_label">Введите ващ пароль:</string>
@@ -24,7 +27,7 @@
     <string name="login_qr_text">Войти по QR коду</string>
     <string name="label_to_sign_up">Еще нет аккаунта?</string>
     <string name="link_to_sign_up">Создать!</string>
-<!--    Account & preferences page-->
+    <!--    Account & preferences page-->
     <string name="account_page_label">Аккаунт</string>
     <string name="app_section_label">Приложение</string>
     <string name="language_preferences_label">Язык</string>

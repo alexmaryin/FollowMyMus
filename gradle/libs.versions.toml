@@ -18,13 +18,14 @@ buildKonfig = "0.17.1"
 koin = "4.1.1"
 koin-annotations = "2.3.0"
 ksp = "2.3.0"
-supabase-bom = "3.2.5"
+supabase-bom = "3.2.6"
 ktor = "3.3.1"
 qrcode = "4.5.0"
 camera2 = "1.5.1"
 mlkit-barcode = "17.3.0"
 decompose = "3.4.0"
 essenity = "2.5.0"
+material3-adaptive = "1.2.0"
 
 # app versions
 android-versionCode = "1"
@@ -44,6 +45,7 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }

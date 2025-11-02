@@ -71,6 +71,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.material3.adaptive)
 
             // Koin DI
             implementation(project.dependencies.platform(libs.koin.bom))
