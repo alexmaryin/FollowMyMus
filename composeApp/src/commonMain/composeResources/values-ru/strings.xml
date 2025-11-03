@@ -2,6 +2,12 @@
     <string name="app_name">FollowMyMus</string>
     <!--    Errors definitions-->
     <string name="network_error">Сетевая ошибка без описания</string>
+    <string name="email_exists">Аккаунт с таким ником уже существует</string>
+    <string name="signup_disabled">Регистрация временно отключена администратором</string>
+    <string name="weak_password">Пароль слишком простой, придумайте, пожалуйста другой</string>
+    <string name="auth_error">Ошибка сервиса авторизации: </string>
+    <string name="rest_error">Сервер вернул ошибку с кодом </string>
+    <string name="credentials_invalid">Ошибочные никнейм или пароль</string>
     <!--    Pages titles-->
     <string name="releases_page_title">Релизы</string>
     <string name="favorites_page_title">Избранное</string>
@@ -28,6 +34,9 @@
     <string name="login_qr_text">Войти по QR коду</string>
     <string name="label_to_sign_up">Еще нет аккаунта?</string>
     <string name="link_to_sign_up">Создать!</string>
+    <string name="camera_permission_request">Для сканирования QR кода нужно предоставить разрешение на доступ к камере.</string>
+    <string name="camera_permission_grant">Дать разрешение</string>
+    <string name="camera_permission_cancel">Отменить</string>
     <!--    Account & preferences page-->
     <string name="account_page_label">Аккаунт</string>
     <string name="app_section_label">Приложение</string>

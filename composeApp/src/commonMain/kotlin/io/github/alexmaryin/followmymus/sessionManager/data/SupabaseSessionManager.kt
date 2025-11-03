@@ -11,6 +11,7 @@ import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionPaylo
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.event.AuthEvent
+import io.github.jan.supabase.auth.exception.AuthErrorCode
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionSource
@@ -54,9 +55,9 @@ class SupabaseSessionManager(
     private suspend fun <T> safeCall(call: suspend () -> T): Result<T> = try {
         Result.Success(call())
     } catch (e: AuthRestException) {
-        Result.Error(SessionError.AuthError, e.errorDescription)
+        Result.Error(SessionError.AuthError(e.errorCode ?: AuthErrorCode.UnexpectedFailure), e.errorDescription)
     } catch (e: RestException) {
-        Result.Error(SessionError.RestError, e.error)
+        Result.Error(SessionError.RestError(e.statusCode), e.error)
     } catch (e: IOException) {
         Result.Error(SessionError.NetworkError, e.message ?: getString(Res.string.network_error))
     }
@@ -81,7 +82,7 @@ class SupabaseSessionManager(
         val user = auth.retrieveUserForCurrentSession(true)
         Result.Success(user)
     } catch (e: AuthRestException) {
-        Result.Error(SessionError.AuthError, e.errorDescription)
+        Result.Error(SessionError.AuthError(e.errorCode ?: AuthErrorCode.UnexpectedFailure), e.errorDescription)
     } catch (e: Exception) {
         Result.Error(UndefinedError, e.message)
     }

@@ -1,19 +1,26 @@
-package io.github.alexmaryin.followmymus.qrScanner
+package io.github.alexmaryin.followmymus.screens.login.ui.parts
 
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import io.github.alexmaryin.followmymus.screens.login.ui.parts.qrScanner.CameraPermissionRequestScreen
+import io.github.alexmaryin.followmymus.screens.login.ui.parts.qrScanner.CameraWithScanner
 
 @Composable
-fun QRCodeScannerScreen(
-    modifier: Modifier = Modifier,
-    onQrDetected: (String) -> Unit = {},
-    onCancel: () -> Unit = {}
+actual fun QRCodeScanner(
+    modifier: Modifier,
+    onQrDetected: (String) -> Unit,
+    onCancel: () -> Unit
 ) {
     val context = LocalContext.current
     var hasCameraPermission by remember {
@@ -44,4 +51,3 @@ fun QRCodeScannerScreen(
         )
     }
 }
-

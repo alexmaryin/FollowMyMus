@@ -5,14 +5,19 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.forError
+import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
+import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionError
+import io.github.jan.supabase.auth.exception.AuthErrorCode
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -69,7 +74,40 @@ class CMPSignUpComponent(
         _state.update { it.copy(isLoading = false) }
 
         result.forError { error, message ->
-            eventChannel.send(SignUpEvent.ShowError(message ?: "Unknown error with type $error"))
+            val msg = when (error) {
+                is SessionError.AuthError -> {
+                    when (error.code) {
+                        AuthErrorCode.EmailExists -> {
+                            _state.update { it.copy(isNicknameValid = false) }
+                            getString(Res.string.email_exists)
+                        }
+
+                        AuthErrorCode.SignupDisabled -> getString(Res.string.signup_disabled)
+
+                        AuthErrorCode.UserAlreadyExists -> {
+                            _state.update { it.copy(isNicknameValid = false) }
+                            getString(Res.string.email_exists)
+                        }
+
+                        AuthErrorCode.WeakPassword -> {
+                            _state.update { it.copy(isPasswordValid = false) }
+                            getString(Res.string.weak_password)
+                        }
+
+                        else -> getString(Res.string.auth_error) + error.code.value +
+                                "\n" + message
+                    }
+                }
+
+                is SessionError.RestError -> getString(Res.string.rest_error) + error.statusCode +
+                        "\n" + message
+
+                else -> getString(Res.string.network_error) + "\n" + message
+            }
+            eventChannel.send(SignUpEvent.ShowError(msg))
+        }
+        result.forSuccess {
+            _state.update { it.copy(isLoading = false, isNicknameValid = true, isPasswordValid = true) }
         }
     }
 }

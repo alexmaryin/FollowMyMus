@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.signUp.ui.parts
+package io.github.alexmaryin.followmymus.screens.login.ui.parts
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
-import followmymus.composeapp.generated.resources.sign_up
-import followmymus.composeapp.generated.resources.sign_up_button
+import followmymus.composeapp.generated.resources.key
+import followmymus.composeapp.generated.resources.login_button
 import io.github.alexmaryin.followmymus.core.ui.modifiers.animatedShimmerBrush
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SignUpButton(
+fun LoginButton(
     modifier: Modifier = Modifier,
     isEnabled: Boolean,
     onClick: () -> Unit
@@ -32,11 +32,11 @@ fun SignUpButton(
         .animatedShimmerBrush(showShimmer = !isEnabled, shape = ButtonDefaults.shape)
 ) {
     Icon(
-        painter = painterResource(Res.drawable.sign_up),
-        contentDescription = "sign up click"
+        painter = painterResource(Res.drawable.key),
+        contentDescription = "login click"
     )
     Text(
-        text = stringResource(Res.string.sign_up_button),
+        text = stringResource(Res.string.login_button),
         modifier = Modifier.padding(6.dp)
     )
 }

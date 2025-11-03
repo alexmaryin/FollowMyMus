@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.qrScanner
+package io.github.alexmaryin.followmymus.screens.login.ui.parts.qrScanner
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.camera_permission_cancel
+import followmymus.composeapp.generated.resources.camera_permission_grant
+import followmymus.composeapp.generated.resources.camera_permission_request
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CameraPermissionRequestScreen(
@@ -28,16 +34,17 @@ fun CameraPermissionRequestScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Camera permission is required to scan QR codes.",
-            style = MaterialTheme.typography.bodyLarge
+            stringResource(Res.string.camera_permission_request),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
         Button(onClick = onGrantPermission) {
-            Text("Grant permission")
+            Text(stringResource(Res.string.camera_permission_grant))
         }
         Spacer(Modifier.height(8.dp))
         TextButton(onClick = onCancel) {
-            Text("Cancel")
+            Text(stringResource(Res.string.camera_permission_cancel))
         }
     }
 }

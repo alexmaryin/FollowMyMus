@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.qrScanner
+package io.github.alexmaryin.followmymus.screens.login.ui.parts.qrScanner
 
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage

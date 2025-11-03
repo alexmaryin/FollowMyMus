@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.qrScanner
+package io.github.alexmaryin.followmymus.screens.login.ui.parts.qrScanner
 
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis

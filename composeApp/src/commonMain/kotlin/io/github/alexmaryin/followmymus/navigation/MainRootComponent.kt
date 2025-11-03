@@ -43,7 +43,7 @@ class MainRootComponent(
     override val childStack: Value<ChildStack<*, Child>> = childStack(
         source = navigation,
         serializer = Config.serializer(),
-        initialConfiguration = Config.SignUp,
+        initialConfiguration = Config.Login(),
         handleBackButton = true
     ) { config, context ->
         when (config) {

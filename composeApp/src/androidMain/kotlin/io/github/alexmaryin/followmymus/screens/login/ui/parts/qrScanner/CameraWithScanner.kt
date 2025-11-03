@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.qrScanner
+package io.github.alexmaryin.followmymus.screens.login.ui.parts.qrScanner
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +34,7 @@ fun CameraWithScanner(
             hintWrongQR = false
         }
     }
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         CameraView(
             onQrScanned = { value ->
                 if (value.startsWith(DEEP_LINK_URL_PREFIX)) {
