@@ -8,6 +8,7 @@
     <string name="auth_error">Authentication service error: </string>
     <string name="rest_error">Server returns error with code </string>
     <string name="credentials_invalid">Nickname or password are invalid</string>
+    <string name="qr_invalid">QR code is not valid</string>
     <!--    Pages titles-->
     <string name="releases_page_title">Releases</string>
     <string name="favorites_page_title">Favorites</string>
@@ -37,6 +38,7 @@
     <string name="camera_permission_request">Camera permission is required to scan QR codes.</string>
     <string name="camera_permission_grant">Grant permission</string>
     <string name="camera_permission_cancel">Cancel</string>
+    <string name="open_qr_dialog_caption">Select QR Code Image</string>
     <!--    Account & preferences page-->
     <string name="account_page_label">Account</string>
     <string name="app_section_label">App</string>

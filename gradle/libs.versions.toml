@@ -26,6 +26,7 @@ mlkit-barcode = "17.3.0"
 decompose = "3.4.0"
 essenity = "2.5.0"
 material3-adaptive = "1.2.0"
+zxing = "3.5.3"
 
 # app versions
 android-versionCode = "1"
@@ -63,6 +64,7 @@ camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camera2" }
 camera2-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera2" }
 camera2-view = { module = "androidx.camera:camera-view", version.ref = "camera2" }
 mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
+zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
 
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

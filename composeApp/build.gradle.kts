@@ -62,6 +62,15 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
 
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutinesSwing)
+            // KTOR client
+            implementation(libs.ktor.client.okhttp)
+            // QR kit
+            implementation(libs.zxing)
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -99,13 +108,6 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-        }
-
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
-            // KTOR client
-            implementation(libs.ktor.client.okhttp)
         }
     }
 
