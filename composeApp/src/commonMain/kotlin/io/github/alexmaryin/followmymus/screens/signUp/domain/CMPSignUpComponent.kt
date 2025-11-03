@@ -1,13 +1,13 @@
 package io.github.alexmaryin.followmymus.screens.signUp.domain
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.navigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionError
@@ -28,14 +28,8 @@ class CMPSignUpComponent(
     private val onLoginClick: () -> Unit
 ) : SignUpComponent, ComponentContext by componentContext, KoinComponent {
 
-    private val stateHolder = stateKeeper.consume("SIGN_UP", SignUpState.serializer())
-        ?: SignUpState()
-    private val _state = MutableValue(stateHolder)
+    private val _state by saveableMutableValue(SignUpState.serializer(), init = ::SignUpState)
     override val state: Value<SignUpState> get() = _state
-
-    init {
-        stateKeeper.register("SIGN_UP", SignUpState.serializer()) { state.value }
-    }
 
     private val eventChannel = Channel<SignUpEvent>()
     override val events = eventChannel.receiveAsFlow()
