@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -13,10 +15,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.cancel
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -26,11 +30,15 @@ fun BaseTextField(
     overheadText: String? = null,
     labelText: String? = null,
     supportingText: String? = null,
-    isError: Boolean,
+    isError: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActionHandler: KeyboardActionHandler? = null,
     onTextChange: (String) -> Unit = {}
 ) {
-    LaunchedEffect(fieldState.text) {
-        onTextChange(fieldState.text.toString())
+    LaunchedEffect(fieldState) {
+        snapshotFlow { fieldState.text.toString() }.collectLatest {
+            onTextChange(it)
+        }
     }
     overheadText?.let {
         Text(
@@ -61,6 +69,8 @@ fun BaseTextField(
             supportingText?.let { Text(it) }
         },
         isError = isError,
-        lineLimits = TextFieldLineLimits.SingleLine
+        lineLimits = TextFieldLineLimits.SingleLine,
+        keyboardOptions = keyboardOptions,
+        onKeyboardAction = keyboardActionHandler
     )
 }

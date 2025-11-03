@@ -31,8 +31,14 @@ class CMPLoginComponent(
     private val onSignUpClick: () -> Unit
 ) : LoginComponent, ComponentContext by componentContext, KoinComponent {
 
-    private val _state = MutableValue(LoginState())
+    private val stateHolder = stateKeeper.consume("LOGIN", LoginState.serializer())
+        ?: LoginState()
+    private val _state = MutableValue(stateHolder)
     override val state get() = _state
+
+    init {
+        stateKeeper.register("LOGIN", LoginState.serializer()) { state.value }
+    }
 
     private val eventChannel = Channel<LoginEvent>()
     override val events = eventChannel.receiveAsFlow()
@@ -45,20 +51,25 @@ class CMPLoginComponent(
         qrCode?.let { sessionCode ->
             scope.launch { loginBySessionCode(sessionCode) }
         }
+
     }
 
     override operator fun invoke(action: LoginAction) {
         when (action) {
             LoginAction.OnLogin -> scope.launch {
                 login(
-                    nickname = _state.value.nickname.text.toString(),
-                    password = _state.value.password.text.toString()
+                    nickname = _state.value.nickname,
+                    password = _state.value.password
                 )
             }
 
             is LoginAction.OnQrRecognized -> scope.launch {
                 loginBySessionCode(action.qrCode)
             }
+
+            is LoginAction.OnNickNameSet -> _state.update { it.copy(nickname = action.new, isCredentialsValid = true) }
+
+            is LoginAction.OnPasswordSet -> _state.update { it.copy(password = action.new, isCredentialsValid = true) }
 
             LoginAction.OnOpenSignUp -> onSignUpClick()
 

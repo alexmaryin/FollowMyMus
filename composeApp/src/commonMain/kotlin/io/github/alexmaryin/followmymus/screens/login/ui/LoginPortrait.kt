@@ -47,11 +47,13 @@ fun LoginPortrait(
             } else {
                 NicknameLoginField(
                     nickname = state.value.nickname,
-                    isInvalid = !state.value.isCredentialsValid
+                    isInvalid = !state.value.isCredentialsValid,
+                    onLoginChange = { new -> onAction(LoginAction.OnNickNameSet(new)) }
                 )
                 PasswordLoginField(
                     password = state.value.password,
                     isInvalid = !state.value.isCredentialsValid,
+                    onPasswordChange = { new -> onAction(LoginAction.OnPasswordSet(new)) }
                 )
                 LoginButton(
                     modifier = Modifier.align(Alignment.CenterHorizontally),

@@ -1,10 +1,11 @@
 package io.github.alexmaryin.followmymus.screens.login.domain
 
-import androidx.compose.foundation.text.input.TextFieldState
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class LoginState(
-    val nickname: TextFieldState = TextFieldState(),
-    val password: TextFieldState = TextFieldState(),
+    val nickname: String = "",
+    val password: String = "",
     val isLoading: Boolean = false,
     val isCredentialsValid: Boolean = true,
     val isQrScanOpen: Boolean = false,

@@ -6,4 +6,6 @@ sealed class LoginAction {
     data object OnOpenQrScan : LoginAction()
     data object OnCloseQrScan : LoginAction()
     data class OnQrRecognized(val qrCode: String) : LoginAction()
+    data class OnNickNameSet(val new: String) : LoginAction()
+    data class OnPasswordSet(val new: String) : LoginAction()
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import io.github.alexmaryin.followmymus.core.ui.DeviceConfiguration
 import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpAction
@@ -24,17 +25,16 @@ fun SignUpScreen(
     val deviceConfiguration = DeviceConfiguration.fromWindowSize(windowSize)
     val autofillManager = LocalAutofillManager.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     fun actionHandler(action: SignUpAction) {
         when (action) {
-            SignUpAction.OnOpenLogin -> component(SignUpAction.OnOpenLogin)
             SignUpAction.OnSignUp -> {
+                keyboardController?.hide()
                 autofillManager?.commit()
                 component(SignUpAction.OnSignUp)
             }
-
-            is SignUpAction.NicknameChange -> component(SignUpAction.NicknameChange(action.new))
-            is SignUpAction.PasswordChange -> component(SignUpAction.PasswordChange(action.new))
+            else -> component(action)
         }
     }
 

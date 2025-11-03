@@ -1,6 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.login.ui.parts
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -14,12 +15,14 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PasswordLoginField(
-    password: TextFieldState,
+    password: String,
     isInvalid: Boolean,
+    onPasswordChange: (String) -> Unit
 ) = BaseSecureField(
-    fieldState = password,
+    fieldState = rememberTextFieldState(password),
     modifier = Modifier.semantics { contentType = ContentType.Password },
     overheadText = stringResource(Res.string.password),
     labelText = stringResource(Res.string.password_login_label),
     isError = isInvalid,
+    onTextChange = onPasswordChange
 )

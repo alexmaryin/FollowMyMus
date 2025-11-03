@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import io.github.alexmaryin.followmymus.core.ui.DeviceConfiguration
 import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginAction
@@ -30,19 +31,16 @@ fun LoginScreen(
     val deviceConfiguration = DeviceConfiguration.fromWindowSize(windowSize)
     val autofillManager = LocalAutofillManager.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     fun actionHandler(action: LoginAction) {
         when (action) {
             LoginAction.OnLogin -> {
+                keyboardController?.hide()
                 autofillManager?.commit()
                 component(LoginAction.OnLogin)
             }
-
-            is LoginAction.OnQrRecognized -> component(LoginAction.OnQrRecognized(action.qrCode))
-
-            LoginAction.OnOpenSignUp -> component(LoginAction.OnOpenSignUp)
-            LoginAction.OnOpenQrScan -> component(LoginAction.OnOpenQrScan)
-            LoginAction.OnCloseQrScan -> component(LoginAction.OnCloseQrScan)
+            else -> component(action)
         }
     }
 

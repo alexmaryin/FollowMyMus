@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material3.Icon
@@ -12,10 +13,15 @@ import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.visibility
 import followmymus.composeapp.generated.resources.visibility_off
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -26,12 +32,16 @@ fun BaseSecureField(
     labelText: String? = null,
     supportingText: String? = null,
     isError: Boolean = false,
+    keyboardController: SoftwareKeyboardController? = null,
     onTextChange: (String) -> Unit = {}
 ) {
-    LaunchedEffect(fieldState.text) {
-        onTextChange(fieldState.text.toString())
+    LaunchedEffect(fieldState) {
+        snapshotFlow { fieldState.text.toString() }.collectLatest {
+            onTextChange(it)
+        }
     }
     var isVisible by remember { mutableStateOf(false) }
+    val keyboardController = keyboardController ?: LocalSoftwareKeyboardController.current
 
     overheadText?.let {
         Text(
@@ -63,5 +73,10 @@ fun BaseSecureField(
             supportingText?.let { Text(it) }
         },
         isError = isError,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        onKeyboardAction = { keyboardController?.hide() }
     )
 }

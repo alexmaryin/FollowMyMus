@@ -28,8 +28,14 @@ class CMPSignUpComponent(
     private val onLoginClick: () -> Unit
 ) : SignUpComponent, ComponentContext by componentContext, KoinComponent {
 
-    private val _state = MutableValue(SignUpState())
+    private val stateHolder = stateKeeper.consume("SIGN_UP", SignUpState.serializer())
+        ?: SignUpState()
+    private val _state = MutableValue(stateHolder)
     override val state: Value<SignUpState> get() = _state
+
+    init {
+        stateKeeper.register("SIGN_UP", SignUpState.serializer()) { state.value }
+    }
 
     private val eventChannel = Channel<SignUpEvent>()
     override val events = eventChannel.receiveAsFlow()
@@ -42,18 +48,18 @@ class CMPSignUpComponent(
         when (action) {
             SignUpAction.OnSignUp -> scope.launch {
                 signUp(
-                    nickname = _state.value.nickname.text.toString(),
-                    password = _state.value.password.text.toString()
+                    nickname = _state.value.nickname,
+                    password = _state.value.password
                 )
             }
 
             SignUpAction.OnOpenLogin -> onLoginClick()
-            is SignUpAction.NicknameChange -> if (!state.value.isNicknameValid) _state.update {
-                it.copy(isNicknameValid = true)
+            is SignUpAction.NicknameChange -> _state.update {
+                it.copy(nickname = action.new, isNicknameValid = true)
             }
 
-            is SignUpAction.PasswordChange -> if (!state.value.isPasswordValid) _state.update {
-                it.copy(isPasswordValid = true)
+            is SignUpAction.PasswordChange -> _state.update {
+                it.copy(password = action.new, isPasswordValid = true)
             }
         }
     }
