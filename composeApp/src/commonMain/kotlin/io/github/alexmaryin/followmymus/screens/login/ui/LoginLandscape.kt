@@ -19,7 +19,7 @@ import io.github.alexmaryin.followmymus.screens.login.ui.parts.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun LoginPortrait(
+fun LoginLandscape(
     modifier: Modifier = Modifier,
     stateValue: Value<LoginState>,
     onAction: (LoginAction) -> Unit
@@ -29,30 +29,40 @@ fun LoginPortrait(
         modifier = modifier,
         contentAlignment = Alignment.TopCenter
     ) {
-
         Column(
             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LoginTitle(Modifier.align(Alignment.Start))
+            LoginTitle(Modifier.align(Alignment.CenterHorizontally))
 
             if (state.value.isQrScanOpen) {
                 QRCodeScanner(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.Center)
-                        .padding(24.dp),
+                    modifier = Modifier.sizeIn(200.dp).padding(24.dp),
                     onQrDetected = { qrCode -> onAction(LoginAction.OnQrRecognized(qrCode)) },
                     onCancel = { onAction(LoginAction.OnCloseQrScan) }
                 )
             } else {
-                NicknameLoginField(
-                    nickname = state.value.nickname,
-                    isInvalid = !state.value.isCredentialsValid
-                )
-                PasswordLoginField(
-                    password = state.value.password,
-                    isInvalid = !state.value.isCredentialsValid,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    NicknameLoginField(
+                        nickname = state.value.nickname,
+                        isInvalid = !state.value.isCredentialsValid
+                    )
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PasswordLoginField(
+                        password = state.value.password,
+                        isInvalid = !state.value.isCredentialsValid,
+                    )
+                }
                 LoginButton(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     isEnabled = !state.value.isLoading

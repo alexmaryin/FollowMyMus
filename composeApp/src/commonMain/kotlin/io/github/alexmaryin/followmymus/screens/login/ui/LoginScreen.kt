@@ -69,8 +69,19 @@ fun LoginScreen(
                 onAction = ::actionHandler
             )
 
-            DeviceConfiguration.MOBILE_LANDSCAPE -> {}
-            else -> {}
+            DeviceConfiguration.MOBILE_LANDSCAPE -> LoginPhoneLandscape(
+                modifier = Modifier.fillMaxSize()
+                    .padding(paddingValues).consumeWindowInsets(WindowInsets.safeContent),
+                stateValue = component.state,
+                onAction = ::actionHandler
+            )
+
+            else -> LoginLandscape(
+                modifier = Modifier.fillMaxSize()
+                    .padding(paddingValues).consumeWindowInsets(WindowInsets.safeContent),
+                stateValue = component.state,
+                onAction = ::actionHandler
+            )
         }
     }
 }
