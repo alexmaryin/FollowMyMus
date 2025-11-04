@@ -6,7 +6,7 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
-import io.github.alexmaryin.followmymus.navigation.ui.saveableMutableValue
+import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.sessionManager.data.transferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials

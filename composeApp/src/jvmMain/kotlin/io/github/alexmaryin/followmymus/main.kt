@@ -11,8 +11,8 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.github.alexmaryin.followmymus.core.FollowMyMusApp
-import io.github.alexmaryin.followmymus.navigation.MainRootComponent
-import io.github.alexmaryin.followmymus.navigation.ui.RootContent
+import io.github.alexmaryin.followmymus.rootNavigation.MainRootComponent
+import io.github.alexmaryin.followmymus.rootNavigation.ui.RootContent
 import org.koin.ksp.generated.startKoin
 
 fun main() {

@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation.ui
+package io.github.alexmaryin.followmymus.rootNavigation.ui
 
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.essenty.statekeeper.ExperimentalStateKeeperApi

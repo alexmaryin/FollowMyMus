@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation.mainScreenPager
+package io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager
 
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.account_active_icon

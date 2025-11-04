@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation.mainScreenPager
+package io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.pages.Pages
@@ -7,15 +7,20 @@ import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.update
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import org.koin.core.annotation.Factory
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 @Factory(binds = [PagerComponent::class])
 class MainPagerComponent(
     private val componentContext: ComponentContext,
     nickName: String
-) : PagerComponent, ComponentContext by componentContext {
+) : PagerComponent, ComponentContext by componentContext, KoinComponent {
 
     private val navigation = PagesNavigation<PagerConfig>()
     private val _state = MutableValue(MainScreenState(nickName))
@@ -33,16 +38,32 @@ class MainPagerComponent(
         handleBackButton = true
     ) { page, context ->
         when (page) {
-            PagerConfig.Favorites -> object : Page {}
-            PagerConfig.Releases -> object : Page {}
-            PagerConfig.Account -> object : Page {}
+            PagerConfig.Favorites -> DummyPage
+            PagerConfig.Releases -> DummyPage
+            PagerConfig.Account -> get<AccountHostComponent> { parametersOf(context) }
         }
     }
 
-    override fun onAction(action: MainScreenAction) {
+    override fun invoke(action: MainScreenAction) {
         when (action) {
-            is MainScreenAction.SelectPage -> navigation.select(action.index)
-        }
+            is MainScreenAction.SelectPage -> {
+                navigation.select(action.index)
+                _state.update { it.copy(activePageIndex = action.index) }
+            }
 
+            is MainScreenAction.SetBackIconState -> {
+                _state.update { it.copy(backIconVisible = action.isVisible) }
+            }
+
+            MainScreenAction.BackClick -> {
+                pages.value.items[state.value.activePageIndex].instance?.invoke(PageAction.Back)
+            }
+        }
     }
+}
+
+//TODO delete after
+object DummyPage : Page {
+    override val state: Value<PageState> = MutableValue(PageState())
+    override fun invoke(action: PageAction) = Unit
 }

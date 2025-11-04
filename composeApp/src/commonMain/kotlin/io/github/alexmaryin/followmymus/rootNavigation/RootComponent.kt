@@ -1,8 +1,8 @@
-package io.github.alexmaryin.followmymus.navigation
+package io.github.alexmaryin.followmymus.rootNavigation
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
-import io.github.alexmaryin.followmymus.navigation.mainScreenPager.PagerComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.settings.domain.SettingsComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent

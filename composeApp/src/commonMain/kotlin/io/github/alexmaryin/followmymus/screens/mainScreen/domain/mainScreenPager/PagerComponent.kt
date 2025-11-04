@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation.mainScreenPager
+package io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager
 
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
@@ -9,5 +9,5 @@ interface PagerComponent {
     val pages: Value<ChildPages<*, Page>>
     val state: Value<MainScreenState>
 
-    fun onAction(action: MainScreenAction)
+    operator fun invoke(action: MainScreenAction)
 }

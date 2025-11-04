@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -15,10 +16,13 @@ import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
+import followmymus.composeapp.generated.resources.back
 import io.github.alexmaryin.followmymus.BuildKonfig
-import io.github.alexmaryin.followmymus.navigation.mainScreenPager.MainPages
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
-import io.github.alexmaryin.followmymus.navigation.mainScreenPager.PagerComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.MainPages
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.AccountPageUi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.random.Random
@@ -29,8 +33,9 @@ fun MainScreen(
     component: PagerComponent
 ) {
     val scope = rememberCoroutineScope()
-    val activePage by component.pages.subscribeAsState()
+    val screenPages by component.pages.subscribeAsState()
     val state by component.state.subscribeAsState()
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -41,7 +46,14 @@ fun MainScreen(
                     Text(stringResource(Res.string.app_name) + " ver.${BuildKonfig.appVersion}")
                 },
                 navigationIcon = {
-
+                    if (state.backIconVisible) {
+                        IconButton(onClick = { component(MainScreenAction.BackClick) }) {
+                            Icon(
+                                painter = painterResource(Res.drawable.back),
+                                contentDescription = stringResource(Res.string.back)
+                            )
+                        }
+                    }
                 }
             )
         },
@@ -49,12 +61,12 @@ fun MainScreen(
             NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                 MainPages.entries.forEach { page ->
                     NavigationBarItem(
-                        selected = page.index == activePage.selectedIndex,
-                        onClick = { component.onAction(MainScreenAction.SelectPage(page.index)) },
+                        selected = page.index == screenPages.selectedIndex,
+                        onClick = { component(MainScreenAction.SelectPage(page.index)) },
                         icon = {
                             Icon(
                                 painter = painterResource(
-                                    if (page.index == activePage.selectedIndex)
+                                    if (page.index == screenPages.selectedIndex)
                                         page.iconActiveRes else page.iconRes
                                 ),
                                 contentDescription = page.name
@@ -68,18 +80,29 @@ fun MainScreen(
     ) { paddingValues ->
 
         ChildPages(
-            pages = component.pages,
+            pages = screenPages,
             modifier = Modifier.fillMaxSize().padding(paddingValues),
-            onPageSelected = { component.onAction(MainScreenAction.SelectPage(it)) },
+            onPageSelected = {},
             scrollAnimation = PagesScrollAnimation.Default
-        ) { page, childComponent ->
-            Box(modifier = Modifier.fillMaxSize().background(color = Color(Random.nextLong()))) {
-                Text(
-                    text = "Hello, ${state.nickname}!\nThis is PAGE #$page",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+        ) { index, page ->
+
+            val backIconVisibility by page.state.subscribeAsState()
+
+            LaunchedEffect(backIconVisibility) {
+                component(MainScreenAction.SetBackIconState(backIconVisibility.isBackVisible))
+            }
+
+            if (index == MainPages.ACCOUNT.index) {
+                AccountPageUi(page as AccountHostComponent)
+            } else {
+                Box(modifier = Modifier.fillMaxSize().background(color = Color(Random.nextLong()))) {
+                    Text(
+                        text = "Hello, ${state.nickname}!\nThis is PAGE #$index\nJUST STUB FOR THE PAGE",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
     }

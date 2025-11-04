@@ -39,6 +39,8 @@
     <string name="camera_permission_grant">Дать разрешение</string>
     <string name="camera_permission_cancel">Отменить</string>
     <string name="open_qr_dialog_caption">Выберите изображение с QR кодом</string>
+    <!--    Main screen-->
+    <string name="back">Назад</string>
     <!--    Account & preferences page-->
     <string name="account_page_label">Аккаунт</string>
     <string name="app_section_label">Приложение</string>

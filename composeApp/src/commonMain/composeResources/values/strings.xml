@@ -39,6 +39,8 @@
     <string name="camera_permission_grant">Grant permission</string>
     <string name="camera_permission_cancel">Cancel</string>
     <string name="open_qr_dialog_caption">Select QR Code Image</string>
+    <!--    Main screen-->
+    <string name="back">Back</string>
     <!--    Account & preferences page-->
     <string name="account_page_label">Account</string>
     <string name="app_section_label">App</string>

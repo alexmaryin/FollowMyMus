@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.navigation
+package io.github.alexmaryin.followmymus.rootNavigation
 
 import kotlinx.serialization.Serializable
 

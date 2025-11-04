@@ -1,0 +1,79 @@
+<resources>
+    <string name="privacy_policy_text">
+        <![CDATA[
+# 🛡️ Privacy Policy
+
+**Effective date:** October 27, 2025 г.
+
+---
+
+## 🇬🇧 Privacy Policy
+
+This Privacy Policy (the *Policy*) describes how **FollowMyMus** (the *App*) collects, stores, and uses user data.
+We respect your privacy and protect your data in accordance with the **General Data Protection Regulation (GDPR)** and the **Federal Law of the Russian Federation No. 152-FZ “On Personal Data.”**
+
+---
+
+### 1. General Provisions
+
+1.1. The App does not collect or process personal data that can directly or indirectly identify an individual (such as name, address, email address, phone number, etc.).
+1.2. By using the App, the user agrees to this Policy.
+
+---
+
+### 2. Data We Process
+
+To ensure proper operation of the user account, the App stores **only the following data**:
+- **Nickname (alias)** — used only as a display name and not linked to any personal identity;
+- **Password hash** — a cryptographically transformed representation of the password, which cannot be reversed to obtain the original password and does not contain any identifying information.
+
+These data **do not allow identification of any specific person** and are not considered personal data under EU or Russian law.
+
+---
+
+### 3. Purpose of Data Processing
+
+Data are processed exclusively for the following purposes:
+- to create and maintain a user account;
+- to ensure authentication and secure access.
+
+---
+
+### 4. Data Storage and Security
+
+4.1. The data (nickname and password hash) are stored in the **Supabase** cloud service, which complies with modern international security standards.
+4.2. We use technical and organizational measures to prevent unauthorized access, alteration, disclosure, or destruction of data.
+4.3. When the user deletes their account, all associated data are permanently removed from storage.
+
+---
+
+### 5. Data Disclosure to Third Parties
+
+5.1. We do not share, sell, or disclose user data to third parties.
+5.2. Data may be disclosed only in response to lawful requests from government authorities, as required by applicable law.
+
+---
+
+### 6. User Rights
+
+Users have the right to:
+- request information about stored data;
+- request deletion of their account and associated data;
+- withdraw consent to data processing (if applicable).
+
+---
+
+### 7. Changes to This Policy
+
+We may update this Policy from time to time. The current version is always available within the App or on the official website.
+The date of the latest update is indicated at the top of the document.
+
+---
+
+### 8. Contact
+
+For any privacy-related questions, please contact:
+📧 **java.ul@gmail.com**
+        ]]>
+    </string>
+</resources>

@@ -1,19 +1,17 @@
-package io.github.alexmaryin.followmymus.navigation
+package io.github.alexmaryin.followmymus.rootNavigation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
-import io.github.alexmaryin.followmymus.navigation.RootComponent.Child
-import io.github.alexmaryin.followmymus.navigation.mainScreenPager.PagerComponent
+import io.github.alexmaryin.followmymus.rootNavigation.RootComponent.Child
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.getNickname
 import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -22,7 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.component.getScopeName
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
@@ -35,7 +32,7 @@ class MainRootComponent(
 
     init {
         lifecycle.doOnStart {
-//            observeSessionStatus()
+            observeSessionStatus()
         }
     }
 
@@ -44,7 +41,7 @@ class MainRootComponent(
     override val childStack: Value<ChildStack<*, Child>> = childStack(
         source = navigation,
         serializer = Config.serializer(),
-        initialConfiguration = Config.Login(),
+        initialConfiguration = Config.Splash,
         handleBackButton = true
     ) { config, context ->
         when (config) {
