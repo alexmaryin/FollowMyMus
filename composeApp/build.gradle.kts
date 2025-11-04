@@ -1,7 +1,12 @@
+@file:OptIn(ExperimentalComposeLibrary::class)
+
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.getLocalProperty
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -24,6 +29,8 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
     
     listOf(
@@ -108,6 +115,13 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(compose.uiTest)
+        }
+
+        jvmTest.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.mockk)
+            implementation(libs.mockk.agent)
         }
     }
 
@@ -130,6 +144,8 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.android.versionCode.get().toInt()
         versionName = libs.versions.packageVersion.get()
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -150,6 +166,9 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
     add("kspCommonMainMetadata", libs.koin.ksp)
+    androidTestImplementation(libs.android.test.compose)
+    debugImplementation(libs.android.test.manifest)
+
 }
 
 // Trigger Common Metadata Generation from Native tasks

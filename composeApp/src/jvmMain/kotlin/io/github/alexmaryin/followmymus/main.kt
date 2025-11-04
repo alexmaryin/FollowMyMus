@@ -40,7 +40,6 @@ fun main() {
             title = "FollowMyMus",
         ) {
             RootContent(root)
-//            App()
         }
     }
 }
