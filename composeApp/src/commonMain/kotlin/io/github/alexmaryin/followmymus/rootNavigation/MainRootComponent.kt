@@ -81,10 +81,10 @@ class MainRootComponent(
 
     private fun observeSessionStatus() = scope.launch {
 
-        val splashDelay = async { delay(2500L) }
+//        val splashDelay = async { delay(2500L) }
         sessionManager.sessionStatus().collectLatest { sessionStatus ->
             println(sessionStatus)
-            splashDelay.await()
+//            splashDelay.await()
             when (sessionStatus) {
                 is SessionStatus.Authenticated -> navigation.replaceAll(
                     Config.MainScreen(

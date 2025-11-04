@@ -32,6 +32,7 @@ mockk = "1.14.6"
 # app versions
 android-versionCode = "1"
 packageVersion = "1.0.0"
+uiTestJunit4Desktop = "1.7.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -76,6 +77,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
 android-test-compose = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
 android-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
+androidx-ui-test-junit4-desktop = { group = "androidx.compose.ui", name = "ui-test-junit4-desktop", version.ref = "uiTestJunit4Desktop" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
