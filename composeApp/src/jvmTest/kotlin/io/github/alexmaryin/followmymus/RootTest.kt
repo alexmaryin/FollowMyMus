@@ -15,13 +15,19 @@ import io.github.alexmaryin.followmymus.screens.login.domain.LoginAction
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginEvent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginState
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.MainPages
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.splash.SplashScreen
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
+import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.auth.user.UserInfo
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
+import org.jetbrains.compose.resources.getString
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -32,6 +38,21 @@ import kotlin.test.Test
 class RootNavigationTests {
 
     val mockkSession = mockk<SessionManager>()
+
+    val mockSessionStatus = mockk<SessionStatus.Authenticated> {
+        every { this@mockk.session.user } returns mockk<UserInfo> user@{
+            every { this@user.email } returns "mockk" + Credentials.SUFFIX
+        }
+    }
+
+    val mockkPager = mockk<PagerComponent> {
+        every { this@mockk.state  } returns MutableValue(MainScreenState("mockk"))
+        every { this@mockk.pages } returns MutableValue(mockk pages@{
+            every { this@pages.selectedIndex } returns 0
+            every { this@pages.items } returns emptyList()
+        })
+    }
+
     val loginComponent = object : LoginComponent {
         override val state = MutableValue(LoginState())
         override val events = emptyFlow<LoginEvent>()
@@ -44,6 +65,11 @@ class RootNavigationTests {
             get() = registry
     }
 
+    val lifecycle = com.arkivanov.essenty.lifecycle.LifecycleRegistry()
+    val root = runOnUiThread {
+        MainRootComponent(DefaultComponentContext(lifecycle))
+    }
+
     @BeforeTest
     fun setUp() {
         startKoin {
@@ -51,6 +77,7 @@ class RootNavigationTests {
                 module {
                     single<SessionManager> { mockkSession }
                     factory<LoginComponent> { loginComponent }
+                    factory<PagerComponent> { mockkPager }
                 }
             )
         }
@@ -71,10 +98,6 @@ class RootNavigationTests {
 
         every { mockkSession.sessionStatus() } returns flow { emit(SessionStatus.NotAuthenticated()) }
 
-        val lifecycle = com.arkivanov.essenty.lifecycle.LifecycleRegistry()
-        val root = runOnUiThread {
-            MainRootComponent(DefaultComponentContext(lifecycle))
-        }
         setContent {
             CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
                 lifecycle.start()
@@ -86,6 +109,27 @@ class RootNavigationTests {
 
         waitUntil { root.childStack.value.active.instance is RootComponent.Child.LoginChild }
         onNodeWithContentDescription("login click").assertExists()
+
+        stopKoin()
+    }
+
+    @Test
+    fun `Check if app navigates to Main screen when authenticated`() = runComposeUiTest {
+        every { mockkSession.sessionStatus() } returns flow { emit(mockSessionStatus) }
+
+        setContent {
+            CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
+                lifecycle.start()
+                RootContent(root)
+            }
+        }
+
+        awaitIdle()
+
+        waitUntil { root.childStack.value.active.instance is RootComponent.Child.MainScreenPager }
+        MainPages.entries.forEach { navIcon ->
+            onNodeWithText(getString(navIcon.titleRes)).assertExists()
+        }
 
         stopKoin()
     }

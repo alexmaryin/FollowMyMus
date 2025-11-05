@@ -15,6 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -23,6 +26,9 @@ import followmymus.composeapp.generated.resources.visibility
 import followmymus.composeapp.generated.resources.visibility_off
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.painterResource
+
+val isPasswordVisibleKey = SemanticsPropertyKey<Boolean>("isPasswordVisible")
+var SemanticsPropertyReceiver.isPasswordVisible by isPasswordVisibleKey
 
 @Composable
 fun BaseSecureField(
@@ -54,7 +60,8 @@ fun BaseSecureField(
         state = fieldState,
         modifier = modifier.padding(horizontal = 20.dp, vertical = 6.dp)
             .sizeIn(maxWidth = 600.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .semantics { isPasswordVisible = isVisible },
         label = {
             labelText?.let { Text(text = it) }
         },
