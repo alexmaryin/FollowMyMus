@@ -122,6 +122,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.mockk)
             implementation(libs.mockk.agent)
+            implementation(libs.koin.test)
         }
     }
 

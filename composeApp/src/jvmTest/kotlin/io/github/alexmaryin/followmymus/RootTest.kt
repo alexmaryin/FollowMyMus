@@ -31,12 +31,13 @@ import org.jetbrains.compose.resources.getString
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class RootNavigationTests {
-
+internal class RootTest {
+    
     val mockkSession = mockk<SessionManager>()
 
     val mockSessionStatus = mockk<SessionStatus.Authenticated> {
@@ -65,11 +66,10 @@ class RootNavigationTests {
             get() = registry
     }
 
-    val lifecycle = com.arkivanov.essenty.lifecycle.LifecycleRegistry()
-    val root = runOnUiThread {
-        MainRootComponent(DefaultComponentContext(lifecycle))
-    }
+    private val lifecycle = com.arkivanov.essenty.lifecycle.LifecycleRegistry()
+    private lateinit var root: RootComponent
 
+    @OptIn(ExperimentalTestApi::class)
     @BeforeTest
     fun setUp() {
         startKoin {
@@ -81,6 +81,23 @@ class RootNavigationTests {
                 }
             )
         }
+
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
+
+    private suspend fun ComposeUiTest.setContentForRoot() {
+        root = MainRootComponent(DefaultComponentContext(lifecycle))
+        lifecycle.start()
+        setContent {
+            CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
+                RootContent(root)
+            }
+        }
+        awaitIdle()
     }
 
     @Test
@@ -90,47 +107,26 @@ class RootNavigationTests {
         "FollowMyMus".forEach { char ->
             onAllNodesWithText(char.toString()).onFirst().assertExists()
         }
-        stopKoin()
     }
 
     @Test
     fun `Check if app navigates to Login if not authenticated`() = runComposeUiTest {
 
         every { mockkSession.sessionStatus() } returns flow { emit(SessionStatus.NotAuthenticated()) }
-
-        setContent {
-            CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
-                lifecycle.start()
-                RootContent(root)
-            }
-        }
-
-        awaitIdle()
+        setContentForRoot()
 
         waitUntil { root.childStack.value.active.instance is RootComponent.Child.LoginChild }
         onNodeWithContentDescription("login click").assertExists()
-
-        stopKoin()
     }
 
     @Test
     fun `Check if app navigates to Main screen when authenticated`() = runComposeUiTest {
         every { mockkSession.sessionStatus() } returns flow { emit(mockSessionStatus) }
-
-        setContent {
-            CompositionLocalProvider(LocalLifecycleOwner provides lifecycleOwner) {
-                lifecycle.start()
-                RootContent(root)
-            }
-        }
-
-        awaitIdle()
+        setContentForRoot()
 
         waitUntil { root.childStack.value.active.instance is RootComponent.Child.MainScreenPager }
         MainPages.entries.forEach { navIcon ->
             onNodeWithText(getString(navIcon.titleRes)).assertExists()
         }
-
-        stopKoin()
     }
 }
