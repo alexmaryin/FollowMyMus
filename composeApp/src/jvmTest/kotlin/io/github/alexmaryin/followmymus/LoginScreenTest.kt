@@ -81,7 +81,7 @@ internal class LoginScreenTest {
     }
 
     @Test
-    fun `Nickname text field should show icon to erase when typing`() = runComposeUiTest {
+    fun `Nickname text field should show icon to erase when typing and do it on click`() = runComposeUiTest {
         setContentForLoginScreen()
 
         onNodeWithText(getString(Res.string.nickname_login_label))
@@ -117,7 +117,7 @@ internal class LoginScreenTest {
     }
 
     @Test
-    fun `Password text field should show icon to toggle visibility`() = runComposeUiTest {
+    fun `Password text field should show icon to toggle visibility and do it on click`() = runComposeUiTest {
         setContentForLoginScreen()
 
         onNodeWithText(getString(Res.string.password_login_label))

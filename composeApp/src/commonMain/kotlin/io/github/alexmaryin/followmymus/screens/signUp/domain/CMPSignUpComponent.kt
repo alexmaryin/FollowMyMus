@@ -106,8 +106,5 @@ class CMPSignUpComponent(
             }
             eventChannel.send(SignUpEvent.ShowError(msg))
         }
-        result.forSuccess {
-            _state.update { it.copy(isLoading = false, isNicknameValid = true, isPasswordValid = true) }
-        }
     }
 }
