@@ -6,7 +6,6 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.forError
-import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
@@ -59,12 +58,12 @@ class CMPSignUpComponent(
     }
 
     private suspend fun signUp(nickname: String, password: String) {
-        if (!_state.value.nicknameValidation) {
+        if (!_state.value.nicknameValidation()) {
             _state.update { it.copy(isNicknameValid = false) }
             return
         }
 
-        if (!_state.value.passwordValidation) {
+        if (!_state.value.passwordValidation()) {
             _state.update { it.copy(isPasswordValid = false) }
             return
         }

@@ -11,17 +11,16 @@ data class SignUpState(
     val isPasswordValid: Boolean = true
 ) {
     // Nickname consists only of letters, digits, underscore and dot
-    val nicknameValidation get() =
+    fun nicknameValidation() =
         nickname.isNotBlank() && nickname.isNotEmpty() &&
-        nickname.all { it.isLetterOrDigit() || it == '_' || it == '.' }
+                nickname.all { it.isLetterOrDigit() || it == '_' || it == '.' }
 
     // Password should be at least 6 characters long,
     // contain at least one lowercase letter, one uppercase letter, and one digit
     //may include any other symbols
-    val passwordValidation
-        get() = password.length >= 6 &&
-                password.any { it.isLowerCase() } &&
-                password.any { it.isUpperCase() } &&
-                password.any { it.isDigit() }
+    fun passwordValidation() = password.length >= 6 &&
+            password.any { it.isLowerCase() } &&
+            password.any { it.isUpperCase() } &&
+            password.any { it.isDigit() }
 
 }
