@@ -18,10 +18,12 @@ import org.koin.core.component.KoinComponent
 
 @Factory(binds = [AccountHostComponent::class])
 class AccountPage(
-    private val componentContext: ComponentContext
+    private val componentContext: ComponentContext,
+    private val nickname: String,
 ) : Page, AccountHostComponent, ComponentContext by componentContext, KoinComponent {
 
-    private val _state by saveableMutableValue(AccountPageState.serializer(), init = ::AccountPageState)
+    private val _state by saveableMutableValue(AccountPageState.serializer(),
+        init = { AccountPageState(nickname = nickname) })
     override val state get() = _state
     private val navigation = StackNavigation<AccountPageConfig>()
 
@@ -32,7 +34,7 @@ class AccountPage(
         handleBackButton = true
     ) { config, _ ->
         when (config) {
-            AccountPageConfig.Account -> AccountHostComponent.Child.Account
+            AccountPageConfig.Account -> AccountHostComponent.Child.Account(nickname)
             AccountPageConfig.About -> AccountHostComponent.Child.About
             AccountPageConfig.PrivacyPolicy -> AccountHostComponent.Child.PrivacyPolicy
         }

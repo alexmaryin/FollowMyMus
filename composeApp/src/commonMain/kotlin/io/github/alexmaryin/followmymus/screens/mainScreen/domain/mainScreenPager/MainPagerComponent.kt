@@ -12,6 +12,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenActi
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -40,7 +41,9 @@ class MainPagerComponent(
         when (page) {
             PagerConfig.Favorites -> DummyPage
             PagerConfig.Releases -> DummyPage
-            PagerConfig.Account -> get<AccountHostComponent> { parametersOf(context) }
+            is PagerConfig.Account -> get<AccountHostComponent> {
+                parametersOf(context, state.value.nickname)
+            }
         }
     }
 
