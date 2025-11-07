@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import io.github.alexmaryin.followmymus.sessionManager.data.DEEP_LINK_URL_PREFIX
+import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.DEEP_LINK_URL_PREFIX
 import kotlinx.coroutines.delay
 
 @Composable
