@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import followmymus.composeapp.generated.resources.avatar
 import followmymus.composeapp.generated.resources.logout
 import followmymus.composeapp.generated.resources.qr_code
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun UserListItem(
@@ -64,7 +66,15 @@ fun UserListItem(
             )
         }
     },
-    colors = ListItemDefaults.colors().copy(
-        containerColor = Color.Transparent
-    )
+    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent)
 )
+
+@Preview
+@Composable
+fun UserListItemPreview() {
+    Surface {
+        UserListItem(
+            "Metallica", {}, {}
+        )
+    }
+}

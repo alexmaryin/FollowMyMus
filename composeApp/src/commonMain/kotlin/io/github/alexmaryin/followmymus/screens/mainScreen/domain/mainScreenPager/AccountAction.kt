@@ -5,4 +5,6 @@ sealed class AccountAction : PageAction {
     data object ShowPrivacyPolicy : AccountAction()
     data object ToggleQrView : AccountAction()
     data object Logout : AccountAction()
+    data object LanguageClick : AccountAction()
+    data object ThemeClick : AccountAction()
 }

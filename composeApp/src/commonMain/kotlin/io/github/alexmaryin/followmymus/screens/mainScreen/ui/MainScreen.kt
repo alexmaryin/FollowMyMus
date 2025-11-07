@@ -6,7 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,10 +31,8 @@ import kotlin.random.Random
 fun MainScreen(
     component: PagerComponent
 ) {
-    val scope = rememberCoroutineScope()
     val screenPages by component.pages.subscribeAsState()
     val state by component.state.subscribeAsState()
-
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -82,7 +79,8 @@ fun MainScreen(
         ChildPages(
             pages = screenPages,
             modifier = Modifier.fillMaxSize().padding(paddingValues),
-            onPageSelected = {},
+            onPageSelected = {
+                component(MainScreenAction.SelectPage(it)) },
             scrollAnimation = PagesScrollAnimation.Default
         ) { index, page ->
 

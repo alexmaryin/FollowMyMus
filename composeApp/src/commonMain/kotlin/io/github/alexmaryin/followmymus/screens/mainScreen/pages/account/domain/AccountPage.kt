@@ -73,6 +73,9 @@ class AccountPage(
             }
 
             AccountAction.ToggleQrView -> _state.update { it.copy(isQrVisible = !state.value.isQrVisible) }
+
+            AccountAction.LanguageClick -> {}
+            AccountAction.ThemeClick -> {}
         }
     }
 }

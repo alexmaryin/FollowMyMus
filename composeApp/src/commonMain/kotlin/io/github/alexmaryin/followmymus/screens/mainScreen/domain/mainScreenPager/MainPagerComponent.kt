@@ -12,7 +12,6 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenActi
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -50,8 +49,11 @@ class MainPagerComponent(
     override fun invoke(action: MainScreenAction) {
         when (action) {
             is MainScreenAction.SelectPage -> {
-                navigation.select(action.index)
-                _state.update { it.copy(activePageIndex = action.index) }
+                if (action.index != state.value.activePageIndex) {
+                    println("Navigate to page #${action.index}")
+                    _state.update { it.copy(activePageIndex = action.index) }
+                    navigation.select(action.index)
+                }
             }
 
             is MainScreenAction.SetBackIconState -> {

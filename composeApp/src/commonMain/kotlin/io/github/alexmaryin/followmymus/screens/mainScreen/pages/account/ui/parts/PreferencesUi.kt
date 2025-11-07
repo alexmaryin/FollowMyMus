@@ -14,11 +14,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
+import io.github.alexmaryin.followmymus.BuildKonfig
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.AccountAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.PreferencesItem
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.TrailingIconType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.AccountCaption
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.GroupCaption
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.PreferenceListItem
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.PreferencesGroup
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.SoftCornerBlock
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.UserListItem
 import org.jetbrains.compose.resources.stringResource
@@ -64,15 +69,44 @@ fun PreferencesUi(
 
             }
         }
-        GroupCaption(stringResource(Res.string.app_section_label))
-        SoftCornerBlock {
+        PreferencesGroup(
+            groupCaption = stringResource(Res.string.app_section_label),
+            PreferencesItem(
+                text = stringResource(Res.string.language_preferences_label),
+                leadingIconRes = Res.drawable.language,
+                trailingText = "English",
+                onClick = { component(AccountAction.LanguageClick) }
+            ),
+            PreferencesItem(
+                text = stringResource(Res.string.theme_preferences_label),
+                leadingIconRes = Res.drawable.theme,
+                trailingText = "System",
+                onClick = { component(AccountAction.ThemeClick) }
+            )
+        )
 
-        }
-        GroupCaption(stringResource(Res.string.about))
-        SoftCornerBlock {
-
-        }
-
+        PreferencesGroup(
+            groupCaption = stringResource(Res.string.about),
+            PreferencesItem(
+                text = stringResource(Res.string.privacy_policy),
+                leadingIconRes = Res.drawable.privacy,
+                type = TrailingIconType.FORWARD,
+                onClick = { component(AccountAction.ShowPrivacyPolicy) }
+            ),
+            PreferencesItem(
+                text = stringResource(Res.string.about),
+                leadingIconRes = Res.drawable.info,
+                type = TrailingIconType.FORWARD,
+                onClick = { component(AccountAction.ShowAbout) }
+            ),
+            PreferencesItem(
+                text = stringResource(Res.string.current_version),
+                leadingIconRes = Res.drawable.version,
+                type = TrailingIconType.FORWARD,
+                trailingText = BuildKonfig.appVersion,
+                onClick = {}
+            )
+        )
     }
 
 }
