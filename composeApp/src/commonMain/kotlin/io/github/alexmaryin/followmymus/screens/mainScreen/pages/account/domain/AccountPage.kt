@@ -7,14 +7,20 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountPageConfig
+import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @Factory(binds = [AccountHostComponent::class])
 class AccountPage(
@@ -26,6 +32,10 @@ class AccountPage(
         init = { AccountPageState(nickname = nickname) })
     override val state get() = _state
     private val navigation = StackNavigation<AccountPageConfig>()
+
+    private val sessionManager by inject<SessionManager>()
+
+    private val scope = componentContext.coroutineScope() + SupervisorJob()
 
     override val childStack: Value<ChildStack<*, AccountHostComponent.Child>> = childStack(
         source = navigation,
@@ -56,6 +66,13 @@ class AccountPage(
                 _state.update { it.copy(backVisible = true) }
                 navigation.bringToFront(AccountPageConfig.PrivacyPolicy)
             }
+
+            AccountAction.Logout -> scope.launch {
+                _state.update { it.copy(sessionLogout = true) }
+                sessionManager.signOut()
+            }
+
+            AccountAction.ToggleQrView -> _state.update { it.copy(isQrVisible = !state.value.isQrVisible) }
         }
     }
 }

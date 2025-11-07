@@ -3,4 +3,6 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPag
 sealed class AccountAction : PageAction {
     data object ShowAbout : AccountAction()
     data object ShowPrivacyPolicy : AccountAction()
+    data object ToggleQrView : AccountAction()
+    data object Logout : AccountAction()
 }

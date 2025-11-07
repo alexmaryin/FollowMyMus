@@ -59,8 +59,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             // Camera & ML Kit to recognize QR
             implementation(libs.camera2)
-            implementation(libs.camera2.lifecycle)
-            implementation(libs.camera2.view)
+            implementation(libs.camera.lifecycle)
+            implementation(libs.camera.view)
             implementation(libs.mlkit.barcode)
         }
 

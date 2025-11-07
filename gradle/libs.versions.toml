@@ -7,19 +7,19 @@ androidx-activity = "1.11.0"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
 androidx-espresso = "3.7.0"
-androidx-lifecycle = "2.9.5"
+androidx-lifecycle = "2.9.6"
 androidx-testExt = "1.3.0"
 composeHotReload = "1.0.0-rc02"
-composeMultiplatform = "1.9.2"
+composeMultiplatform = "1.9.3"
 junit = "4.13.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 buildKonfig = "0.17.1"
 koin = "4.1.1"
-koin-annotations = "2.3.0"
+koin-annotations = "2.3.1"
 ksp = "2.3.0"
 supabase-bom = "3.2.6"
-ktor = "3.3.1"
+ktor = "3.3.2"
 qrcode = "4.5.0"
 camera2 = "1.5.1"
 mlkit-barcode = "17.3.0"
@@ -58,8 +58,8 @@ supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 
 qrcode = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcode" }
 camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camera2" }
-camera2-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera2" }
-camera2-view = { module = "androidx.camera:camera-view", version.ref = "camera2" }
+camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera2" }
+camera-view = { module = "androidx.camera:camera-view", version.ref = "camera2" }
 mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
 zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
 

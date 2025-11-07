@@ -1,6 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,9 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun UserListItem(
-    nickname: String
+    nickname: String,
+    onQrToggle: () -> Unit,
+    onLogout: () -> Unit
 ) = ListItem(
     modifier = Modifier.fillMaxWidth(),
     headlineContent = {
@@ -48,13 +51,15 @@ fun UserListItem(
             Icon(
                 painter = painterResource(Res.drawable.qr_code),
                 contentDescription = "generate QR for login",
-                modifier = Modifier.padding(6.dp),
+                modifier = Modifier.padding(6.dp)
+                    .clickable(onClick = onQrToggle),
                 tint = MaterialTheme.colorScheme.primaryFixedDim
             )
             Icon(
                 painter = painterResource(Res.drawable.logout),
                 contentDescription = "logout",
-                modifier = Modifier.padding(6.dp),
+                modifier = Modifier.padding(6.dp)
+                    .clickable(onClick = onLogout),
                 tint = MaterialTheme.colorScheme.primaryFixedDim
             )
         }

@@ -13,6 +13,9 @@
     <string name="releases_page_title">Релизы</string>
     <string name="favorites_page_title">Избранное</string>
     <string name="account_page_title">Аккаунт</string>
+    <!--    Common UI-->
+    <string name="ok_dialog_button">OK</string>
+    <string name="cancel_dialog_button">Отмена</string>
     <!--    Sign up / Login common-->
     <string name="nickname">Никнейм:</string>
     <string name="password">Пароль:</string>
@@ -29,8 +32,8 @@
     <string name="mbrz_logo_support">содержит в себе</string>
     <!--    Login screen-->
     <string name="login_title">ВХОД</string>
-    <string name="nickname_login_label">Введите ващ ник:</string>
-    <string name="password_login_label">Введите ващ пароль:</string>
+    <string name="nickname_login_label">Введите ваш ник:</string>
+    <string name="password_login_label">Введите ваш пароль:</string>
     <string name="login_button">ВОЙТИ</string>
     <string name="login_qr_text">Войти по QR коду</string>
     <string name="label_to_sign_up">Еще нет аккаунта?</string>
@@ -56,4 +59,8 @@
     <string name="about">О приложении</string>
     <string name="current_version">Версия приложения</string>
     <string name="qr_gen_support_text">Отсканируйте или сохраните QR код, чтобы войти на другом устройстве</string>
+    <!--    Logout Dialog-->
+    <string name="logout_dialog_title">Выход из сессии</string>
+    <string name="logout_dialog_text">Вы уверены, что хотите выйти из аккаунта?</string>
+    <string name="logout_shimmer">Выхожу аккаунта.</string>
 </resources>

@@ -10,5 +10,6 @@ data class AccountPageState(
     val theme: String = "",
     val version: String = "",
     val isQrVisible: Boolean = false,
-    val backVisible: Boolean = false
+    val backVisible: Boolean = false,
+    val sessionLogout: Boolean = false,
 ) : PageState(backVisible)

@@ -7,8 +7,6 @@ import io.github.alexmaryin.followmymus.rootNavigation.ui.RootContent
 import platform.UIKit.UIViewController
 
 @OptIn(ExperimentalDecomposeApi::class)
-fun MainViewController(root: RootComponent): UIViewController =
-    ComposeUIViewController {
-        RootContent(component = root)
-//        App()
-    }
+fun MainViewController(root: RootComponent): UIViewController = ComposeUIViewController {
+    RootContent(component = root)
+}

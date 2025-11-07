@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
 import io.github.alexmaryin.followmymus.rootNavigation.MainRootComponent
 import io.github.alexmaryin.followmymus.rootNavigation.ui.RootContent
-import io.github.alexmaryin.followmymus.sessionManager.data.transferSession
+import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.transferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.launch

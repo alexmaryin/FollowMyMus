@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.sessionManager.data
+package io.github.alexmaryin.followmymus.sessionManager.data.qrcode
 
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
