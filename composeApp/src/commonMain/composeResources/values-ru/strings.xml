@@ -50,6 +50,8 @@
     <string name="language_preferences_label">Язык</string>
     <string name="language_english">Английский</string>
     <string name="language_russian">Русский</string>
+    <string name="select_language">Выберите язык:</string>
+    <string name="select_theme">Выберите тему:</string>
     <string name="language_system">Как в системе</string>
     <string name="theme_preferences_label">Тема</string>
     <string name="theme_dark">Темная</string>

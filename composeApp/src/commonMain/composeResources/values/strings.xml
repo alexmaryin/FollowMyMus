@@ -50,6 +50,8 @@
     <string name="account_page_label">Account</string>
     <string name="app_section_label">App</string>
     <string name="language_preferences_label">Language</string>
+    <string name="select_language">Select language:</string>
+    <string name="select_theme">Select theme:</string>
     <string name="language_english">English</string>
     <string name="language_russian">Russian</string>
     <string name="language_system">System</string>

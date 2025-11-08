@@ -50,6 +50,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
+            implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
 
             // Koin DI Android
@@ -88,6 +89,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.material3.adaptive)
+            implementation(libs.androidx.datastore)
+
 
             // Koin DI
             implementation(project.dependencies.platform(libs.koin.bom))

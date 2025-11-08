@@ -11,9 +11,6 @@ sealed class Config {
     data object SignUp : Config()
 
     @Serializable
-    data object Settings : Config()
-
-    @Serializable
     data class MainScreen(val nickname: String) : Config()
 
     @Serializable

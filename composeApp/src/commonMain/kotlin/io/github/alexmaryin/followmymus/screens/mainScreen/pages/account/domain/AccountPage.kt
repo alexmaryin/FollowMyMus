@@ -28,7 +28,8 @@ class AccountPage(
     private val nickname: String,
 ) : Page, AccountHostComponent, ComponentContext by componentContext, KoinComponent {
 
-    private val _state by saveableMutableValue(AccountPageState.serializer(),
+    private val _state by saveableMutableValue(
+        AccountPageState.serializer(),
         init = { AccountPageState(nickname = nickname) })
     override val state get() = _state
     private val navigation = StackNavigation<AccountPageConfig>()
@@ -74,8 +75,15 @@ class AccountPage(
 
             AccountAction.ToggleQrView -> _state.update { it.copy(isQrVisible = !state.value.isQrVisible) }
 
-            AccountAction.LanguageClick -> {}
-            AccountAction.ThemeClick -> {}
+            AccountAction.LanguageClick ->
+                _state.update { it.copy(isLanguageModalOpened = !state.value.isLanguageModalOpened) }
+
+            AccountAction.ThemeClick ->
+                _state.update { it.copy(isThemeModalOpened = !state.value.isThemeModalOpened) }
+
+            is AccountAction.LanguageChange -> _state.update { it.copy(language = action.language) }
+
+            is AccountAction.ThemeChange -> _state.update { it.copy(theme = action.theme) }
         }
     }
 }

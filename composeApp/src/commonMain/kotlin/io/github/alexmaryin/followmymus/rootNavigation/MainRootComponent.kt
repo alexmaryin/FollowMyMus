@@ -55,8 +55,6 @@ class MainRootComponent(
                 mainScreen(context, config.nickname)
             )
 
-            Config.Settings -> TODO()
-
             Config.SignUp -> Child.SignUpChild(
                 signUp(context) { navigation.replaceCurrent(Config.Login()) }
             )

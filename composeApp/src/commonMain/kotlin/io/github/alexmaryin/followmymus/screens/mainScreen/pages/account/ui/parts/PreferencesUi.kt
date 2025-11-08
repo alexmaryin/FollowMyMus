@@ -12,20 +12,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.BuildKonfig
+import io.github.alexmaryin.followmymus.preferences.Language
+import io.github.alexmaryin.followmymus.preferences.ThemeMode
+import io.github.alexmaryin.followmymus.preferences.rememberAppPreferences
+import io.github.alexmaryin.followmymus.preferences.rememberPrefs
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.PreferencesItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.TrailingIconType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.AccountCaption
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.GroupCaption
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.PreferenceListItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.PreferencesGroup
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.SoftCornerBlock
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.UserListItem
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -33,6 +37,10 @@ fun PreferencesUi(
     component: AccountHostComponent
 ) {
     val state by component.state.subscribeAsState()
+    val preferences = rememberAppPreferences(rememberPrefs())
+    val theme by preferences.getThemeMode().collectAsStateWithLifecycle(ThemeMode.SYSTEM)
+    val language by preferences.getLanguage().collectAsStateWithLifecycle(Language.SYSTEM)
+    val scope = rememberCoroutineScope()
 
     var logoutDialogVisible by remember { mutableStateOf(false) }
 
@@ -44,6 +52,24 @@ fun PreferencesUi(
             component(AccountAction.Logout)
         },
         onDismiss = { logoutDialogVisible = false }
+    )
+
+    ThemeModalUi(
+        isOpened = state.isThemeModalOpened,
+        selectedOption = stringResource(theme.caption),
+        onSelect = { new ->
+            scope.launch { preferences.changeThemeMode(ThemeMode.fromCaption(new)) }
+        },
+        onDismiss = { component(AccountAction.ThemeClick) }
+    )
+
+    LanguageModalUi(
+        isOpened = state.isLanguageModalOpened,
+        selectedOption = stringResource(language.caption),
+        onSelect = { new ->
+            scope.launch { preferences.changeLanguage(Language.fromCaption(new)) }
+        },
+        onDismiss = { component(AccountAction.LanguageClick) }
     )
 
     if (state.sessionLogout) {
@@ -74,13 +100,13 @@ fun PreferencesUi(
             PreferencesItem(
                 text = stringResource(Res.string.language_preferences_label),
                 leadingIconRes = Res.drawable.language,
-                trailingText = "English",
+                trailingText = stringResource(language.caption),
                 onClick = { component(AccountAction.LanguageClick) }
             ),
             PreferencesItem(
                 text = stringResource(Res.string.theme_preferences_label),
                 leadingIconRes = Res.drawable.theme,
-                trailingText = "System",
+                trailingText = stringResource(theme.caption),
                 onClick = { component(AccountAction.ThemeClick) }
             )
         )
@@ -108,5 +134,4 @@ fun PreferencesUi(
             )
         )
     }
-
 }
