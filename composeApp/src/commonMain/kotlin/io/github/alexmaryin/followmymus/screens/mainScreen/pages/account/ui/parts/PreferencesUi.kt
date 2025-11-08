@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.BuildKonfig
+import io.github.alexmaryin.followmymus.core.ui.isIOS
 import io.github.alexmaryin.followmymus.preferences.Language
 import io.github.alexmaryin.followmymus.preferences.ThemeMode
 import io.github.alexmaryin.followmymus.preferences.rememberAppPreferences
@@ -95,20 +96,26 @@ fun PreferencesUi(
 
             }
         }
-        PreferencesGroup(
-            groupCaption = stringResource(Res.string.app_section_label),
-            PreferencesItem(
+        val preferencesList = buildList {
+            if (!isIOS()) add(
+                PreferencesItem(
                 text = stringResource(Res.string.language_preferences_label),
                 leadingIconRes = Res.drawable.language,
                 trailingText = stringResource(language.caption),
                 onClick = { component(AccountAction.LanguageClick) }
-            ),
-            PreferencesItem(
+            ))
+            add(
+                PreferencesItem(
                 text = stringResource(Res.string.theme_preferences_label),
                 leadingIconRes = Res.drawable.theme,
                 trailingText = stringResource(theme.caption),
                 onClick = { component(AccountAction.ThemeClick) }
-            )
+            ))
+        }.toTypedArray()
+
+        PreferencesGroup(
+            groupCaption = stringResource(Res.string.app_section_label),
+            *preferencesList
         )
 
         PreferencesGroup(

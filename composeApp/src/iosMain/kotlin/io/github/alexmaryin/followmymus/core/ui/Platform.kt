@@ -1,3 +1,5 @@
 package io.github.alexmaryin.followmymus.core.ui
 
-actual fun isDesktop(): Boolean = false
+actual fun isDesktop() = false
+
+actual fun isIOS() = true

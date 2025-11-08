@@ -1,13 +1,7 @@
 package io.github.alexmaryin.followmymus.rootNavigation.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
@@ -45,8 +39,10 @@ fun RootContent(component: RootComponent) {
                 Language.RUSSIAN -> "ru"
                 Language.SYSTEM -> null
             }
-            changeLanguage(lang)
-            appLanguage = language
+            if (appLanguage != language) {
+                changeLanguage(lang)
+                appLanguage = language
+            }
         }
     }
 
