@@ -10,6 +10,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import io.github.alexmaryin.followmymus.core.changeLanguage
 import io.github.alexmaryin.followmymus.core.ui.isDesktop
+import io.github.alexmaryin.followmymus.core.ui.isIOS
 import io.github.alexmaryin.followmymus.core.ui.theme.FollowMyMusTheme
 import io.github.alexmaryin.followmymus.preferences.Language
 import io.github.alexmaryin.followmymus.preferences.ThemeMode
