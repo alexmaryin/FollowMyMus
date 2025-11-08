@@ -11,7 +11,7 @@ data class AccountPageState(
     val language: Language = Language.SYSTEM,
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val version: String = "",
-    val isQrVisible: Boolean = false,
+    val deepLink: String? = null,
     val backVisible: Boolean = false,
     val isThemeModalOpened: Boolean = false,
     val isLanguageModalOpened: Boolean = false,

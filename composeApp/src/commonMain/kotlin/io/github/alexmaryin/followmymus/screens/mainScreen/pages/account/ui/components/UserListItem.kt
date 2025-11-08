@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.avatar
+import followmymus.composeapp.generated.resources.close_qr
 import followmymus.composeapp.generated.resources.logout
 import followmymus.composeapp.generated.resources.qr_code
 import org.jetbrains.compose.resources.painterResource
@@ -26,6 +27,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun UserListItem(
     nickname: String,
+    isQrOpened: Boolean,
     onQrToggle: () -> Unit,
     onLogout: () -> Unit
 ) = ListItem(
@@ -50,9 +52,11 @@ fun UserListItem(
     },
     trailingContent = {
         Row {
+            val iconRes = if (isQrOpened) Res.drawable.close_qr else Res.drawable.qr_code
+            val description = if (isQrOpened) "close QR" else "generate QR for login"
             Icon(
-                painter = painterResource(Res.drawable.qr_code),
-                contentDescription = "generate QR for login",
+                painter = painterResource(iconRes),
+                contentDescription = description,
                 modifier = Modifier.padding(6.dp)
                     .clickable(onClick = onQrToggle),
                 tint = MaterialTheme.colorScheme.primaryFixedDim
@@ -74,7 +78,10 @@ fun UserListItem(
 fun UserListItemPreview() {
     Surface {
         UserListItem(
-            "Metallica", {}, {}
+            "Metallica",
+            true,
+            {},
+            {},
         )
     }
 }

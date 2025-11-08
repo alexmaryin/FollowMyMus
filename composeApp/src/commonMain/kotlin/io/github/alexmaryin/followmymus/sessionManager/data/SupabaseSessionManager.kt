@@ -77,6 +77,7 @@ class SupabaseSessionManager(
                 expiresIn = sessionPayload.expiresIn,
                 tokenType = sessionPayload.tokenType
             ),
+            autoRefresh = false,
             source = SessionSource.External
         )
         val user = auth.retrieveUserForCurrentSession(true)

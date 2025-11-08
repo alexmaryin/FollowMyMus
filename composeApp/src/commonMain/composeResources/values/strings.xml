@@ -62,7 +62,8 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="about">About</string>
     <string name="current_version">Current Version</string>
-    <string name="qr_gen_support_text">Scan QR code or download to login on another device</string>
+    <string name="qr_gen_support_text">Scan QR code or download to log in on another device</string>
+    <string name="qr_code_expires_in">QR code expires in: %1$d</string>
     <!--    Logout Dialog-->
     <string name="logout_dialog_title">Logout</string>
     <string name="logout_dialog_text">Are you sure you want to log out from account?</string>

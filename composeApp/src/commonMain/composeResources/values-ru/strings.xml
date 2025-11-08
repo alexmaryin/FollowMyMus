@@ -61,8 +61,9 @@
     <string name="about">О приложении</string>
     <string name="current_version">Версия приложения</string>
     <string name="qr_gen_support_text">Отсканируйте или сохраните QR код, чтобы войти на другом устройстве</string>
+    <string name="qr_code_expires_in">QR исчезнет через %1$d с</string>
     <!--    Logout Dialog-->
     <string name="logout_dialog_title">Выход из сессии</string>
     <string name="logout_dialog_text">Вы уверены, что хотите выйти из аккаунта?</string>
-    <string name="logout_shimmer">Выхожу аккаунта.</string>
+    <string name="logout_shimmer">Выхожу из аккаунта.</string>
 </resources>

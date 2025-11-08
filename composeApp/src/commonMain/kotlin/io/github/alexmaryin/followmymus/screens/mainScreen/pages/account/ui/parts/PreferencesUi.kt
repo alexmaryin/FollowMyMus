@@ -29,6 +29,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.AccountCaption
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.PreferencesGroup
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.QRGeneratedBlock
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.SoftCornerBlock
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.UserListItem
 import kotlinx.coroutines.launch
@@ -90,11 +91,18 @@ fun PreferencesUi(
         SoftCornerBlock {
             UserListItem(
                 nickname = state.nickname,
+                isQrOpened = state.deepLink != null,
                 onQrToggle = { component(AccountAction.ToggleQrView) },
                 onLogout = { logoutDialogVisible = true }
             )
-            AnimatedVisibility(visible = state.isQrVisible) {
-
+            AnimatedVisibility(visible = state.deepLink != null) {
+                state.deepLink?.let {
+                    QRGeneratedBlock(
+                        deepLink = it,
+                        onDownloadClick = { image -> component(AccountAction.DownloadQR(image)) },
+                        onExpired = { component(AccountAction.ToggleQrView) }
+                    )
+                }
             }
         }
 

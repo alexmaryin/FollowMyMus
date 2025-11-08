@@ -14,14 +14,22 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountPageConfig
+import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.DEEP_LINK_URL_PREFIX
+import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.startTransferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
+import io.github.jan.supabase.realtime.RealtimeChannel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Factory(binds = [AccountHostComponent::class])
 class AccountPage(
     private val componentContext: ComponentContext,
@@ -35,6 +43,8 @@ class AccountPage(
     private val navigation = StackNavigation<AccountPageConfig>()
 
     private val sessionManager by inject<SessionManager>()
+
+    private var sessionTransferJob: Job? = null
 
     private val scope = componentContext.coroutineScope() + SupervisorJob()
 
@@ -73,7 +83,7 @@ class AccountPage(
                 sessionManager.signOut()
             }
 
-            AccountAction.ToggleQrView -> _state.update { it.copy(isQrVisible = !state.value.isQrVisible) }
+            AccountAction.ToggleQrView -> toggleTransferringSession()
 
             AccountAction.LanguageClick ->
                 _state.update { it.copy(isLanguageModalOpened = !state.value.isLanguageModalOpened) }
@@ -84,6 +94,28 @@ class AccountPage(
             is AccountAction.LanguageChange -> _state.update { it.copy(language = action.language) }
 
             is AccountAction.ThemeChange -> _state.update { it.copy(theme = action.theme) }
+
+            is AccountAction.DownloadQR -> TODO()
         }
+    }
+
+    private fun toggleTransferringSession() {
+        if (sessionTransferJob != null) closeQRandStopTransfer()
+        else sessionTransferJob = scope.launch { showQRandStartTransfer() }
+    }
+
+    private suspend fun showQRandStartTransfer() {
+        val sessionId = Uuid.random().toString()
+        println("SESSION ID SENT: $sessionId")
+        val deeplink = DEEP_LINK_URL_PREFIX + sessionId
+        _state.update { it.copy(deepLink = deeplink) }
+        val channel by inject<RealtimeChannel> { parametersOf(sessionId) }
+        channel.startTransferSession(sessionManager)
+        _state.update { it.copy(deepLink = null) }
+    }
+
+    private fun closeQRandStopTransfer() {
+        sessionTransferJob?.cancel()
+        _state.update { it.copy(deepLink = null) }
     }
 }

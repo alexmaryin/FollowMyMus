@@ -7,6 +7,7 @@ import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
+import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.DEEP_LINK_URL_PREFIX
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.transferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
@@ -58,7 +59,7 @@ class CMPLoginComponent(
             }
 
             is LoginAction.OnQrRecognized -> scope.launch {
-                loginBySessionCode(action.qrCode)
+                loginBySessionCode(action.qrCode.substringAfter(DEEP_LINK_URL_PREFIX))
             }
 
             is LoginAction.OnNickNameSet -> _state.update { it.copy(nickname = action.new, isCredentialsValid = true) }
@@ -104,7 +105,8 @@ class CMPLoginComponent(
     }
 
     private suspend fun loginBySessionCode(sessionCode: String) {
-        _state.update { it.copy(isCredentialsValid = true, isLoading = true) }
+        println("SESSION ID RECEIVED: $sessionCode")
+        _state.update { it.copy(isCredentialsValid = true, isLoading = true, isQrScanOpen = false) }
         val channel by inject<RealtimeChannel> { parametersOf(sessionCode) }
         channel.transferSession(sessionManager)
         _state.update { it.copy(isLoading = false) }
