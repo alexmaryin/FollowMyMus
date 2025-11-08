@@ -83,7 +83,7 @@ fun PreferencesUi(
         }
     } else Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-            .background(color = MaterialTheme.colorScheme.surfaceBright),
+            .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
         verticalArrangement = Arrangement.Top
     ) {
         AccountCaption()
