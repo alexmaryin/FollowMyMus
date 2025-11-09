@@ -2,19 +2,19 @@ package io.github.alexmaryin.followmymus.rootNavigation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.rootNavigation.RootComponent.Child
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.getNickname
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -26,6 +26,8 @@ import org.koin.core.parameter.parametersOf
 class MainRootComponent(
     componentContext: ComponentContext
 ) : RootComponent, ComponentContext by componentContext, KoinComponent {
+
+    override val state = MutableValue(RootState())
 
     private val sessionManager by inject<SessionManager>()
     private val scope = componentContext.coroutineScope() + SupervisorJob()
@@ -95,6 +97,14 @@ class MainRootComponent(
 
                 else -> Unit
             }
+        }
+    }
+
+    override fun invoke(action: RootAction) {
+        when (action) {
+            is RootAction.ChangeDynamicMode -> state.update { it.copy(dynamicMode = action.dynamicMode) }
+            is RootAction.ChangeLanguage -> state.update { it.copy(languageTag = action.languageTag) }
+            is RootAction.ChangeTheme -> state.update { it.copy(isDark = action.isDark)  }
         }
     }
 }

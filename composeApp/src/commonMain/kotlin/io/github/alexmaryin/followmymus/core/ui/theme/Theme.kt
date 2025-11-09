@@ -6,5 +6,6 @@ import androidx.compose.runtime.Composable
 @Composable
 expect fun FollowMyMusTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    androidDynamicMode: Boolean = true,
     content: @Composable () -> Unit
 )

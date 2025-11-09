@@ -84,10 +84,11 @@ private val darkScheme = darkColorScheme(
 @Composable
 actual fun FollowMyMusTheme(
     darkTheme: Boolean,
+    androidDynamicMode: Boolean,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && androidDynamicMode -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

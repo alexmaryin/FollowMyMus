@@ -17,7 +17,9 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.BuildKonfig
 import io.github.alexmaryin.followmymus.core.changeLanguage
+import io.github.alexmaryin.followmymus.core.ui.isAndroid
 import io.github.alexmaryin.followmymus.core.ui.isIOS
+import io.github.alexmaryin.followmymus.preferences.DynamicMode
 import io.github.alexmaryin.followmymus.preferences.Language
 import io.github.alexmaryin.followmymus.preferences.ThemeMode
 import io.github.alexmaryin.followmymus.preferences.rememberAppPreferences
@@ -43,6 +45,7 @@ fun PreferencesUi(
     val preferences = rememberAppPreferences(rememberPrefs())
     val theme by preferences.getThemeMode().collectAsStateWithLifecycle(ThemeMode.SYSTEM)
     val language by preferences.getLanguage().collectAsStateWithLifecycle(Language.SYSTEM)
+    val dynamicMode by preferences.getAndroidDynamicMode().collectAsStateWithLifecycle(DynamicMode.ON)
     val scope = rememberCoroutineScope()
 
     var logoutDialogVisible by remember { mutableStateOf(false) }
@@ -73,6 +76,15 @@ fun PreferencesUi(
             scope.launch { preferences.changeLanguage(Language.fromCaption(new)) }
         },
         onDismiss = { component(AccountAction.LanguageClick) }
+    )
+
+    DynamicModalUi(
+        isOpened = state.isDynamicModalOpened,
+        selectedOption = stringResource(dynamicMode.caption),
+        onSelect = { new ->
+            scope.launch { preferences.changeAndroidDynamicMode(DynamicMode.fromCaption(new)) }
+        },
+        onDismiss = { component(AccountAction.DynamicClick) }
     )
 
     if (state.sessionLogout) {
@@ -106,25 +118,38 @@ fun PreferencesUi(
             }
         }
 
+        val preferencesItems = buildList {
+            add(
+                PreferencesItem(
+                    text = stringResource(Res.string.language_preferences_label),
+                    leadingIconRes = Res.drawable.language,
+                    trailingText = stringResource(
+                        if (isIOS()) Language.SYSTEM.caption else language.caption
+                    ),
+                    onClick = {
+                        if (isIOS()) scope.launch { changeLanguage(null) }
+                        else component(AccountAction.LanguageClick)
+                    }
+                ))
+            add(
+                PreferencesItem(
+                    text = stringResource(Res.string.theme_preferences_label),
+                    leadingIconRes = Res.drawable.theme,
+                    trailingText = stringResource(theme.caption),
+                    onClick = { component(AccountAction.ThemeClick) }
+                ))
+            if (isAndroid()) add(
+                PreferencesItem(
+                    text = stringResource(Res.string.dynamic_preferences_label),
+                    leadingIconRes = Res.drawable.dynamic_colors,
+                    trailingText = stringResource(dynamicMode.caption),
+                    onClick = { component(AccountAction.DynamicClick) }
+                ))
+        }.toTypedArray()
+
         PreferencesGroup(
             groupCaption = stringResource(Res.string.app_section_label),
-            PreferencesItem(
-                text = stringResource(Res.string.language_preferences_label),
-                leadingIconRes = Res.drawable.language,
-                trailingText = stringResource(
-                    if (isIOS()) Language.SYSTEM.caption else language.caption
-                ),
-                onClick = {
-                    if (isIOS()) scope.launch { changeLanguage(null) }
-                    else component(AccountAction.LanguageClick)
-                }
-            ),
-            PreferencesItem(
-                text = stringResource(Res.string.theme_preferences_label),
-                leadingIconRes = Res.drawable.theme,
-                trailingText = stringResource(theme.caption),
-                onClick = { component(AccountAction.ThemeClick) }
-            )
+            *preferencesItems,
         )
 
         PreferencesGroup(

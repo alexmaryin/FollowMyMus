@@ -91,9 +91,14 @@ class AccountPage(
             AccountAction.ThemeClick ->
                 _state.update { it.copy(isThemeModalOpened = !state.value.isThemeModalOpened) }
 
+            AccountAction.DynamicClick ->
+                _state.update { it.copy(isDynamicModalOpened = !state.value.isDynamicModalOpened) }
+
             is AccountAction.LanguageChange -> _state.update { it.copy(language = action.language) }
 
             is AccountAction.ThemeChange -> _state.update { it.copy(theme = action.theme) }
+
+            is AccountAction.DynamicChange -> _state.update { it.copy(dynamicMode = action.dynamicMode) }
 
             is AccountAction.DownloadQR -> TODO()
         }
@@ -106,7 +111,6 @@ class AccountPage(
 
     private suspend fun showQRandStartTransfer() {
         val sessionId = Uuid.random().toString()
-        println("SESSION ID SENT: $sessionId")
         val deeplink = DEEP_LINK_URL_PREFIX + sessionId
         _state.update { it.copy(deepLink = deeplink) }
         val channel by inject<RealtimeChannel> { parametersOf(sessionId) }

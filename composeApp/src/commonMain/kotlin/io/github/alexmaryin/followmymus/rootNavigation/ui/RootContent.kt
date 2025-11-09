@@ -1,54 +1,32 @@
 package io.github.alexmaryin.followmymus.rootNavigation.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.*
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
-import io.github.alexmaryin.followmymus.core.changeLanguage
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.alexmaryin.followmymus.core.ui.isDesktop
-import io.github.alexmaryin.followmymus.core.ui.isIOS
 import io.github.alexmaryin.followmymus.core.ui.theme.FollowMyMusTheme
-import io.github.alexmaryin.followmymus.preferences.Language
-import io.github.alexmaryin.followmymus.preferences.ThemeMode
-import io.github.alexmaryin.followmymus.preferences.rememberAppPreferences
-import io.github.alexmaryin.followmymus.preferences.rememberPrefs
 import io.github.alexmaryin.followmymus.rootNavigation.RootComponent
 import io.github.alexmaryin.followmymus.rootNavigation.RootComponent.Child
 import io.github.alexmaryin.followmymus.screens.login.ui.LoginScreen
 import io.github.alexmaryin.followmymus.screens.mainScreen.ui.MainScreen
 import io.github.alexmaryin.followmymus.screens.signUp.ui.SignUpScreen
 import io.github.alexmaryin.followmymus.screens.splash.SplashScreen
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RootContent(component: RootComponent) {
 
-    val datastore = rememberPrefs()
-    val preferences = rememberAppPreferences(datastore)
-    val theme by preferences.getThemeMode().collectAsStateWithLifecycle(ThemeMode.SYSTEM)
-    val isDark = theme == ThemeMode.DARK || (theme == ThemeMode.SYSTEM && isSystemInDarkTheme())
-    var appLanguage by remember { mutableStateOf(Language.SYSTEM) }
+    val state by component.state.subscribeAsState()
 
-    LaunchedEffect(Unit) {
-        preferences.getLanguage().collectLatest { language ->
-            val lang = when (language) {
-                Language.ENGLISH -> "en"
-                Language.RUSSIAN -> "ru"
-                Language.SYSTEM -> null
-            }
-            if (appLanguage != language) {
-                changeLanguage(lang)
-                appLanguage = language
-            }
-        }
-    }
+    PreferencesHandler(state, component::invoke)
 
-    FollowMyMusTheme(darkTheme = isDark) {
-        AddOnlyDesktopLanguageKey(appLanguage) {
+    FollowMyMusTheme(darkTheme = state.isDark, androidDynamicMode = state.dynamicMode) {
+        AddOnlyDesktopLanguageKey(state.languageTag) {
             Children(
                 stack = component.childStack,
                 animation = stackAnimation(slide() + fade())

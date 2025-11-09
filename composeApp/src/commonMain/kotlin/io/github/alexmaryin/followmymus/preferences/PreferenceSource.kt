@@ -10,13 +10,30 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.Single
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 @Single
 class PreferenceSource(private val prefs: Prefs) {
+
+    fun getAndroidDynamicMode(): Flow<DynamicMode> {
+        return prefs.data.map {
+            val dynamic = it[stringPreferencesKey("dynamic")] ?: DynamicMode.ON.name
+            DynamicMode.valueOf(dynamic)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun changeAndroidDynamicMode(newMode: DynamicMode) {
+        withContext(Dispatchers.IO) {
+            try {
+                prefs.edit {
+                    it[stringPreferencesKey("dynamic")] = newMode.name
+                }
+            } catch (e: Exception) {
+                println("FAILED TO SAVE PREFERENCES ON THE DISK!")
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun getThemeMode(): Flow<ThemeMode> {
         return prefs.data.map {

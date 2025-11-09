@@ -84,6 +84,7 @@ private val darkScheme = darkColorScheme(
 @Composable
 actual fun FollowMyMusTheme(
     darkTheme: Boolean,
+    androidDynamicMode: Boolean,
     content: @Composable () -> Unit
 ) {
   val colorScheme = when {

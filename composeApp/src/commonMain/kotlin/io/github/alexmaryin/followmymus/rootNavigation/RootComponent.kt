@@ -10,6 +10,10 @@ interface RootComponent {
 
     val childStack: Value<ChildStack<*, Child>>
 
+    val state: Value<RootState>
+
+    operator fun invoke(action: RootAction)
+
     sealed class Child {
         data object Splash : Child()
         class LoginChild(val component: LoginComponent) : Child()
