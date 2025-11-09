@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import qrcode.QRCode
+import qrcode.color.Colors
 
 @Composable
 fun QRGeneratedBlock(
@@ -34,6 +35,7 @@ fun QRGeneratedBlock(
     onExpired: () -> Unit
 ) {
     val painter = QRCode.ofCircles()
+        .withBackgroundColor(Colors.WHITE_SMOKE)
         .withSize(15)
         .build(deepLink)
         .render()
@@ -66,6 +68,7 @@ fun QRGeneratedBlock(
             contentDescription = "QR",
             modifier = Modifier
                 .weight(1f)
+                .sizeIn(maxWidth = 150.dp)
                 .padding(6.dp)
                 .alpha(alpha)
         )
@@ -86,7 +89,8 @@ fun QRGeneratedBlock(
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(Res.string.qr_code_expires_in, timeLeft),
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
             )
         }
     }

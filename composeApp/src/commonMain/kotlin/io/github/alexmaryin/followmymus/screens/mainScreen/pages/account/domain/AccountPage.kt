@@ -20,10 +20,12 @@ import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
@@ -45,6 +47,7 @@ class AccountPage(
     private val sessionManager by inject<SessionManager>()
 
     private var sessionTransferJob: Job? = null
+    private var transferChannel: RealtimeChannel? = null
 
     private val scope = componentContext.coroutineScope() + SupervisorJob()
 
@@ -113,13 +116,16 @@ class AccountPage(
         val sessionId = Uuid.random().toString()
         val deeplink = DEEP_LINK_URL_PREFIX + sessionId
         _state.update { it.copy(deepLink = deeplink) }
-        val channel by inject<RealtimeChannel> { parametersOf(sessionId) }
-        channel.startTransferSession(sessionManager)
-        _state.update { it.copy(deepLink = null) }
+        transferChannel = get<RealtimeChannel> { parametersOf(sessionId) }
+        transferChannel?.startTransferSession(sessionManager)
+        closeQRandStopTransfer()
     }
 
     private fun closeQRandStopTransfer() {
-        sessionTransferJob?.cancel()
         _state.update { it.copy(deepLink = null) }
+        scope.launch { transferChannel?.unsubscribe() }
+        sessionTransferJob?.cancel()
+        sessionTransferJob = null
+        transferChannel = null
     }
 }
