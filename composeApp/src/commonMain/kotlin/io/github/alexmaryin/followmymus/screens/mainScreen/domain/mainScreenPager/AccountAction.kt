@@ -1,6 +1,5 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager
 
-import androidx.compose.ui.graphics.ImageBitmap
 import io.github.alexmaryin.followmymus.preferences.DynamicMode
 import io.github.alexmaryin.followmymus.preferences.Language
 import io.github.alexmaryin.followmymus.preferences.ThemeMode
@@ -16,5 +15,5 @@ sealed class AccountAction : PageAction {
     data class LanguageChange(val language: Language) : AccountAction()
     data class ThemeChange(val theme: ThemeMode) : AccountAction()
     data class DynamicChange(val dynamicMode: DynamicMode) : AccountAction()
-    data class DownloadQR(val image: ImageBitmap) : AccountAction()
+    class DownloadQR(val image: ByteArray) : AccountAction()
 }

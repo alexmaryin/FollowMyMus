@@ -23,6 +23,7 @@ kotlin {
 
     compilerOptions {
         freeCompilerArgs.add("-Xwhen-guards")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     androidTarget {

@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
@@ -20,7 +21,6 @@ import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
@@ -103,7 +103,7 @@ class AccountPage(
 
             is AccountAction.DynamicChange -> _state.update { it.copy(dynamicMode = action.dynamicMode) }
 
-            is AccountAction.DownloadQR -> TODO()
+            is AccountAction.DownloadQR -> scope.launch { FileHandler().saveQR(action.image) }
         }
     }
 

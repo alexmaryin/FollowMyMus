@@ -1,0 +1,41 @@
+<resources>
+    <string name="about_text">
+        <![CDATA[
+# 🎵 FollowMyMus
+
+**FollowMyMus** helps you **stay up-to-date** with new music releases from your favorite **artists, bands, and singers**.
+No more missing fresh albums, singles, or EPs — simply follow who you love, and let *FollowMyMus* do the rest. 💫
+
+---
+
+## 🌐 Data Source
+
+All release information is provided by the **MusicBrainz** open music encyclopedia —
+a community-driven project that collects detailed information about artists and recordings worldwide.
+
+---
+
+## ⚙️ Technology
+
+Built with ❤️ using **Kotlin Multiplatform** and **Compose Multiplatform**,
+*FollowMyMus* runs seamlessly on **Android**, **iOS**, and **Desktop**.
+Your music, your device — always in sync. 🎧
+
+---
+
+## 📄 Open Source & Credits
+
+This app is not affiliated with or endorsed by **MusicBrainz** or its contributors.
+All data is used in accordance with the MusicBrainz Data License.
+
+---
+
+## 💬 Feedback
+
+Have ideas, feature requests, or found a bug?
+We’d love to hear from you — your feedback helps make *FollowMyMus* better for everyone! 🚀
+java.ul@gmail.com
+---
+        ]]>
+    </string>
+</resources>

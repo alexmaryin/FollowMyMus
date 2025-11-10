@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,6 +20,7 @@ import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.download
 import followmymus.composeapp.generated.resources.qr_code_expires_in
 import followmymus.composeapp.generated.resources.qr_gen_support_text
+import io.github.alexmaryin.followmymus.core.ui.isIOS
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -31,10 +31,11 @@ import qrcode.color.Colors
 @Composable
 fun QRGeneratedBlock(
     deepLink: String,
-    onDownloadClick: (ImageBitmap) -> Unit,
+    onDownloadClick: (ByteArray) -> Unit,
     onExpired: () -> Unit
 ) {
-    val painter = QRCode.ofCircles()
+    val painter = (if (isIOS()) QRCode.ofSquares() else QRCode.ofCircles())
+        .withColor(Colors.BLACK)
         .withBackgroundColor(Colors.WHITE_SMOKE)
         .withSize(15)
         .build(deepLink)
@@ -84,7 +85,7 @@ fun QRGeneratedBlock(
             Icon(
                 painter = painterResource(Res.drawable.download),
                 contentDescription = "download QR image",
-                modifier = Modifier.clickable { onDownloadClick(image) }
+                modifier = Modifier.clickable { onDownloadClick(painter.getBytes()) }
             )
             Spacer(Modifier.height(8.dp))
             Text(

@@ -68,6 +68,7 @@
     <string name="current_version">Current Version</string>
     <string name="qr_gen_support_text">Scan QR code or download to log in on another device</string>
     <string name="qr_code_expires_in">expires in: %1$d</string>
+    <string name="qr_share_title">Share QR code</string>
     <!--    Logout Dialog-->
     <string name="logout_dialog_title">Logout</string>
     <string name="logout_dialog_text">Are you sure you want to log out from account?</string>
