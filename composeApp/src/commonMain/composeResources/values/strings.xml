@@ -10,6 +10,7 @@
     <string name="credentials_invalid">Nickname or password are invalid</string>
     <string name="qr_invalid">QR code is not valid</string>
     <!--    Pages titles-->
+    <string name="artists_page_title">Artists</string>
     <string name="releases_page_title">Releases</string>
     <string name="favorites_page_title">Favorites</string>
     <string name="account_page_title">Account</string>
@@ -73,4 +74,11 @@
     <string name="logout_dialog_title">Logout</string>
     <string name="logout_dialog_text">Are you sure you want to log out from account?</string>
     <string name="logout_shimmer">Wait. Logging out.</string>
+    <!--    Artists page-->
+    <string name="person_lifespan_start">Born in %1$s. </string>
+    <string name="character_lifespan_start">Created in %1$s. </string>
+    <string name="group_lifespan_start">Founded in %1$s. </string>
+    <string name="person_lifespan_end">Died in %1$s. </string>
+    <string name="group_lifespan_end">Broke up in %1$s. </string>
+    <string name="releases_placeholder">Select artist to load releases</string>
 </resources>

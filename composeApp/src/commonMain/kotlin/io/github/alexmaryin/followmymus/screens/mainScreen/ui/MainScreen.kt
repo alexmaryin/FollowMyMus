@@ -22,6 +22,9 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.AccountPageUi
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsPageHost
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.releases.ui.SearchPage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.random.Random
@@ -80,7 +83,8 @@ fun MainScreen(
             pages = screenPages,
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             onPageSelected = {
-                component(MainScreenAction.SelectPage(it)) },
+                component(MainScreenAction.SelectPage(it))
+            },
             scrollAnimation = PagesScrollAnimation.Default
         ) { index, page ->
 
@@ -90,10 +94,14 @@ fun MainScreen(
                 component(MainScreenAction.SetBackIconState(backIconVisibility.isBackVisible))
             }
 
-            if (index == MainPages.ACCOUNT.index) {
-                AccountPageUi(page as AccountHostComponent)
-            } else {
-                Box(modifier = Modifier.fillMaxSize().background(color = Color(Random.nextLong()))) {
+            when (index) {
+                MainPages.ARTISTS.index -> ArtistsPageHost(page as ArtistsHostComponent)
+                MainPages.ACCOUNT.index -> AccountPageUi(page as AccountHostComponent)
+                MainPages.RELEASES.index -> SearchPage()
+                else -> Box(
+                    modifier = Modifier.fillMaxSize()
+                        .background(color = Color(Random.nextLong()))
+                ) {
                     Text(
                         text = "Hello, ${state.nickname}!\nThis is PAGE #$index\nJUST STUB FOR THE PAGE",
                         textAlign = TextAlign.Center,

@@ -3,14 +3,14 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class AccountPageConfig {
+sealed interface AccountPageConfig {
 
     @Serializable
-    data object Account : AccountPageConfig()
+    data class Account(val nickname: String) : AccountPageConfig
 
     @Serializable
-    data object PrivacyPolicy : AccountPageConfig()
+    data object PrivacyPolicy : AccountPageConfig
 
     @Serializable
-    data object About : AccountPageConfig()
+    data object About : AccountPageConfig
 }

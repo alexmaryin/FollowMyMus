@@ -11,6 +11,7 @@ import com.arkivanov.decompose.value.update
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -31,13 +32,19 @@ class MainPagerComponent(
         serializer = PagerConfig.serializer(),
         initialPages = {
             Pages(
-                items = listOf(PagerConfig.Releases, PagerConfig.Favorites, PagerConfig.Account),
-                selectedIndex = MainPages.RELEASES.index
+                items = listOf(
+                    PagerConfig.Artists,
+                    PagerConfig.Releases,
+                    PagerConfig.Favorites,
+                    PagerConfig.Account
+                ),
+                selectedIndex = MainPages.ARTISTS.index
             )
         },
         handleBackButton = true
     ) { page, context ->
         when (page) {
+            PagerConfig.Artists -> get<ArtistsHostComponent> { parametersOf(context) }
             PagerConfig.Favorites -> DummyPage
             PagerConfig.Releases -> DummyPage
             is PagerConfig.Account -> get<AccountHostComponent> {
@@ -50,7 +57,6 @@ class MainPagerComponent(
         when (action) {
             is MainScreenAction.SelectPage -> {
                 if (action.index != state.value.activePageIndex) {
-                    println("Navigate to page #${action.index}")
                     _state.update { it.copy(activePageIndex = action.index) }
                     navigation.select(action.index)
                 }

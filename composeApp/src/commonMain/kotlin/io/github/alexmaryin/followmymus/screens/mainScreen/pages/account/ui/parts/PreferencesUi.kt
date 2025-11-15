@@ -1,8 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.parts
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,9 +25,9 @@ import io.github.alexmaryin.followmymus.preferences.ThemeMode
 import io.github.alexmaryin.followmymus.preferences.rememberAppPreferences
 import io.github.alexmaryin.followmymus.preferences.rememberPrefs
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.AccountAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.PreferencesItem
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.TrailingIconType
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.models.PreferencesItem
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.models.TrailingIconType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.AccountCaption
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components.PreferencesGroup

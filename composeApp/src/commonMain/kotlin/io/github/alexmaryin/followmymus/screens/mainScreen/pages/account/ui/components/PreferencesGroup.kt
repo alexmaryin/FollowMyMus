@@ -1,7 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components
 
 import androidx.compose.runtime.Composable
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.PreferencesItem
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.models.PreferencesItem
 
 @Composable
 fun PreferencesGroup(

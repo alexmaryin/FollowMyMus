@@ -1,0 +1,9 @@
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.mediaDetailsPanel
+
+import com.arkivanov.decompose.ComponentContext
+
+class MediaDetails(
+    private val releaseId: String,
+    private val context: ComponentContext
+) {
+}

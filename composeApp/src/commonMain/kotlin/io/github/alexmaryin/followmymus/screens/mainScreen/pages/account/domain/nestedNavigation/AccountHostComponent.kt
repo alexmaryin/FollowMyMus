@@ -9,10 +9,11 @@ interface AccountHostComponent : Page {
     val childStack: Value<ChildStack<*, Child>>
 
     override val state: Value<AccountPageState>
+    operator fun invoke(action: AccountAction)
 
-    sealed class Child {
-        data class Account(val nickname: String) : Child()
-        data object PrivacyPolicy : Child()
-        data object About : Child()
+    sealed interface Child {
+        data class Account(val nickname: String) : Child
+        data object PrivacyPolicy : Child
+        data object About : Child
     }
 }

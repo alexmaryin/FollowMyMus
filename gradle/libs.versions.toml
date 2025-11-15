@@ -7,10 +7,13 @@ androidx-activity = "1.11.0"
 androidx-datastore = "1.1.7"
 androidx-lifecycle = "2.9.6"
 androidx-appcompat = "1.7.1"
-composeHotReload = "1.0.0-rc02"
+androidx-paging = "3.3.6"
+androidx-paging-compose = "3.4.0-alpha04"
+composeHotReload = "1.0.0-rc03"
 composeMultiplatform = "1.9.3"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
+kotlinx-datetime = "0.7.1"
 buildKonfig = "0.17.1"
 koin = "4.1.1"
 koin-annotations = "2.3.1"
@@ -23,13 +26,12 @@ mlkit-barcode = "17.3.0"
 decompose = "3.4.0"
 essenity = "2.5.0"
 material3-adaptive = "1.2.0"
-zxing = "3.5.3"
+zxing = "3.5.4"
 mockk = "1.14.6"
 
 # app versions
 android-versionCode = "1"
 packageVersion = "1.0.0"
-uiTestJunit4Desktop = "1.7.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -40,6 +42,7 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "androidx-datastore" }
 
@@ -67,17 +70,21 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-cmp = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+decompose-cmp-experimental = { module = "com.arkivanov.decompose:extensions-compose-experimental", version.ref = "decompose" }
 decompose-essenity = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenity" }
 decompose-essenity-coroutines = { module = "com.arkivanov.essenty:lifecycle-coroutines", version.ref = "essenity" }
+
+paging = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging-compose" }
 
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
 android-test-compose = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
 android-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
-androidx-ui-test-junit4-desktop = { group = "androidx.compose.ui", name = "ui-test-junit4-desktop", version.ref = "uiTestJunit4Desktop" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

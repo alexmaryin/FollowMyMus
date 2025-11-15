@@ -91,7 +91,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.material3.adaptive)
             implementation(libs.androidx.datastore)
-
+            implementation(libs.kotlinx.datetime)
 
             // Koin DI
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -103,6 +103,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.negotiation)
             implementation(libs.ktor.serialization.json)
+            implementation(libs.ktor.logging)
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
@@ -112,8 +113,12 @@ kotlin {
             // Decompose
             api(libs.decompose)
             implementation(libs.decompose.cmp)
+            implementation(libs.decompose.cmp.experimental)
             api(libs.decompose.essenity)
             implementation(libs.decompose.essenity.coroutines)
+            // Paging + compose
+            implementation(libs.paging)
+            implementation(libs.paging.compose)
 
         }
 
@@ -200,6 +205,8 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.STRING, "projectId", project.getLocalProperty("projectId"))
         buildConfigField(FieldSpec.Type.STRING, "publishableKey", project.getLocalProperty("publishableKey"))
         buildConfigField(FieldSpec.Type.STRING, "secretKey", project.getLocalProperty("secretKey"))
+        buildConfigField(FieldSpec.Type.STRING, "musicBrainzOpenAuth", project.getLocalProperty("musicBrainzOpenAuth"))
+        buildConfigField(FieldSpec.Type.STRING, "musicBrainzSecret", project.getLocalProperty("musicBrainzSecret"))
         buildConfigField(FieldSpec.Type.STRING, "appVersion", libs.versions.packageVersion.get())
     }
 }

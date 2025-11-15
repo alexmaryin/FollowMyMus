@@ -10,7 +10,7 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.AccountAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
@@ -54,11 +54,11 @@ class AccountPage(
     override val childStack: Value<ChildStack<*, AccountHostComponent.Child>> = childStack(
         source = navigation,
         serializer = AccountPageConfig.serializer(),
-        initialConfiguration = AccountPageConfig.Account,
+        initialConfiguration = AccountPageConfig.Account(nickname),
         handleBackButton = true
     ) { config, _ ->
         when (config) {
-            AccountPageConfig.Account -> AccountHostComponent.Child.Account(nickname)
+            is AccountPageConfig.Account -> AccountHostComponent.Child.Account(config.nickname)
             AccountPageConfig.About -> AccountHostComponent.Child.About
             AccountPageConfig.PrivacyPolicy -> AccountHostComponent.Child.PrivacyPolicy
         }
@@ -68,9 +68,13 @@ class AccountPage(
         when (action) {
             PageAction.Back -> {
                 _state.update { it.copy(backVisible = false) }
-                navigation.bringToFront(AccountPageConfig.Account)
+                navigation.bringToFront(AccountPageConfig.Account(nickname))
             }
+        }
+    }
 
+    override fun invoke(action: AccountAction) {
+        when (action) {
             AccountAction.ShowAbout -> {
                 _state.update { it.copy(backVisible = true) }
                 navigation.bringToFront(AccountPageConfig.About)

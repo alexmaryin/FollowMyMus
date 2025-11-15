@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.models
 
 import org.jetbrains.compose.resources.DrawableResource
 
