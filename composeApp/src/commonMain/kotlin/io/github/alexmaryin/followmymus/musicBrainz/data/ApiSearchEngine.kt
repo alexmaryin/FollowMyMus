@@ -14,8 +14,9 @@ import org.koin.core.annotation.Single
 class ApiSearchEngine(
     val httpClient: HttpClient
 ) : SearchEngine {
-    override suspend fun searchArtists(query: String, offset: Int, limit: Int): Result<SearchResponse> = try {
-        val response: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+
+    override suspend fun searchArtists(query: String, offset: Int, limit: Int): SearchResponse {
+        return httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
             url {
                 parameters.append("query", query.surroundWithQuotation())
                 parameters.append("fmt", "json")
@@ -26,14 +27,29 @@ class ApiSearchEngine(
                 append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
             }
         }.body()
-        Result.Success(response)
-    } catch (_: NoTransformationFoundException) {
-        Result.Error(SearchError.InvalidResponse)
-    } catch (e: ResponseException) {
-        Result.Error(SearchError.ServerError(e.response.status.value), e.message)
-    } catch (e: Exception) {
-        Result.Error(SearchError.NetworkError, e.message)
     }
+
+
+//    override suspend fun searchArtists(query: String, offset: Int, limit: Int): Result<SearchResponse> = try {
+//        val response: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+//            url {
+//                parameters.append("query", query.surroundWithQuotation())
+//                parameters.append("fmt", "json")
+//                parameters.append("offset", offset.toString())
+//                parameters.append("limit", limit.toString())
+//            }
+//            headers {
+//                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+//            }
+//        }.body()
+//        Result.Success(response)
+//    } catch (_: NoTransformationFoundException) {
+//        Result.Error(SearchError.InvalidResponse)
+//    } catch (e: ResponseException) {
+//        Result.Error(SearchError.ServerError(e.response.status.value), e.message)
+//    } catch (e: Exception) {
+//        Result.Error(SearchError.NetworkError, e.message)
+//    }
     
     private fun String.surroundWithQuotation() = "\"$this\""
 }

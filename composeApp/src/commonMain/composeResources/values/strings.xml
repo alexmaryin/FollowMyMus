@@ -81,4 +81,5 @@
     <string name="person_lifespan_end">Died in %1$s. </string>
     <string name="group_lifespan_end">Broke up in %1$s. </string>
     <string name="releases_placeholder">Select artist to load releases</string>
+    <string name="artists_search_header">The most relevant artists (found %1$d)</string>
 </resources>

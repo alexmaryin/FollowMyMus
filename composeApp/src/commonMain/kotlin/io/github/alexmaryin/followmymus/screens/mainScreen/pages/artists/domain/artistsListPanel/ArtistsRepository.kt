@@ -1,12 +1,15 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel
 
+import androidx.paging.PagingData
+import io.github.alexmaryin.followmymus.core.Result
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.ArtistsResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface ArtistsRepository {
-    fun searchArtists(query: String): Flow<ArtistsResult>
+    val searchCount: StateFlow<Int?>
+    fun searchArtists(query: String): Flow<PagingData<Artist>>
     fun getFavoriteArtists(): Flow<Artist>
-    fun addToFavorite(artist: Artist)
-    fun deleteFromFavorites(artistId: Int)
+    suspend fun addToFavorite(artist: Artist)
+    suspend fun deleteFromFavorites(artistId: String)
 }

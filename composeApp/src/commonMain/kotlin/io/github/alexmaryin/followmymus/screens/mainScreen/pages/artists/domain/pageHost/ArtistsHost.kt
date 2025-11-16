@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost
 
+import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.panels.ChildPanels
@@ -91,4 +92,10 @@ class ArtistsHost(
             PageAction.Back -> navigation.pop()
         }
     }
+
+    @Composable
+    override fun ProvideSearchBar() = panels.value.main.instance.ProvideArtistsSearchBar()
+
+    override val searchIsVisible: Boolean
+        get() = panels.value.mode != ChildPanelsMode.SINGLE || panels.value.details == null
 }

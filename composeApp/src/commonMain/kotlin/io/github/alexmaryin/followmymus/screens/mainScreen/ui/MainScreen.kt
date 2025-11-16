@@ -16,7 +16,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
 import followmymus.composeapp.generated.resources.back
-import io.github.alexmaryin.followmymus.BuildKonfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.HasSearchBar
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.MainPages
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
@@ -43,7 +43,14 @@ fun MainScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(Res.string.app_name) + " ver.${BuildKonfig.appVersion}")
+                    when (val page = screenPages.items[state.activePageIndex].instance) {
+                        is HasSearchBar if page.searchIsVisible -> {
+                            page.ProvideSearchBar()
+                        }
+                        else -> {
+                            Text(stringResource(Res.string.app_name))
+                        }
+                    }
                 },
                 navigationIcon = {
                     if (state.backIconVisible) {

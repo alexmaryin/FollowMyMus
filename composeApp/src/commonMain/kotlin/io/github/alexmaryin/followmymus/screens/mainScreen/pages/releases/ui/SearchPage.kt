@@ -17,21 +17,5 @@ import org.koin.compose.koinInject
 
 @Composable
 fun SearchPage() {
-    val searchEngine = koinInject<SearchEngine>()
 
-    var search by remember { mutableStateOf("Taylor Swift") }
-
-    var result by remember { mutableStateOf(emptyList<Artist>()) }
-
-    LaunchedEffect(search) {
-        val res = searchEngine.searchArtists(search)
-        res.forSuccess { result = it.artists.map { it.toArtist(false) } }
-        res.forError { println(it) }
-    }
-
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        items(result) { artist ->
-            Text(text = artist.toString(), modifier = Modifier.fillMaxWidth().padding(6.dp))
-        }
-    }
 }
