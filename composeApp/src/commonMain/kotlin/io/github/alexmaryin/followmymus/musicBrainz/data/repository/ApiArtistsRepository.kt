@@ -19,7 +19,7 @@ import org.koin.core.parameter.parametersOf
 class ApiArtistsRepository : ArtistsRepository, KoinComponent {
 
     override val searchCount = MutableStateFlow<Int?>(null)
-    private fun emitNewCount(count: Int) {
+    private fun emitNewCount(count: Int?) {
         searchCount.update { count }
     }
 

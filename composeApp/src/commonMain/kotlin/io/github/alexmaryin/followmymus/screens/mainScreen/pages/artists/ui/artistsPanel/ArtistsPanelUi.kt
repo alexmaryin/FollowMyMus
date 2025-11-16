@@ -33,8 +33,11 @@ fun ArtistsPanelUi(component: ArtistsList) {
 
     val artists = state.artists.collectAsLazyPagingItems()
 
-    LaunchedEffect(artists.itemCount) {
-        if (artists.itemCount > 0) component(ArtistsListAction.LoadingCompleted)
+    LaunchedEffect(state.searchResultsCount) {
+        state.searchResultsCount?.let {
+            component(ArtistsListAction.LoadingCompleted)
+            listState.animateScrollToItem(0)
+        }
     }
 
     if (state.isLoading) {

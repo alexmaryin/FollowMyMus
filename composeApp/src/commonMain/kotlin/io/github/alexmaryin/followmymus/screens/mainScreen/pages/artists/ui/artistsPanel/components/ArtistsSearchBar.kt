@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.search
@@ -33,9 +34,11 @@ fun ArtistsSearchBar(
 ) {
     val searchState = rememberSearchBarState()
     val queryState = rememberTextFieldState()
+    val focusManager = LocalFocusManager.current
     val searchFun = { query: String ->
         queryState.clearText()
         action(ArtistsListAction.Search(query))
+        focusManager.clearFocus()
     }
     SearchBar(
         state = searchState,

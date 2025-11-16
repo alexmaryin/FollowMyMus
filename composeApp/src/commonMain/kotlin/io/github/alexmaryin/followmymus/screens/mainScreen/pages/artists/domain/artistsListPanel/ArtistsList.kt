@@ -1,6 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel
 
 import androidx.compose.runtime.Composable
+import androidx.paging.cachedIn
 import androidx.paging.filter
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
@@ -11,7 +12,10 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistsSearchBar
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
@@ -54,6 +58,7 @@ class ArtistsList(
         lastQuery = query
         _state.update { it.copy(isLoading = true, searchResultsCount = null) }
         val result = repository.searchArtists(query)
+            .cachedIn(scope)
             .map { page ->
                 val ids = mutableSetOf<String>()
                 page.filter { artist ->

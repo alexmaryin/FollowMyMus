@@ -5,17 +5,16 @@ import androidx.paging.PagingState
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import org.koin.core.annotation.Factory
 
 @Factory(binds = [PagingSource::class])
 class ArtistsPagingSource(
     private val searchEngine: SearchEngine,
     private val query: String,
-    private val emitNewCount: (Int) -> Unit
+    private val emitNewCount: (Int?) -> Unit
 ) : PagingSource<Int, Artist>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Artist> {
+        emitNewCount(null)
         val offset = params.key?.coerceAtLeast(0) ?: 0
         val limit = params.loadSize
 
