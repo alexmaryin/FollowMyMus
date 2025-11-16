@@ -7,4 +7,6 @@ sealed interface ArtistsListAction {
     data class SelectArtist(val artistId: String) : ArtistsListAction
     data class ToggleArtistFavorite(val artist: Artist) : ArtistsListAction
     data object ToggleSearchTune : ArtistsListAction
+    data object Retry : ArtistsListAction
+    data object LoadingCompleted : ArtistsListAction
 }

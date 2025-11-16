@@ -1,8 +1,12 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -42,10 +46,10 @@ fun ArtistListItem(
             }
         },
         supportingContent = {
-          Text(
-              text = artist.details,
-              style = MaterialTheme.typography.bodyMedium,
-          )
+            Text(
+                text = artist.details,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         },
         leadingContent = {
             val iconRes = if (artist.isFavorite) Res.drawable.favorite else Res.drawable.add
@@ -57,7 +61,9 @@ fun ArtistListItem(
             )
         },
         trailingContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = artist.score.toString(),
                     style = MaterialTheme.typography.labelSmall,

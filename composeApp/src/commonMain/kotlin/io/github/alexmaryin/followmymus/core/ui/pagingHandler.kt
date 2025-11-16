@@ -64,7 +64,7 @@ class PagingHandlerScope<T : Any>(
             }
             handled = true
             body(result)
-        } else this
+        }
     }
 
     @LazyScopeMarker

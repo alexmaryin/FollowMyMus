@@ -9,7 +9,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -19,6 +19,9 @@ import org.koin.core.parameter.parametersOf
 class ApiArtistsRepository : ArtistsRepository, KoinComponent {
 
     override val searchCount = MutableStateFlow<Int?>(null)
+    private fun emitNewCount(count: Int) {
+        searchCount.update { count }
+    }
 
     override fun searchArtists(query: String): Flow<PagingData<Artist>> {
         val pager = Pager(
@@ -28,7 +31,7 @@ class ApiArtistsRepository : ArtistsRepository, KoinComponent {
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
-                get<PagingSource<Int, Artist>> { parametersOf(query, searchCount) }
+                get<PagingSource<Int, Artist>> { parametersOf(query, ::emitNewCount) }
             }
         )
         return pager.flow

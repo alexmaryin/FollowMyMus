@@ -6,7 +6,6 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import org.koin.core.annotation.Factory
 
@@ -14,7 +13,7 @@ import org.koin.core.annotation.Factory
 class ArtistsPagingSource(
     private val searchEngine: SearchEngine,
     private val query: String,
-    private val totalCount: MutableStateFlow<Int?>
+    private val emitNewCount: (Int) -> Unit
 ) : PagingSource<Int, Artist>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Artist> {
         val offset = params.key?.coerceAtLeast(0) ?: 0
@@ -22,7 +21,7 @@ class ArtistsPagingSource(
 
         return try {
             val response = searchEngine.searchArtists(query, offset, limit)
-            totalCount.update { response.count }
+            emitNewCount(response.count)
             LoadResult.Page(
                 data = response.artists.map { it.toArtist(false) },
                 prevKey = if (offset == 0) null else offset - limit,

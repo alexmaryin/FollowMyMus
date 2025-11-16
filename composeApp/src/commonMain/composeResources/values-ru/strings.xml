@@ -80,4 +80,7 @@
     <string name="group_lifespan_end">Окончание: %1$s. </string>
     <string name="releases_placeholder">Выделите исполнителя, чтобы загрузить релизы</string>
     <string name="artists_search_header">Наиболее подходящие исполнители (найдено %1$d)</string>
+    <string name="empty_search_placeholder">Ничего не найдено</string>
+    <string name="error_title">Ошибка!</string>
+    <string name="error_restart_option">Попробовать снова</string>
 </resources>

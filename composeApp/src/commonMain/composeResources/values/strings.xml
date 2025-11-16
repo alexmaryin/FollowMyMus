@@ -82,4 +82,7 @@
     <string name="group_lifespan_end">Broke up in %1$s. </string>
     <string name="releases_placeholder">Select artist to load releases</string>
     <string name="artists_search_header">The most relevant artists (found %1$d)</string>
+    <string name="empty_search_placeholder">Nothing found</string>
+    <string name="error_title">Error!</string>
+    <string name="error_restart_option">Try again</string>
 </resources>

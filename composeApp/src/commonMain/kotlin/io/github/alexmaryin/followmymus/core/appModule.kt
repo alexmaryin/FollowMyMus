@@ -1,7 +1,6 @@
 package io.github.alexmaryin.followmymus.core
 
 import io.github.alexmaryin.followmymus.BuildKonfig
-import io.github.alexmaryin.followmymus.screens.signUp.ui.parts.LoginLink
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
@@ -14,9 +13,9 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.logging.Logger
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.*
 
@@ -29,11 +28,17 @@ class AppModule() {
     @Single
     fun provideMusicBrainzClient() = HttpClient(getHttpEngine()) {
         install(Logging) {
-            level = LogLevel.ALL
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println("KTOR CLIENT: $message")
+                }
+            }
+            level = LogLevel.INFO
         }
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
+                coerceInputValues = true
                 explicitNulls = false
             })
         }

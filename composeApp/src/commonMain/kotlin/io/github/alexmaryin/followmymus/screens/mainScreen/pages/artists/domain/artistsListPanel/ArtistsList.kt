@@ -1,8 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.filter
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -12,6 +11,7 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistsSearchBar
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
@@ -23,12 +23,12 @@ class ArtistsList(
 
     private val repository by inject<ArtistsRepository>()
     private val scope = context.coroutineScope() + SupervisorJob()
+    private var lastQuery: String? = null
 
     init {
         lifecycle.doOnStart {
             scope.launch {
                 repository.searchCount.collect { count ->
-                    println("NEW SEARCH COUNT is $count")
                     _state.update { it.copy(searchResultsCount = count) }
                 }
             }
@@ -44,14 +44,27 @@ class ArtistsList(
             is ArtistsListAction.ToggleArtistFavorite -> scope.launch { toggleFavorite(action.artist) }
             is ArtistsListAction.SelectArtist -> TODO()
             ArtistsListAction.ToggleSearchTune -> TODO()
+            ArtistsListAction.Retry -> lastQuery?.let { startSearch(it) }
+            ArtistsListAction.LoadingCompleted -> _state.update { it.copy(isLoading = false) }
         }
     }
 
     private fun startSearch(query: String) {
         if (query.isBlank()) return
+        lastQuery = query
         _state.update { it.copy(isLoading = true, searchResultsCount = null) }
         val result = repository.searchArtists(query)
-        _state.update { it.copy(isLoading = false, artists = result) }
+            .map { page ->
+                val ids = mutableSetOf<String>()
+                page.filter { artist ->
+                    if (ids.contains(artist.id)) false
+                    else {
+                        ids.add(artist.id)
+                        true
+                    }
+                }
+            }
+        _state.update { it.copy(artists = result) }
     }
 
     private suspend fun toggleFavorite(artist: Artist) {
