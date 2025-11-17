@@ -9,5 +9,5 @@ data class AreaDto(
     val name: String,
     @SerialName("sort-name") val sortName: String,
     val type: String,
-    @SerialName("life-span") val lifeSpan: LifeSpanDto
+    @SerialName("life-span") val lifeSpan: LifeSpanDto?
 )

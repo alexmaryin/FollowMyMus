@@ -3,7 +3,7 @@ package io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ArtistType
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedName
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
 import io.github.alexmaryin.followmymus.musicBrainz.data.utils.parseLifeSpanDate
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import org.jetbrains.compose.resources.getString
@@ -13,7 +13,7 @@ suspend fun ArtistDto.toArtist(isFavorite: Boolean) = Artist(
     name = name,
     description = disambiguation,
     details = buildString {
-        country?.toLocalizedName()?.let { append("$it. ") }
+        country?.toLocalizedResourceName()?.let { append("${getString(it)}. ") }
         lifeSpan?.begin?.parseLifeSpanDate()?.let {
             when (type) {
                 ArtistType.PERSON ->
@@ -39,7 +39,8 @@ suspend fun ArtistDto.toArtist(isFavorite: Boolean) = Artist(
             append(tags.joinToString(separator = ", ", postfix = ".") { it.name.capitalizeTag() })
     },
     isFavorite = isFavorite,
-    score = score
+    score = score,
+    dtoSource = this
 )
 
 internal fun String.capitalizeTag() = replaceFirstChar {

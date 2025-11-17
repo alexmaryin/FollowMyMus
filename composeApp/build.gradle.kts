@@ -17,6 +17,7 @@ plugins {
     alias(libs.plugins.buildKonfig)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -33,7 +34,7 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -45,9 +46,9 @@ kotlin {
             export(libs.decompose.essenity)
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -92,7 +93,6 @@ kotlin {
             implementation(libs.material3.adaptive)
             implementation(libs.androidx.datastore)
             implementation(libs.kotlinx.datetime)
-
             // Koin DI
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -119,7 +119,9 @@ kotlin {
             // Paging + compose
             implementation(libs.paging)
             implementation(libs.paging.compose)
-
+            // Room
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
 
         commonTest.dependencies {
@@ -138,10 +140,6 @@ kotlin {
     sourceSets.named("commonMain").configure {
         kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
     }
-}
-
-ksp {
-//    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 android {
@@ -173,12 +171,25 @@ android {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     debugImplementation(compose.uiTooling)
+    // KOIN
     add("kspCommonMainMetadata", libs.koin.ksp)
+    add("kspAndroid", libs.koin.ksp)
+    add("kspJvm", libs.koin.ksp)
+    add("kspIosSimulatorArm64", libs.koin.ksp)
+    add("kspIosArm64", libs.koin.ksp)
+    // ROOM
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
     androidTestImplementation(libs.android.test.compose)
     debugImplementation(libs.android.test.manifest)
-
 }
 
 // Trigger Common Metadata Generation from Native tasks

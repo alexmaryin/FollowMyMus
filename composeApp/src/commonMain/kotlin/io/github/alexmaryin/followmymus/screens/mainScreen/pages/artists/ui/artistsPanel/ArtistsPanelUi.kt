@@ -33,6 +33,8 @@ fun ArtistsPanelUi(component: ArtistsList) {
 
     val artists = state.artists.collectAsLazyPagingItems()
 
+    // This effect added to prolong loading indicator until actual
+    // fetching and mapping data from the flow.
     LaunchedEffect(state.searchResultsCount) {
         state.searchResultsCount?.let {
             component(ArtistsListAction.LoadingCompleted)
