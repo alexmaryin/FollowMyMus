@@ -15,5 +15,4 @@ fun ArtistWithRelations.toArtist() = Artist(
             append(tags.joinToString(separator = ", ", postfix = ".") { it.name })
     },
     isFavorite = artist.isFavorite,
-    score = 100
 )

@@ -14,9 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchError
 import io.github.alexmaryin.followmymus.screens.commonUi.EmptyListPlaceholder
@@ -24,6 +25,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistListItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.SearchHeader
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ArtistsPanelUi(component: ArtistsList) {
@@ -32,13 +34,12 @@ fun ArtistsPanelUi(component: ArtistsList) {
 
     val listState = rememberLazyListState()
 
-    val artistsFlow by component.artists.collectAsStateWithLifecycle()
-    val artists = artistsFlow.collectAsLazyPagingItems()
+    val artists = component.artists.collectAsLazyPagingItems()
 
     // This effect added to prolong loading indicator until actual
-    // fetching and mapping data from the flow.
-    LaunchedEffect(state.searchResultsCount) {
-        state.searchResultsCount?.let {
+    // fetching and mapping data from the flow or error occurs.
+    LaunchedEffect(state.searchResultsCount, artists.loadState.refresh) {
+        if (state.searchResultsCount != null || artists.loadState.refresh is LoadState.Error) {
             component(ArtistsListAction.LoadingCompleted)
         }
     }
@@ -61,9 +62,22 @@ fun ArtistsPanelUi(component: ArtistsList) {
             }
             OnError { error ->
                 val errorText = when (error) {
-                    SearchError.InvalidResponse -> "Invalid response"
-                    SearchError.NetworkError -> "Network error"
-                    is SearchError.ServerError -> "Server error ${error.code}"
+                    SearchError.InvalidResponse ->
+                        stringResource(Res.string.invalid_response_api)
+
+                    is SearchError.NetworkError ->
+                        if (error.message != null) {
+                            stringResource(
+                                Res.string.network_error_msg,
+                                error.message
+                            )
+                        } else stringResource(Res.string.network_error)
+
+                    is SearchError.ServerError ->
+                        stringResource(
+                            Res.string.server_error_code,
+                            error.code, error.message
+                        )
                 }
                 ErrorPlaceholder(text = errorText) {
                     component(ArtistsListAction.Retry)

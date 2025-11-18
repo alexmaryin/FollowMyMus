@@ -20,9 +20,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.search
+import followmymus.composeapp.generated.resources.search_placeholder
 import followmymus.composeapp.generated.resources.tune
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(
@@ -48,7 +50,7 @@ fun ArtistsSearchBar(
                 textFieldState = queryState,
                 searchBarState = searchState,
                 onSearch = searchFun,
-                placeholder = { Text("enter artist, genre or description") },
+                placeholder = { Text(stringResource(Res.string.search_placeholder)) },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(Res.drawable.tune),

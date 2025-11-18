@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class ArtistDto(
     val id: String,
     val type: ArtistType?,
-    val score: Int,
+    val score: Int?,
     val name: String,
     @SerialName("sort-name") val sortName: String,
     val country: CountryISO?,

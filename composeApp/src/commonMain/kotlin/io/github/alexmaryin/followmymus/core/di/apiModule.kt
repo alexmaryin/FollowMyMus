@@ -39,9 +39,13 @@ class AppModule() {
                 explicitNulls = false
             })
         }
-        install(HttpTimeout)
+        install(HttpTimeout) {
+            requestTimeoutMillis = 5000L
+            connectTimeoutMillis = 5000L
+            socketTimeoutMillis = 5000L
+        }
         install(HttpRequestRetry) {
-            maxRetries = 5
+            maxRetries = 3
             delayMillis { retry -> retry * 3000L }
         }
     }

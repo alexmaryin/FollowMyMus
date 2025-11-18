@@ -35,7 +35,7 @@ fun ErrorPlaceholder(
             Spacer(Modifier.height(12.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             )
             onRestart?.let {
@@ -52,7 +52,7 @@ fun ErrorPlaceholder(
                         )
                         Text(
                             text = stringResource(Res.string.error_restart_option),
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         )
                     }

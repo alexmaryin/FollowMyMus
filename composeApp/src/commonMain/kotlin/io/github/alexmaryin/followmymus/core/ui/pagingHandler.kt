@@ -57,10 +57,14 @@ class PagingHandlerScope<T : Any>(
             val result = when (val error = (loadState.refresh as LoadState.Error).error) {
                 is NoTransformationFoundException -> SearchError.InvalidResponse
                 is DoubleReceiveException -> SearchError.InvalidResponse
-                is SocketTimeoutException -> SearchError.NetworkError
-                is UnresolvedAddressException -> SearchError.NetworkError
-                is ResponseException -> SearchError.ServerError(error.response.status.value)
-                else -> SearchError.NetworkError
+                is SocketTimeoutException -> SearchError.NetworkError(error.message)
+                is UnresolvedAddressException -> SearchError.NetworkError(error.message)
+                is ResponseException -> SearchError.ServerError(
+                    code = error.response.status.value,
+                    message = error.response.status.description
+                )
+
+                else -> SearchError.NetworkError(error.message)
             }
             handled = true
             body(result)

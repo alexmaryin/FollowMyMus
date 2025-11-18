@@ -9,6 +9,9 @@
     <string name="rest_error">Server returns error with code</string>
     <string name="credentials_invalid">Nickname or password are invalid</string>
     <string name="qr_invalid">QR code is not valid</string>
+    <string name="invalid_response_api">Invalid response from web service</string>
+    <string name="server_error_code">Server error %1$d: %2$s</string>
+    <string name="network_error_msg">Network error: %1$s</string>
     <!--    Pages titles-->
     <string name="artists_page_title">Artists</string>
     <string name="releases_page_title">Releases</string>
@@ -85,4 +88,5 @@
     <string name="empty_search_placeholder">Nothing found</string>
     <string name="error_title">Error!</string>
     <string name="error_restart_option">Try again</string>
+    <string name="search_placeholder">enter artist, genre or description</string>
 </resources>

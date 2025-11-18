@@ -83,10 +83,12 @@ fun ArtistListItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = artist.score.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                )
+                artist.score?.let {
+                    Text(
+                        text = it.toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
                 Icon(
                     painter = painterResource(Res.drawable.forward),
                     contentDescription = "Open releases for ${artist.name}",
@@ -123,7 +125,7 @@ fun ArtistItemPreview() {
                 description = "Russian folk metal band",
                 details = "Russia. Founded in 1995. Folk metal, Doom metal.",
                 isFavorite = true,
-                score = 100
+                score = null
             )
         ) {}
     }

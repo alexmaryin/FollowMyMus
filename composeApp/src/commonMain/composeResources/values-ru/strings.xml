@@ -9,6 +9,9 @@
     <string name="rest_error">Сервер вернул ошибку с кодом </string>
     <string name="credentials_invalid">Ошибочные никнейм или пароль</string>
     <string name="qr_invalid">QR код не распознан</string>
+    <string name="invalid_response_api">Неверный ответ от сервиса</string>
+    <string name="server_error_code">Ошибка сервера %1$d: %2$s</string>
+    <string name="network_error_msg">Ошибка сети: %1$s</string>
     <!--    Pages titles-->
     <string name="artists_page_title">Исполнители</string>
     <string name="releases_page_title">Релизы</string>
@@ -83,4 +86,5 @@
     <string name="empty_search_placeholder">Ничего не найдено</string>
     <string name="error_title">Ошибка!</string>
     <string name="error_restart_option">Попробовать снова</string>
+    <string name="search_placeholder">введите исполнителя, жанр или описание</string>
 </resources>

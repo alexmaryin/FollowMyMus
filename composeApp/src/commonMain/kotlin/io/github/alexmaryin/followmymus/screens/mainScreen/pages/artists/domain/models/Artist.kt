@@ -8,6 +8,6 @@ data class Artist(
     val description: String? = null,
     val details: String,
     val isFavorite: Boolean = false,
-    val score: Int,
+    val score: Int? = null,
     val dtoSource: ArtistDto? = null
 )
