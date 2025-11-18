@@ -49,6 +49,8 @@ class ApiArtistsRepository(
         }
     }
 
+    override fun getFavoriteArtistsIds(): Flow<List<String>> = musicBrainzDAO.getFavoriteArtistsIds()
+
     override suspend fun addToFavorite(artist: Artist) {
         artist.dtoSource?.let {
             musicBrainzDAO.insertFavoriteArtist(

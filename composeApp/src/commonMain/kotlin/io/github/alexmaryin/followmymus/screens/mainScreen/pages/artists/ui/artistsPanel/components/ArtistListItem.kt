@@ -1,17 +1,19 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,12 +55,29 @@ fun ArtistListItem(
         },
         leadingContent = {
             val iconRes = if (artist.isFavorite) Res.drawable.favorite else Res.drawable.add
-            Icon(
-                painter = painterResource(iconRes),
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable { action(ArtistsListAction.ToggleArtistFavorite(artist)) }
+            val rotation by animateFloatAsState(
+                targetValue = if (artist.isFavorite) 360f else 0f,
+                animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+                label = "rotation"
             )
+
+            AnimatedContent(
+                targetState = artist.isFavorite,
+                transitionSpec = {
+                    (slideInVertically() + fadeIn() togetherWith slideOutVertically() + fadeOut()).using(
+                        SizeTransform(clip = false)
+                    )
+                },
+                label = "icon_animation"
+            ) {
+                Icon(
+                    painter = painterResource(iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.clickable { action(ArtistsListAction.ToggleArtistFavorite(artist)) }
+                        .animateContentSize()
+                        .rotate(rotation)
+                )
+            }
         },
         trailingContent = {
             Row(

@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MusicBrainzDAO {
 
+    @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true")
     fun getFavoriteArtists(): Flow<List<ArtistWithRelations>>
 
     @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true")
-    suspend fun getFavoriteArtistsIds(): List<String>
+    fun getFavoriteArtistsIds(): Flow<List<String>>
 
+    @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE id = :id")
     suspend fun getArtistById(id: String): ArtistWithRelations?
 

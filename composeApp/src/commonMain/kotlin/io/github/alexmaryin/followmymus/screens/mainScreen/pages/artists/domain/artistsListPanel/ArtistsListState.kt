@@ -8,5 +8,4 @@ import kotlinx.coroutines.flow.emptyFlow
 data class ArtistsListState(
     val isLoading: Boolean = false,
     val searchResultsCount: Int? = null,
-    val artists: Flow<PagingData<Artist>> = emptyFlow()
 )

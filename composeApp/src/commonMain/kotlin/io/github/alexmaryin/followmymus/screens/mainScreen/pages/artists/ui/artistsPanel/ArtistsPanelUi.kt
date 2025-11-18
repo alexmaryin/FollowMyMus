@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
@@ -31,14 +32,14 @@ fun ArtistsPanelUi(component: ArtistsList) {
 
     val listState = rememberLazyListState()
 
-    val artists = state.artists.collectAsLazyPagingItems()
+    val artistsFlow by component.artists.collectAsStateWithLifecycle()
+    val artists = artistsFlow.collectAsLazyPagingItems()
 
     // This effect added to prolong loading indicator until actual
     // fetching and mapping data from the flow.
     LaunchedEffect(state.searchResultsCount) {
         state.searchResultsCount?.let {
             component(ArtistsListAction.LoadingCompleted)
-            listState.animateScrollToItem(0)
         }
     }
 

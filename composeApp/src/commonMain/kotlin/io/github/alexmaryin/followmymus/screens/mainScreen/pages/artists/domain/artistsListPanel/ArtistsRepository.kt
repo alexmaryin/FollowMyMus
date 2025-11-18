@@ -9,6 +9,7 @@ interface ArtistsRepository {
     val searchCount: StateFlow<Int?>
     fun searchArtists(query: String): Flow<PagingData<Artist>>
     fun getFavoriteArtists(): Flow<List<Artist>>
+    fun getFavoriteArtistsIds(): Flow<List<String>>
     suspend fun addToFavorite(artist: Artist)
     suspend fun deleteFromFavorites(artistId: String)
 }
