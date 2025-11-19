@@ -9,7 +9,6 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
 import io.ktor.client.plugins.*
 import kotlinx.serialization.SerializationException
 import org.koin.core.annotation.Factory
@@ -19,8 +18,7 @@ class DefaultSupabaseDb(
     private val supabase: SupabaseClient
 ) : SupabaseDb {
     override suspend fun getRemoteFavoritesArtists(): Result<List<ArtistRemoteEntity>> = safeCall {
-        supabase.from(SupabaseDb.SUPABASE_NAME)
-            .select(artistsColumns)
+        supabase.from(SupabaseDb.SUPABASE_NAME).select()
             .decodeList<ArtistRemoteEntity>()
     }
 
@@ -49,9 +47,5 @@ class DefaultSupabaseDb(
         Result.Error(SupabaseError.InvalidJsonResponse)
     } catch (_: IllegalArgumentException) {
         Result.Error(SupabaseError.MappingError)
-    }
-
-    companion object {
-        private val artistsColumns = Columns.list("id, created_at, artist_id")
     }
 }
