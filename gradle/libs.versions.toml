@@ -59,6 +59,7 @@ koin-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-an
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase-bom" }
 supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
 supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 
 qrcode = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcode" }
 camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camera2" }

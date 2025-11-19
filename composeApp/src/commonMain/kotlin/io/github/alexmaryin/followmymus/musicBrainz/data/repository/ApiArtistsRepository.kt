@@ -10,6 +10,8 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
+import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
+import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -21,7 +23,8 @@ import org.koin.core.parameter.parametersOf
 
 @Factory(binds = [ArtistsRepository::class])
 class ApiArtistsRepository(
-    private val musicBrainzDAO: MusicBrainzDAO
+    private val musicBrainzDAO: MusicBrainzDAO,
+    private val supabaseDb: SupabaseDb
 ) : ArtistsRepository, KoinComponent {
 
     override val searchCount = MutableStateFlow<Int?>(null)
@@ -60,9 +63,11 @@ class ApiArtistsRepository(
                 tags = it.tags.map { tag -> tag.toEntity(artist.id) }
             )
         }
+        supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
     }
 
     override suspend fun deleteFromFavorites(artistId: String) {
         musicBrainzDAO.deleteArtistById(artistId)
+        supabaseDb.removeRemoteFavoriteArtist(artistId)
     }
 }
