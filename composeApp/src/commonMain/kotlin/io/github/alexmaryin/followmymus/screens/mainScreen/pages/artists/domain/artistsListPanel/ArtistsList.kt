@@ -33,13 +33,12 @@ class ArtistsList(
     }
     val artists: Flow<PagingData<Artist>> = pager.artists
 
+    private val _events = MutableSharedFlow<ArtistsListEvent>()
+    val events = _events.asSharedFlow()
+
     init {
-        // When the component is created/recreated, check if there's a query in the saved state.
-        val restoredQuery = state.value.query
-        if (restoredQuery.isNotBlank()) {
-            // If so, trigger a search in the pager.
-            pager.search(restoredQuery)
-        }
+        // When the component is created/recreated, check if there's a query in the saved state and restore search.
+        if (state.value.query.isNotBlank()) pager.search(state.value.query)
 
         scope.launch {
             repository.searchCount.collect { total ->
@@ -55,7 +54,10 @@ class ArtistsList(
             is ArtistsListAction.SelectArtist -> TODO()
             ArtistsListAction.ToggleSearchTune -> TODO()
             ArtistsListAction.Retry -> startSearch(state.value.query)
-            ArtistsListAction.LoadingCompleted -> _state.update { it.copy(isLoading = false) }
+            ArtistsListAction.LoadingCompleted -> scope.launch {
+                _state.update { it.copy(isLoading = false) }
+                _events.emit(ArtistsListEvent.ScrollUp)
+            }
         }
     }
 

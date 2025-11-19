@@ -11,6 +11,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,12 +21,15 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
+import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchError
 import io.github.alexmaryin.followmymus.screens.commonUi.EmptyListPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListEvent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistListItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.SearchHeader
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -39,8 +44,17 @@ fun ArtistsPanelUi(component: ArtistsList) {
     // This effect added to prolong loading indicator until actual
     // fetching and mapping data from the flow or error occurs.
     LaunchedEffect(state.searchResultsCount, artists.loadState.refresh) {
-        if (state.searchResultsCount != null || artists.loadState.refresh is LoadState.Error) {
+        if (state.isLoading &&
+            (state.searchResultsCount != null
+                    || artists.loadState.refresh is LoadState.Error)
+            ) {
             component(ArtistsListAction.LoadingCompleted)
+        }
+    }
+
+    ObserveEvents(component.events) { event ->
+        when (event) {
+            ArtistsListEvent.ScrollUp -> listState.animateScrollToItem(0)
         }
     }
 
