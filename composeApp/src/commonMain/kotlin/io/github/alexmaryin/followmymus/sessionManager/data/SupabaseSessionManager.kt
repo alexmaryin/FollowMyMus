@@ -3,7 +3,6 @@ package io.github.alexmaryin.followmymus.sessionManager.data
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.network_error
 import io.github.alexmaryin.followmymus.core.Result
-import io.github.alexmaryin.followmymus.core.UndefinedError
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionError
@@ -19,7 +18,10 @@ import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.exceptions.RestException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.Single
@@ -52,16 +54,6 @@ class SupabaseSessionManager(
         }
     }
 
-    private suspend fun <T> safeCall(call: suspend () -> T): Result<T> = try {
-        Result.Success(call())
-    } catch (e: AuthRestException) {
-        Result.Error(SessionError.AuthError(e.errorCode ?: AuthErrorCode.UnexpectedFailure), e.errorDescription)
-    } catch (e: RestException) {
-        Result.Error(SessionError.RestError(e.statusCode), e.error)
-    } catch (e: IOException) {
-        Result.Error(SessionError.NetworkError, e.message ?: getString(Res.string.network_error))
-    }
-
     override fun currentSession(): Result<UserSession> {
         val session = auth.currentSessionOrNull()
         return if (session != null) Result.Success(session)
@@ -69,7 +61,7 @@ class SupabaseSessionManager(
     }
 
     @OptIn(ExperimentalTime::class)
-    override suspend fun transferSession(sessionPayload: SessionPayload): Result<UserInfo> = try {
+    override suspend fun transferSession(sessionPayload: SessionPayload): Result<UserInfo> = safeCall {
         auth.importSession(
             session = UserSession(
                 accessToken = sessionPayload.accessToken,
@@ -80,11 +72,17 @@ class SupabaseSessionManager(
             autoRefresh = false,
             source = SessionSource.External
         )
-        val user = auth.retrieveUserForCurrentSession(true)
-        Result.Success(user)
+        auth.retrieveUserForCurrentSession(true)
+    }
+
+    private suspend fun <T> safeCall(call: suspend () -> T): Result<T> = try {
+        val result = withContext(Dispatchers.IO) { call() }
+        Result.Success(result)
     } catch (e: AuthRestException) {
         Result.Error(SessionError.AuthError(e.errorCode ?: AuthErrorCode.UnexpectedFailure), e.errorDescription)
-    } catch (e: Exception) {
-        Result.Error(UndefinedError, e.message)
+    } catch (e: RestException) {
+        Result.Error(SessionError.RestError(e.statusCode), e.error)
+    } catch (e: IOException) {
+        Result.Error(SessionError.NetworkError, e.message ?: getString(Res.string.network_error))
     }
 }

@@ -10,6 +10,9 @@ import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.postgrest.from
 import io.ktor.client.plugins.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import org.koin.core.annotation.Factory
 
@@ -35,7 +38,7 @@ class DefaultSupabaseDb(
     }
 
     private suspend fun <T> safeCall(call: suspend () -> T) = try {
-        val result = call()
+        val result = withContext(Dispatchers.IO) {call() }
         Result.Success(result)
     } catch (e: PostgrestRestException) {
         Result.Error(SupabaseError.SupabaseResponseError(e.message, e.hint))

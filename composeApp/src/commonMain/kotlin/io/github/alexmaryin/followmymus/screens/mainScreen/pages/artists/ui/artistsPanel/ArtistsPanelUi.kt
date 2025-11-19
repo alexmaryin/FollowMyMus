@@ -36,9 +36,7 @@ import org.jetbrains.compose.resources.stringResource
 fun ArtistsPanelUi(component: ArtistsList) {
 
     val state by component.state.subscribeAsState()
-
     val listState = rememberLazyListState()
-
     val artists = component.artists.collectAsLazyPagingItems()
 
     // This effect added to prolong loading indicator until actual
