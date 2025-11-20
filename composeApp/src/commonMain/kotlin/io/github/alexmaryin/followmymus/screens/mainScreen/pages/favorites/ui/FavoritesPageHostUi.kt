@@ -1,4 +1,6 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui
+@file:OptIn(ExperimentalDecomposeApi::class)
+
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,26 +22,24 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.panels.ChildPanelsMode
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost.ArtistsHostAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.ArtistsPanelUi
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.mediaPanel.MediaPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPlaceholder
 
-@OptIn(ExperimentalDecomposeApi::class)
 @Composable
-fun ArtistsPageHostUi(
-    component: ArtistsHostComponent
+fun FavoritesPageHostUi(
+    component: FavoritesHostComponent
 ) {
-//    val state by component.state.subscribeAsState()
     val panels by component.panels.subscribeAsState()
     val windowSize = currentWindowAdaptiveInfo().windowSizeClass
 
     Box(modifier = Modifier.fillMaxSize()) {
         ChildPanels(
             panels = panels,
-            mainChild = { ArtistsPanelUi(it.instance) },
+            mainChild = { FavoritesPanelUi(it.instance)},
             detailsChild = { ReleasesPanelUi(it.instance) },
             extraChild = { MediaPanelUi(it.instance) },
             layout = HorizontalChildPanelsLayout(dualWeights = 0.4f to 0.6f),
@@ -63,7 +63,7 @@ fun ArtistsPageHostUi(
         }
 
         DisposableEffect(mode) {
-            component(ArtistsHostAction.SetMode(mode))
+            component(FavoritesHostAction.SetMode(mode))
             onDispose { }
         }
     }

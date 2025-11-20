@@ -1,15 +1,11 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -23,11 +19,12 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.AccountPageUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsPageHost
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsPageHostUi
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.FavoritesPageHostUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.releases.ui.SearchPage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,20 +99,10 @@ fun MainScreen(
             }
 
             when (index) {
-                MainPages.ARTISTS.index -> ArtistsPageHost(page as ArtistsHostComponent)
+                MainPages.ARTISTS.index -> ArtistsPageHostUi(page as ArtistsHostComponent)
                 MainPages.ACCOUNT.index -> AccountPageUi(page as AccountHostComponent)
                 MainPages.RELEASES.index -> SearchPage()
-                else -> Box(
-                    modifier = Modifier.fillMaxSize()
-                        .background(color = Color(Random.nextLong()))
-                ) {
-                    Text(
-                        text = "Hello, ${state.nickname}!\nThis is PAGE #$index\nJUST STUB FOR THE PAGE",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+                MainPages.FAVORITES.index -> FavoritesPageHostUi(page as FavoritesHostComponent)
             }
         }
     }

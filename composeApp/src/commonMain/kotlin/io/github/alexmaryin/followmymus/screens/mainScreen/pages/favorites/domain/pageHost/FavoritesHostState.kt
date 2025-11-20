@@ -1,9 +1,9 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost
 
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageState
 
-data class ArtistsHostState(
+data class FavoritesHostState(
     val artistIdSelected: String? = null,
     val releaseIdSelected: String? = null,
     val backVisible: Boolean = false,
-) : PageState(backVisible)
+): PageState(backVisible)

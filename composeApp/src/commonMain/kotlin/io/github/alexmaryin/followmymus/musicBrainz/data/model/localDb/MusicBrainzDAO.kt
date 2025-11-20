@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -49,6 +50,9 @@ interface MusicBrainzDAO {
         beginArea: AreaEntity?,
         tags: List<TagEntity>
     ) = insertArtist(artist.copy(isFavorite = true), area, beginArea, tags)
+
+    @Query("UPDATE ArtistEntity SET syncStatus = :newStatus, isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateArtistSyncStatus(id: String, newStatus: SyncStatus, isFavorite: Boolean = true)
 
     @Query("DELETE FROM ArtistEntity")
     suspend fun clearArtists()

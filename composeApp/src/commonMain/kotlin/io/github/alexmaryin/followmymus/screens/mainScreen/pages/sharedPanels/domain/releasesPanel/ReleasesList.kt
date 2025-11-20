@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.releasesPanel
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel
 
 import com.arkivanov.decompose.ComponentContext
 

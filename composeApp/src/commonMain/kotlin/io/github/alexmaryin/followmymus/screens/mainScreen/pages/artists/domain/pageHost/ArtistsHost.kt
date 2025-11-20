@@ -3,23 +3,16 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
-import com.arkivanov.decompose.router.panels.ChildPanels
-import com.arkivanov.decompose.router.panels.ChildPanelsMode
-import com.arkivanov.decompose.router.panels.Panels
-import com.arkivanov.decompose.router.panels.PanelsNavigation
-import com.arkivanov.decompose.router.panels.childPanels
-import com.arkivanov.decompose.router.panels.navigate
-import com.arkivanov.decompose.router.panels.pop
+import com.arkivanov.decompose.router.panels.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.mediaDetailsPanel.MediaDetails
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.releasesPanel.ReleasesList
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsPanelConfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import org.koin.core.annotation.Factory
 
 @OptIn(ExperimentalDecomposeApi::class)

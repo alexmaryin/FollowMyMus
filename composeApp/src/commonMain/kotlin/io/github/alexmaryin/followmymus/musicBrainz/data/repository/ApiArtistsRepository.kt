@@ -4,12 +4,15 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
+import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrainzDAO
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toArtist
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toFavoriteArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
 import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb
 import kotlinx.coroutines.flow.Flow
@@ -46,9 +49,9 @@ class ApiArtistsRepository(
         return pager.flow
     }
 
-    override fun getFavoriteArtists(): Flow<List<Artist>> = musicBrainzDAO.getFavoriteArtists().map {
+    override fun getFavoriteArtists(): Flow<List<FavoriteArtist>> = musicBrainzDAO.getFavoriteArtists().map {
         it.map { artistWithRelations ->
-            artistWithRelations.toArtist()
+            artistWithRelations.toFavoriteArtist()
         }
     }
 
@@ -63,11 +66,17 @@ class ApiArtistsRepository(
                 tags = it.tags.map { tag -> tag.toEntity(artist.id) }
             )
         }
-        supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
+        val remoteAdd = supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
+        remoteAdd.forSuccess {
+            musicBrainzDAO.updateArtistSyncStatus(artist.id, SyncStatus.OK)
+        }
     }
 
     override suspend fun deleteFromFavorites(artistId: String) {
-        musicBrainzDAO.deleteArtistById(artistId)
-        supabaseDb.removeRemoteFavoriteArtist(artistId)
+        musicBrainzDAO.updateArtistSyncStatus(artistId, SyncStatus.PendingRemoteRemove, false)
+        val remoteRemove = supabaseDb.removeRemoteFavoriteArtist(artistId)
+        remoteRemove.forSuccess {
+            musicBrainzDAO.deleteArtistById(artistId)
+        }
     }
 }

@@ -1,18 +1,21 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers
 
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ArtistType
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.ArtistWithRelations
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.Area
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.LifeSpan
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.MusicTag
 
-fun ArtistWithRelations.toArtist() = Artist(
+fun ArtistWithRelations.toFavoriteArtist() = FavoriteArtist(
     id = artist.id,
+    type = artist.type ?: ArtistType.OTHER,
     name = artist.name,
     description = artist.disambiguation,
-    details = buildString {
-        artist.country?.let { append(it) }
-        artist.lifeSpan?.begin?.let { append(it) }
-        artist.lifeSpan?.end?.let { append(it) }
-        if (tags.isNotEmpty())
-            append(tags.joinToString(separator = ", ", postfix = ".") { it.name })
-    },
-    isFavorite = artist.isFavorite,
+    country = artist.country,
+    area = area?.let { Area(it.name) },
+    beginArea = beginArea?.let { Area(it.name) },
+    lifeSpan = LifeSpan(artist.lifeSpan?.begin, artist.lifeSpan?.end, artist.lifeSpan?.ended),
+    tags = tags.map { tagEntity -> MusicTag(name = tagEntity.name) },
+    syncStatus = artist.syncStatus
 )

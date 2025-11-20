@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.releasesPanel
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost
 
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.panels.ChildPanelsMode

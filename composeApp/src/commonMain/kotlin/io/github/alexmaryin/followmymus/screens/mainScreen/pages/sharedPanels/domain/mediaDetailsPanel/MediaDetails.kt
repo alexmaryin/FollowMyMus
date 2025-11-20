@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.mediaDetailsPanel
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel
 
 import com.arkivanov.decompose.ComponentContext
 
