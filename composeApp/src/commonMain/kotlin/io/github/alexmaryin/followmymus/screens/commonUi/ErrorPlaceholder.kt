@@ -3,6 +3,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
@@ -35,6 +36,7 @@ fun ErrorPlaceholder(
             Spacer(Modifier.height(12.dp))
             Text(
                 text = text,
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             )

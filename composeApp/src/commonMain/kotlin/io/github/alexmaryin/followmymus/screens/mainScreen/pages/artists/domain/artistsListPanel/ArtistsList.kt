@@ -84,10 +84,9 @@ class ArtistsList(
     ) : InstanceKeeper.Instance {
 
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-        private val searchQuery = MutableStateFlow("")
+        private val searchQuery = MutableSharedFlow<String>(replay = 1)
 
         val artists: Flow<PagingData<Artist>> = searchQuery
-            .filter { it.isNotBlank() }
             .flatMapLatest { query -> repository.searchArtists(query) }
             .cachedIn(scope)
             .combine(repository.getFavoriteArtistsIds()) { pagingData, favoriteIds ->
@@ -97,7 +96,7 @@ class ArtistsList(
             }
 
         fun search(query: String) {
-            searchQuery.value = query
+            searchQuery.tryEmit(query)
         }
 
         override fun onDestroy() {
