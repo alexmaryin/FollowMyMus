@@ -89,4 +89,5 @@
     <string name="error_title">Error!</string>
     <string name="error_restart_option">Try again</string>
     <string name="search_placeholder">enter artist, genre or description</string>
+    <string name="sync_menu_item">Update</string>
 </resources>

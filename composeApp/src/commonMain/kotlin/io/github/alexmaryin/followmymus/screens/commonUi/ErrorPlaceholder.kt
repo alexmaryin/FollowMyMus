@@ -48,7 +48,7 @@ fun ErrorPlaceholder(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(Res.drawable.restart_icon),
+                            painter = painterResource(Res.drawable.refresh_icon),
                             contentDescription = "try again",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )

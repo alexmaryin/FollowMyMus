@@ -7,23 +7,31 @@ import com.arkivanov.decompose.router.panels.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesPanelConfig
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.FavoritesTitleBar
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Factory(binds = [FavoritesHostComponent::class])
 class FavoritesHost(
-    private val componentContext: ComponentContext
+    private val componentContext: ComponentContext,
+    nickname: String
 ) : FavoritesHostComponent, ComponentContext by componentContext {
 
-    private val _state = MutableValue(FavoritesHostState())
+    private val _state = MutableValue(FavoritesHostState(avatarState = AvatarState(nickname)))
     override val state: Value<FavoritesHostState> = _state
+
+    private val scope = componentContext.coroutineScope() + SupervisorJob()
 
     private val navigation =
         PanelsNavigation<Unit, FavoritesPanelConfig.ReleasesConfig, FavoritesPanelConfig.MediaDetailsConfig>()
@@ -78,6 +86,14 @@ class FavoritesHost(
                     state.copy(details = FavoritesPanelConfig.ReleasesConfig(artistId = action.artistId))
                 }
             }
+
+            is FavoritesHostAction.SyncRequested -> syncWithRemote()
+        }
+    }
+
+    private fun syncWithRemote() {
+        scope.launch {
+
         }
     }
 
@@ -90,5 +106,8 @@ class FavoritesHost(
     override val contentIsVisible = true
 
     @Composable
-    override fun ProvideContent() = FavoritesTitleBar()
+    override fun ProvideContent() = FavoritesTitleBar(
+        avatarState = state.value.avatarState,
+        onSyncRequest = ::syncWithRemote
+    )
 }
