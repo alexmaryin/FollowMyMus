@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost
 
+import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.panels.*
@@ -10,6 +11,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesPanelConfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.FavoritesTitleBar
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import org.koin.core.annotation.Factory
@@ -84,4 +86,9 @@ class FavoritesHost(
 
     private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)
+
+    override val contentIsVisible = true
+
+    @Composable
+    override fun ProvideContent() = FavoritesTitleBar()
 }

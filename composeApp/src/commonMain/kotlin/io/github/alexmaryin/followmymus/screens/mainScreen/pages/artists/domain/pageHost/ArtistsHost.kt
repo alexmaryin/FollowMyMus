@@ -87,8 +87,8 @@ class ArtistsHost(
     }
 
     @Composable
-    override fun ProvideSearchBar() = panels.value.main.instance.ProvideArtistsSearchBar()
+    override fun ProvideContent() = panels.value.main.instance.ProvideArtistsSearchBar()
 
-    override val searchIsVisible: Boolean
+    override val contentIsVisible: Boolean
         get() = panels.value.mode != ChildPanelsMode.SINGLE || panels.value.details == null
 }

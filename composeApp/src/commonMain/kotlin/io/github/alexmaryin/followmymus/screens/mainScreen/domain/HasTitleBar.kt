@@ -2,7 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.domain
 
 import androidx.compose.runtime.Composable
 
-interface HasSearchBar {
-    val searchIsVisible: Boolean
-    @Composable fun ProvideSearchBar()
+interface HasTitleBar {
+    val contentIsVisible: Boolean
+    @Composable fun ProvideContent()
 }

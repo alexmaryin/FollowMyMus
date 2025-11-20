@@ -137,8 +137,8 @@ fun ArtistsPanelUi(component: ArtistsList) {
         AnimatedVisibility(
             visible = delayedFabVisible,
             modifier = Modifier.align(Alignment.BottomEnd),
-            enter = fadeIn() + scaleIn(),
-            exit = fadeOut() + scaleOut()
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
             FloatingActionButton(
                 onClick = { scope.launch { listState.animateScrollToItem(0) } },
