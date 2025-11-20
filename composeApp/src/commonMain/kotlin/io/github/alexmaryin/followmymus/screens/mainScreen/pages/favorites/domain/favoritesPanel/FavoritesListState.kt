@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class FavoritesListState(
     val isLoading: Boolean = false,
     val favoritesCount: Int = 0,
-    val isSyncing: Boolean = false
+    val isSyncing: Boolean = false,
+    val isRemoveDialogVisible: Boolean = false
 )

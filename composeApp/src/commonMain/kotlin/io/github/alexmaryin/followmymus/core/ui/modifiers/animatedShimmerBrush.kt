@@ -5,23 +5,23 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun Modifier.animatedShimmerBrush(
     showShimmer: Boolean = true,
-    shape: Shape = RectangleShape
+    shape: Shape = RectangleShape,
+    colors: List<Color>? = null
 ): Modifier = composed {
     if (showShimmer) {
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -34,14 +34,14 @@ fun Modifier.animatedShimmerBrush(
             ),
             label = "shimmerStartOffsetX"
         )
-
-        background(
-            brush = Brush.linearGradient(
-                colors = listOf(
+        val brushColors = colors ?: listOf(
                     MaterialTheme.colorScheme.surfaceVariant,
                     MaterialTheme.colorScheme.onSurfaceVariant,
                     MaterialTheme.colorScheme.surfaceVariant,
-                ),
+                )
+        background(
+            brush = Brush.linearGradient(
+                colors =  brushColors,
                 start = Offset(startOffsetX, 0f),
                 end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat()),
             ),
@@ -52,5 +52,21 @@ fun Modifier.animatedShimmerBrush(
             }
     } else {
         this
+    }
+}
+
+@Preview
+@Composable
+fun ShimmerPreview() {
+    Surface {
+        OutlinedButton(
+            onClick = {},
+            modifier = Modifier.animatedShimmerBrush(
+                true,
+                ButtonDefaults.shape
+            )
+        ) {
+            Text("Shimmer")
+        }
     }
 }
