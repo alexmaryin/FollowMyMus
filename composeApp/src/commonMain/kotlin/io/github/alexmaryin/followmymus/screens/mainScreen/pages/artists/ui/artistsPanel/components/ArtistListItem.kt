@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -102,6 +103,7 @@ fun ArtistListItem(
             leadingIconColor = if (artist.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant
         )
     )
+    HorizontalDivider(Modifier.padding(horizontal = 10.dp))
 }
 
 @Preview
