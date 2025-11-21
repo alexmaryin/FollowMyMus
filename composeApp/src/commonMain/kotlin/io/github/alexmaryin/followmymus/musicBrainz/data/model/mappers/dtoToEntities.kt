@@ -8,7 +8,10 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.AreaEntit
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.ArtistEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.LifeSpanEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.TagEntity
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun ArtistDto.toEntity(isFavorite: Boolean) = ArtistEntity(
     id = id,
     type = type,
@@ -19,7 +22,8 @@ fun ArtistDto.toEntity(isFavorite: Boolean) = ArtistEntity(
     beginAreaId = beginArea?.id,
     disambiguation = disambiguation,
     lifeSpan = lifeSpan?.toEntity(),
-    isFavorite = isFavorite
+    isFavorite = isFavorite,
+    createdAt = Clock.System.now()
 )
 
 fun LifeSpanDto.toEntity() = LifeSpanEntity(
