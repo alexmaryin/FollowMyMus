@@ -2,6 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.doma
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
@@ -26,12 +27,16 @@ class FavoritesList(
     operator fun invoke(action: FavoriteListAction) {
         when (action) {
             is FavoriteListAction.SelectArtist -> TODO()
-            is FavoriteListAction.RemoveFromFavorite -> scope.launch { removeFromFavorite(action.artistId) }
+            is FavoriteListAction.OpenConfirmToRemove -> _state.update { it.copy(isRemoveDialogVisible = true, artistToRemove = action.artist) }
+            FavoriteListAction.DismissRemoveDialog -> _state.update { it.copy(isRemoveDialogVisible = false, artistToRemove = null) }
+            is FavoriteListAction.RemoveFromFavorite -> scope.launch { removeFromFavorite() }
         }
     }
 
-    // TODO confirmation dialog for removing artist from favorites list
-    private suspend fun removeFromFavorite(artistId: String) {
-        repository.deleteFromFavorites(artistId)
+    private suspend fun removeFromFavorite() {
+        state.value.artistToRemove?.let {
+            repository.deleteFromFavorites(it.id)
+        }
+        _state.update { it.copy(artistToRemove = null, isRemoveDialogVisible = false) }
     }
 }

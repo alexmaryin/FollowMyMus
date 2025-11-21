@@ -90,4 +90,6 @@
     <string name="error_restart_option">Try again</string>
     <string name="search_placeholder">enter artist, genre or description</string>
     <string name="sync_menu_item">Update</string>
+    <string name="remove_artist_dialog_title">Remove from favorites</string>
+    <string name="remove_artist_dialog_text">Are you sure you want to remove %1$s from your favorites?</string>
 </resources>

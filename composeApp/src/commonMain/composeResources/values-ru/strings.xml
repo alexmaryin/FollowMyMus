@@ -88,4 +88,6 @@
     <string name="error_restart_option">Попробовать снова</string>
     <string name="search_placeholder">введите исполнителя, жанр или описание</string>
     <string name="sync_menu_item">Обновить</string>
+    <string name="remove_artist_dialog_title">Удаление из избранного</string>
+    <string name="remove_artist_dialog_text">Вы действительно хотите удалить %1$s из избранного?</string>
 </resources>
