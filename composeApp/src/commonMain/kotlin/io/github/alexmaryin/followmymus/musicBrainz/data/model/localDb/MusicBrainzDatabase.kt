@@ -1,8 +1,7 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb
 
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
+import androidx.room.*
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.convertors.InstantConverter
 
 @Database(
     entities = [
@@ -10,9 +9,13 @@ import androidx.room.RoomDatabase
         ArtistEntity::class,
         TagEntity::class
     ],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
+@TypeConverters(InstantConverter::class)
 @ConstructedBy(MusicBrainzDbConstructor::class)
 abstract class MusicBrainzDatabase : RoomDatabase(){
 
