@@ -76,11 +76,11 @@
     <string name="logout_dialog_text">Вы уверены, что хотите выйти из аккаунта?</string>
     <string name="logout_shimmer">Выхожу из аккаунта.</string>
     <!--    Artists page-->
-    <string name="person_lifespan_start">Рождение: %1$s. </string>
-    <string name="character_lifespan_start">Создание: %1$s. </string>
-    <string name="group_lifespan_start">Образование: %1$s. </string>
-    <string name="person_lifespan_end">Смерть: %1$s. </string>
-    <string name="group_lifespan_end">Окончание: %1$s. </string>
+    <string name="person_lifespan_start">Рождение: %1$s</string>
+    <string name="character_lifespan_start">Создание: %1$s</string>
+    <string name="group_lifespan_start">Образование: %1$s</string>
+    <string name="person_lifespan_end">Смерть: %1$s</string>
+    <string name="group_lifespan_end">Окончание: %1$s</string>
     <string name="releases_placeholder">Выделите исполнителя, чтобы загрузить релизы</string>
     <string name="artists_search_header">Наиболее подходящие исполнители (найдено %1$d)</string>
     <string name="empty_search_placeholder">Ничего не найдено</string>
@@ -90,4 +90,7 @@
     <string name="sync_menu_item">Обновить</string>
     <string name="remove_artist_dialog_title">Удаление из избранного</string>
     <string name="remove_artist_dialog_text">Вы действительно хотите удалить %1$s из избранного?</string>
+    <string name="favorite_artists_list_title">У вас в избранном %1$d исполнителей</string>
+    <string name="empty_favorites_placeholder">В избранном пусто</string>
+    <string name="begin_area_text">(начало: %1$s)</string>
 </resources>

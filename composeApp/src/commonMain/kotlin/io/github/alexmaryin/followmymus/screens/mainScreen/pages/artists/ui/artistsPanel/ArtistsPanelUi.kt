@@ -29,7 +29,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListEvent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistListItem
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.SearchHeader
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ListHeader
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -123,7 +123,7 @@ fun ArtistsPanelUi(component: ArtistsList) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         state.searchResultsCount?.let {
-                            item { SearchHeader(it) }
+                            item { ListHeader(stringResource(Res.string.artists_search_header, it)) }
                         }
                         onPagingItems({ it.id }) { artist ->
                             ArtistListItem(artist, component::invoke)

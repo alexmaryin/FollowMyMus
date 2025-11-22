@@ -9,7 +9,7 @@ data class FavoritesListState(
     val favoritesCount: Int = 0,
     val isSyncing: Boolean = false,
     val isRemoveDialogVisible: Boolean = false,
-    val artistToRemove: ArtistToRemove? = null
+    val artistToRemove: ArtistToRemove? = null,
 )
 
 @Serializable

@@ -14,13 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.favorite_artists_list_title
 import followmymus.composeapp.generated.resources.remove_artist_dialog_text
 import followmymus.composeapp.generated.resources.remove_artist_dialog_title
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistListItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoriteListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.EmptyFavoritesPlaceholder
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.listItem.FavoriteListItem
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ListHeader
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -43,23 +45,33 @@ fun FavoritesPanelUi(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                state = listState,
-            ) {
-                items(favoriteArtists, key = { it.id} ) { artist ->
-                    ArtistListItem(Artist(
-                        id = artist.id,
-                        name = artist.name,
-                        description = artist.description,
-                        details = "",
-                        isFavorite = true
-                    )) {}
+        when {
+            state.isLoading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            state.favoritesCount == 0 -> {
+                EmptyFavoritesPlaceholder()
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = listState,
+                ) {
+                    item {
+                        ListHeader(
+                            stringResource(
+                                Res.string.favorite_artists_list_title, state.favoritesCount
+                            )
+                        )
+                    }
+
+                    items(favoriteArtists, key = { it.id }) { artist ->
+                        FavoriteListItem(artist, component::invoke)
+                    }
                 }
             }
         }

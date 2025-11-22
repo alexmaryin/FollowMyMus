@@ -17,5 +17,6 @@ fun ArtistWithRelations.toFavoriteArtist() = FavoriteArtist(
     beginArea = beginArea?.let { Area(it.name) },
     lifeSpan = LifeSpan(artist.lifeSpan?.begin, artist.lifeSpan?.end, artist.lifeSpan?.ended),
     tags = tags.map { tagEntity -> MusicTag(name = tagEntity.name) },
-    syncStatus = artist.syncStatus
+    syncStatus = artist.syncStatus,
+    createdAt = artist.createdAt
 )

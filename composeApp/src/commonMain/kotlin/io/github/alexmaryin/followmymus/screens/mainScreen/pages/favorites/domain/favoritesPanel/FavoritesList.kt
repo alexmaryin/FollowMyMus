@@ -7,6 +7,7 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
@@ -19,7 +20,11 @@ class FavoritesList(
     private val repository by inject<ArtistsRepository>()
     private val scope = context.coroutineScope() + SupervisorJob()
 
-    val favoriteArtists = repository.getFavoriteArtists()
+    val favoriteArtists = repository.getFavoriteArtists().map { list ->
+        _state.update { it.copy(favoritesCount = list.size) }
+        println(list)
+        list
+    }
 
     private val _state by saveableMutableValue(FavoritesListState.serializer(), init = ::FavoritesListState)
     val state: Value<FavoritesListState> = _state
@@ -27,8 +32,15 @@ class FavoritesList(
     operator fun invoke(action: FavoriteListAction) {
         when (action) {
             is FavoriteListAction.SelectArtist -> TODO()
-            is FavoriteListAction.OpenConfirmToRemove -> _state.update { it.copy(isRemoveDialogVisible = true, artistToRemove = action.artist) }
-            FavoriteListAction.DismissRemoveDialog -> _state.update { it.copy(isRemoveDialogVisible = false, artistToRemove = null) }
+
+            is FavoriteListAction.OpenConfirmToRemove -> _state.update {
+                it.copy(isRemoveDialogVisible = true, artistToRemove = action.artist)
+            }
+
+            FavoriteListAction.DismissRemoveDialog -> _state.update {
+                it.copy(isRemoveDialogVisible = false, artistToRemove = null)
+            }
+
             is FavoriteListAction.RemoveFromFavorite -> scope.launch { removeFromFavorite() }
         }
     }

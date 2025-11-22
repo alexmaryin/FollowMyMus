@@ -4,6 +4,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ArtistT
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.CountryISO
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
 data class FavoriteArtist(
@@ -16,5 +17,6 @@ data class FavoriteArtist(
     val beginArea: Area? = null,
     val lifeSpan: LifeSpan? = null,
     val tags: List<MusicTag> = emptyList(),
-    val syncStatus: SyncStatus
+    val syncStatus: SyncStatus,
+    val createdAt: Instant
 )

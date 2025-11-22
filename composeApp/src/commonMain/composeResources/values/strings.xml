@@ -78,11 +78,11 @@
     <string name="logout_dialog_text">Are you sure you want to log out from account?</string>
     <string name="logout_shimmer">Wait. Logging out.</string>
     <!--    Artists page-->
-    <string name="person_lifespan_start">Born in %1$s. </string>
-    <string name="character_lifespan_start">Created in %1$s. </string>
-    <string name="group_lifespan_start">Founded in %1$s. </string>
-    <string name="person_lifespan_end">Died in %1$s. </string>
-    <string name="group_lifespan_end">Broke up in %1$s. </string>
+    <string name="person_lifespan_start">Born in %1$s</string>
+    <string name="character_lifespan_start">Created in %1$s</string>
+    <string name="group_lifespan_start">Founded in %1$s</string>
+    <string name="person_lifespan_end">Died in %1$s</string>
+    <string name="group_lifespan_end">Broke up in %1$s</string>
     <string name="releases_placeholder">Select artist to load releases</string>
     <string name="artists_search_header">The most relevant artists (found %1$d)</string>
     <string name="empty_search_placeholder">Nothing found</string>
@@ -92,4 +92,8 @@
     <string name="sync_menu_item">Update</string>
     <string name="remove_artist_dialog_title">Remove from favorites</string>
     <string name="remove_artist_dialog_text">Are you sure you want to remove %1$s from your favorites?</string>
+    <string name="favorite_artists_list_title">Your favorite artists count: %1$d</string>
+    <string name="tags_title">Tags</string>
+    <string name="empty_favorites_placeholder">Empty Favorites</string>
+    <string name="begin_area_text">(begin from: %1$s)</string>
 </resources>

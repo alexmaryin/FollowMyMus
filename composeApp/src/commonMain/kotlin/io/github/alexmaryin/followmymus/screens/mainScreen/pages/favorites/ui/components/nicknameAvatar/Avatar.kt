@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -69,7 +70,8 @@ fun Avatar(
         DropdownMenu(
             expanded = showActions,
             onDismissRequest = { showActions = false },
-            containerColor = avatarColor
+            containerColor = avatarColor,
+            shape = RoundedCornerShape(24.dp)
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.sync_menu_item)) },
@@ -84,7 +86,10 @@ fun Avatar(
                         modifier = Modifier.size(24.dp)
                     )
                 },
-                colors = MenuDefaults.itemColors(textColor = avatarTextColor)
+                colors = MenuDefaults.itemColors(
+                    textColor = avatarTextColor,
+                    leadingIconColor = avatarTextColor
+                )
             )
         }
     }
@@ -107,7 +112,5 @@ fun AvatarPreview() {
             Avatar(state.copy(hasPending = true)) {}
             Avatar(state.copy(isSyncing = true)) {}
         }
-
-
     }
 }

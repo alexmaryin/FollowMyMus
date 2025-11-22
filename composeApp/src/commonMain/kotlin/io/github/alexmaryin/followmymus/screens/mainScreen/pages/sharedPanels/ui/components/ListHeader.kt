@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,10 +15,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SearchHeader(count: Int) {
+fun ListHeader(caption: String) {
     Surface {
         Text(
-            text = stringResource(Res.string.artists_search_header, count),
+            text = caption,
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primaryFixedDim,
             textAlign = TextAlign.Center,
@@ -31,6 +31,11 @@ fun SearchHeader(count: Int) {
 @Composable
 fun SearchHeaderPreview() {
     Surface {
-        SearchHeader(26)
+        ListHeader(
+            stringResource(
+                Res.string.artists_search_header,
+                26
+            )
+        )
     }
 }
