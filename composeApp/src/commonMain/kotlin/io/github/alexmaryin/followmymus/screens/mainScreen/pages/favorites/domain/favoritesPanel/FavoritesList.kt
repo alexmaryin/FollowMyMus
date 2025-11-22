@@ -22,7 +22,6 @@ class FavoritesList(
 
     val favoriteArtists = repository.getFavoriteArtists().map { list ->
         _state.update { it.copy(favoritesCount = list.size) }
-        println(list)
         list
     }
 

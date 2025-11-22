@@ -41,7 +41,7 @@ fun FavoriteListItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                ActionsIcon(onAction)
+                ActionsIcon(artist, onAction)
                 OpenReleasesIcon { onAction(FavoriteListAction.SelectArtist(artist.id)) }
             }
         }

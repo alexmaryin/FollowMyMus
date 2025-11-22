@@ -36,7 +36,7 @@ fun Avatar(
     var showActions by remember { mutableStateOf(false) }
 
     BadgedBox(
-        badge = { if (state.hasPending && !state.isSyncing) Badge() },
+        badge = { if (state.isSyncing || state.hasPending) Badge() },
         modifier = modifier
     ) {
         Box(

@@ -42,7 +42,7 @@ fun MainScreen(
                 title = {
                     when (val page = screenPages.items[state.activePageIndex].instance) {
                         is HasTitleBar if page.contentIsVisible -> {
-                            page.ProvideContent()
+                            page.content()
                         }
                         else -> {
                             Text(stringResource(Res.string.app_name))

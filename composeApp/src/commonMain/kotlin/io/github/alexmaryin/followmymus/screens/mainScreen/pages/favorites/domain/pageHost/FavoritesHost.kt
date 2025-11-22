@@ -3,12 +3,17 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.doma
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.panels.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import com.arkivanov.essenty.lifecycle.doOnStart
+import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
@@ -24,14 +29,36 @@ import org.koin.core.annotation.Factory
 @OptIn(ExperimentalDecomposeApi::class)
 @Factory(binds = [FavoritesHostComponent::class])
 class FavoritesHost(
+    private val repository: ArtistsRepository,
     private val componentContext: ComponentContext,
     nickname: String
 ) : FavoritesHostComponent, ComponentContext by componentContext {
 
-    private val _state = MutableValue(FavoritesHostState(avatarState = AvatarState(nickname)))
+    private val _state by saveableMutableValue(FavoritesHostState.serializer(), init = ::FavoritesHostState)
     override val state: Value<FavoritesHostState> = _state
 
+    private val avatarState = MutableValue(AvatarState(nickname))
     private val scope = componentContext.coroutineScope() + SupervisorJob()
+
+    init {
+        lifecycle.doOnStart {
+            scope.launch {
+                repository.syncStatus.collect { status ->
+                    avatarState.update { it.copy(
+                        isSyncing = status == RemoteSyncStatus.PROCESS
+                    ) }
+                }
+            }
+            scope.launch {
+                repository.checkPendingActions()
+                repository.hasPendingActions.collect { hasPending ->
+                    avatarState.update { it.copy(
+                        hasPending = hasPending
+                    ) }
+                }
+            }
+        }
+    }
 
     private val navigation =
         PanelsNavigation<Unit, FavoritesPanelConfig.ReleasesConfig, FavoritesPanelConfig.MediaDetailsConfig>()
@@ -93,7 +120,7 @@ class FavoritesHost(
 
     private fun syncWithRemote() {
         scope.launch {
-
+            repository.syncRemote()
         }
     }
 
@@ -105,9 +132,11 @@ class FavoritesHost(
 
     override val contentIsVisible = true
 
-    @Composable
-    override fun ProvideContent() = FavoritesTitleBar(
-        avatarState = state.value.avatarState,
-        onSyncRequest = ::syncWithRemote
-    )
+    override val content = @Composable {
+        val state = avatarState.subscribeAsState()
+        FavoritesTitleBar(
+            avatarState = state.value,
+            onSyncRequest = ::syncWithRemote
+        )
+    }
 }

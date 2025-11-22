@@ -22,7 +22,7 @@ data class ArtistEntity(
     @Embedded(prefix = "artist_lifespan_")
     val lifeSpan: LifeSpanEntity?,
     val isFavorite: Boolean = false,
-    val syncStatus: SyncStatus = SyncStatus.PendingRemoteAdd,
+    val syncStatus: SyncStatus,
     @ColumnInfo(defaultValue = "1970-01-01T00:00:00Z")
     val createdAt: Instant
 )

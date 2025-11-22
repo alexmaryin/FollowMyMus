@@ -10,11 +10,12 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountPageConfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.DEEP_LINK_URL_PREFIX
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.startTransferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
@@ -26,7 +27,6 @@ import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -34,6 +34,8 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @Factory(binds = [AccountHostComponent::class])
 class AccountPage(
+    private val sessionManager: SessionManager,
+    private val repository: ArtistsRepository,
     private val componentContext: ComponentContext,
     private val nickname: String,
 ) : Page, AccountHostComponent, ComponentContext by componentContext, KoinComponent {
@@ -43,8 +45,6 @@ class AccountPage(
         init = { AccountPageState(nickname = nickname) })
     override val state get() = _state
     private val navigation = StackNavigation<AccountPageConfig>()
-
-    private val sessionManager by inject<SessionManager>()
 
     private var sessionTransferJob: Job? = null
     private var transferChannel: RealtimeChannel? = null
@@ -87,6 +87,7 @@ class AccountPage(
 
             AccountAction.Logout -> scope.launch {
                 _state.update { it.copy(sessionLogout = true) }
+                repository.clearLocalData()
                 sessionManager.signOut()
             }
 

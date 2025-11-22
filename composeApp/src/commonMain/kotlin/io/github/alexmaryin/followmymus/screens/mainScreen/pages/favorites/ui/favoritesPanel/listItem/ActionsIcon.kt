@@ -2,17 +2,28 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.f
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.more_vert
+import followmymus.composeapp.generated.resources.sync_pend_remove
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoriteListAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.setToRemove
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun ActionsIcon(onAction: (FavoriteListAction) -> Unit) {
+fun ActionsIcon(
+    artist: FavoriteArtist,
+    onAction: (FavoriteListAction) -> Unit
+) {
     var actionsMenuVisible by remember { mutableStateOf(false) }
 
     Icon(
@@ -22,4 +33,24 @@ fun ActionsIcon(onAction: (FavoriteListAction) -> Unit) {
             .clip(CircleShape)
             .clickable { actionsMenuVisible = !actionsMenuVisible }
     )
+
+    DropdownMenu(
+        expanded = actionsMenuVisible,
+        onDismissRequest = { actionsMenuVisible = false },
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        DropdownMenuItem(
+            text = { Text("Remove from favorites") },
+            onClick = {
+                actionsMenuVisible = false
+                onAction(FavoriteListAction.OpenConfirmToRemove(artist.setToRemove()))
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(Res.drawable.sync_pend_remove),
+                    contentDescription = null
+                )
+            }
+        )
+    }
 }

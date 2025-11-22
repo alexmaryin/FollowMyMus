@@ -4,6 +4,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.AreaDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.LifeSpanDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.TagDto
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.AreaEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.ArtistEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.LifeSpanEntity
@@ -12,7 +13,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-fun ArtistDto.toEntity(isFavorite: Boolean) = ArtistEntity(
+fun ArtistDto.toEntity(isFavorite: Boolean, status: SyncStatus) = ArtistEntity(
     id = id,
     type = type,
     name = name,
@@ -23,6 +24,7 @@ fun ArtistDto.toEntity(isFavorite: Boolean) = ArtistEntity(
     disambiguation = disambiguation,
     lifeSpan = lifeSpan?.toEntity(),
     isFavorite = isFavorite,
+    syncStatus = status,
     createdAt = Clock.System.now()
 )
 

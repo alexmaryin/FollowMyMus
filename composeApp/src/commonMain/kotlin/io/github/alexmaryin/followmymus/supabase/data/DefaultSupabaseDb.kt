@@ -5,7 +5,7 @@ import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb
 import io.github.alexmaryin.followmymus.supabase.domain.model.ArtistRemoteEntity
 import io.github.alexmaryin.followmymus.supabase.domain.model.SupabaseError
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.postgrest.from
@@ -18,15 +18,18 @@ import org.koin.core.annotation.Factory
 
 @Factory(binds = [SupabaseDb::class])
 class DefaultSupabaseDb(
-    private val supabase: SupabaseClient
+    private val supabase: SupabaseClient,
+    private val auth: Auth
 ) : SupabaseDb {
-    override suspend fun getRemoteFavoritesArtists(): Result<List<ArtistRemoteEntity>> = safeCall {
+    override suspend fun getRemoteFavoritesArtists(): Result<Set<ArtistRemoteEntity>> = safeCall {
         supabase.from(SupabaseDb.SUPABASE_NAME).select()
             .decodeList<ArtistRemoteEntity>()
+            .toSet()
     }
 
     override suspend fun addRemoteFavoriteArtist(artist: ArtistRemoteEntity): Result<Unit> = safeCall {
-        val userArtist = artist.copy(userid = supabase.auth.currentSessionOrNull()?.user?.id)
+        val userId = auth.retrieveUserForCurrentSession().id
+        val userArtist = artist.copy(userid = userId)
         supabase.from(SupabaseDb.SUPABASE_NAME).upsert(userArtist)
     }
 
@@ -35,6 +38,19 @@ class DefaultSupabaseDb(
             .delete {
                 filter { ArtistRemoteEntity::artistId eq artistId }
             }
+    }
+
+    override suspend fun bulkRemoveFavoriteArtists(artistIds: List<String>): Result<Unit> = safeCall {
+        supabase.from(SupabaseDb.SUPABASE_NAME)
+            .delete {
+                filter { ArtistRemoteEntity::artistId isIn artistIds }
+            }
+    }
+
+    override suspend fun bulkAddFavoriteArtists(artistList: List<ArtistRemoteEntity>): Result<Unit> = safeCall {
+        val userId = auth.retrieveUserForCurrentSession().id
+        val userArtists = artistList.map { it.copy(userid = userId) }
+        supabase.from(SupabaseDb.SUPABASE_NAME).upsert(userArtists)
     }
 
     private suspend fun <T> safeCall(call: suspend () -> T) = try {

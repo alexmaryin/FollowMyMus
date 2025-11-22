@@ -47,7 +47,11 @@ fun FavoritesTitleBar(
 fun FavoritesTitlePreview() {
     Surface {
         FavoritesTitleBar(
-            avatarState = AvatarState("Alex"),
+            avatarState = AvatarState(
+                "Alex",
+                hasPending = true,
+                isSyncing = false
+            ),
             onSyncRequest = {}
         )
     }

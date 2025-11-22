@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 
 interface HasTitleBar {
     val contentIsVisible: Boolean
-    @Composable fun ProvideContent()
+    val content: @Composable () -> Unit
 }

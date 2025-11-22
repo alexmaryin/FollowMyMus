@@ -31,5 +31,23 @@ class ApiSearchEngine(
         }
     }
 
+    override suspend fun fetchArtistsById(ids: List<String>): SearchResponse {
+        return withContext(Dispatchers.IO) {
+            httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+                url {
+                    parameters.append("query", ids.toArtistIdsQuery())
+                }
+                headers {
+                    append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+                }
+            }.body()
+        }
+    }
+
     private fun String.surroundWithQuotation() = "\"$this\""
+
+    private fun List<String>.toArtistIdsQuery() = joinToString(
+        transform = { "arid:" + it.surroundWithQuotation() },
+        separator = " OR "
+    )
 }

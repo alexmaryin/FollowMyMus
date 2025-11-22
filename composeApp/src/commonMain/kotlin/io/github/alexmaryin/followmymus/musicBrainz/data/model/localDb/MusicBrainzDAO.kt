@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,9 +19,21 @@ interface MusicBrainzDAO {
     @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true")
     fun getFavoriteArtistsIds(): Flow<List<String>>
 
+    @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true AND syncStatus = 'PendingRemoteAdd'")
+    suspend fun getIdsToPushAsList(): List<String>
+
+    @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true")
+    suspend fun getIdsAsList(): List<String>
+
+    @Query("SELECT id FROM ArtistEntity WHERE syncStatus = 'PendingRemoteRemove'")
+    suspend fun getArtistsIdsPendingRemove(): List<String>
+
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE id = :id")
     suspend fun getArtistById(id: String): ArtistWithRelations?
+
+    @Query("SELECT EXISTS(SELECT * FROM ArtistEntity WHERE syncStatus <> 'OK')")
+    suspend fun hasPendingActions(): Boolean
 
     @Upsert
     suspend fun insertArtist(artist: ArtistEntity)
@@ -51,15 +65,36 @@ interface MusicBrainzDAO {
         tags: List<TagEntity>
     ) = insertArtist(artist.copy(isFavorite = true), area, beginArea, tags)
 
+    @Transaction
+    suspend fun bulkInsertArtistsDto(artists: List<ArtistDto>) {
+        artists.forEach { artist ->
+            insertFavoriteArtist(
+                artist = artist.toEntity(true, SyncStatus.OK),
+                area = artist.area?.toEntity(),
+                beginArea = artist.beginArea?.toEntity(),
+                tags = artist.tags.map { tag -> tag.toEntity(artist.id) }
+            )
+        }
+    }
+
     @Query("UPDATE ArtistEntity SET syncStatus = :newStatus, isFavorite = :isFavorite WHERE id = :id")
     suspend fun updateArtistSyncStatus(id: String, newStatus: SyncStatus, isFavorite: Boolean = true)
 
     @Query("DELETE FROM ArtistEntity")
     suspend fun clearArtists()
 
+    @Query("DELETE FROM TagEntity")
+    suspend fun clearTags()
+
     @Query("DELETE FROM ArtistEntity WHERE id = :id")
     suspend fun deleteArtistById(id: String)
 
+    @Query("DELETE FROM ArtistEntity WHERE id IN (:ids)")
+    suspend fun bulkDeleteArtistsById(ids: List<String>)
+
     @Query("UPDATE ArtistEntity SET isFavorite = false WHERE id = :id")
     suspend fun removeArtistFromFavorites(id: String)
+
+    @Query("UPDATE ArtistEntity SET syncStatus = 'OK' WHERE id IN (:ids)")
+    suspend fun markFavoriteArtistsAsSynced(ids: Set<String>)
 }
