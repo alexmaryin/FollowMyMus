@@ -20,18 +20,23 @@ import followmymus.composeapp.generated.resources.remove_artist_dialog_title
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoriteListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostEvent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.EmptyFavoritesPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.listItem.FavoriteListItem
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ErrorHeader
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ListHeader
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FavoritesPanelUi(
-    component: FavoritesList
+    component: FavoritesList,
+    events: Flow<FavoritesHostEvent>
 ) {
     val state by component.state.subscribeAsState()
     val listState = rememberLazyListState()
     val favoriteArtists by component.favoriteArtists.collectAsStateWithLifecycle(emptyList())
+    val errors by events.collectAsStateWithLifecycle(null)
 
     if (state.isRemoveDialogVisible) {
         ConfirmationDialog(
@@ -61,6 +66,12 @@ fun FavoritesPanelUi(
                     modifier = Modifier.fillMaxWidth(),
                     state = listState,
                 ) {
+                    errors?.let {
+                        if (it is FavoritesHostEvent.Error) {
+                            item { ErrorHeader(it.message) }
+                        }
+                    }
+
                     item {
                         ListHeader(
                             stringResource(

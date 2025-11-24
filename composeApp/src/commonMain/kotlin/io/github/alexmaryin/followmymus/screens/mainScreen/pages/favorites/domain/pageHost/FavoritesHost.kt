@@ -13,7 +13,7 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
@@ -22,6 +22,8 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.co
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
@@ -40,13 +42,20 @@ class FavoritesHost(
     private val avatarState = MutableValue(AvatarState(nickname))
     private val scope = componentContext.coroutineScope() + SupervisorJob()
 
+    private val _events = MutableSharedFlow<FavoritesHostEvent>()
+    override val events = _events.asSharedFlow()
+
     init {
         lifecycle.doOnStart {
             scope.launch {
                 repository.syncStatus.collect { status ->
                     avatarState.update { it.copy(
-                        isSyncing = status == RemoteSyncStatus.PROCESS
+                        isSyncing = status is RemoteSyncStatus.Process
                     ) }
+                    if (status is RemoteSyncStatus.Error) {
+                        val text = status.errors.joinToString()
+                        _events.emit(FavoritesHostEvent.Error(text))
+                    }
                 }
             }
             scope.launch {

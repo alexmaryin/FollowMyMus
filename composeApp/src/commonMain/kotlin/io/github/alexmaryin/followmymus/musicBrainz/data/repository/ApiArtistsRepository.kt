@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
+import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
@@ -12,6 +13,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toFavoriteArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
@@ -35,8 +37,8 @@ class ApiArtistsRepository(
         searchCount.update { count }
     }
 
-    private val _syncStatus = MutableStateFlow(ArtistsRepository.RemoteSyncStatus.IDLE)
-    override val syncStatus: StateFlow<ArtistsRepository.RemoteSyncStatus> = _syncStatus
+    private val _syncStatus = MutableStateFlow<RemoteSyncStatus>(RemoteSyncStatus.Idle)
+    override val syncStatus: StateFlow<RemoteSyncStatus> = _syncStatus
 
     private val _hasPendingActions = MutableStateFlow(false)
     override val hasPendingActions: StateFlow<Boolean> = _hasPendingActions
@@ -76,6 +78,7 @@ class ApiArtistsRepository(
         remoteAdd.forSuccess {
             musicBrainzDAO.updateArtistSyncStatus(artist.id, SyncStatus.OK)
         }
+        // TODO remove after debug
         remoteAdd.forError { error ->
             println(error.type)
             println(error.message)
@@ -88,6 +91,7 @@ class ApiArtistsRepository(
         remoteRemove.forSuccess {
             musicBrainzDAO.deleteArtistById(artistId)
         }
+        // TODO remove after debug
         remoteRemove.forError { error ->
             println(error.type)
             println(error.message)
@@ -95,14 +99,17 @@ class ApiArtistsRepository(
     }
 
     override suspend fun syncRemote() {
-        _syncStatus.update { ArtistsRepository.RemoteSyncStatus.PROCESS }
+        val errors = mutableListOf<ErrorType>() // collect all errors in process
+
+        _syncStatus.update { RemoteSyncStatus.Process }
         // remove first local ids marked to pending remove
         val pendingRemove = musicBrainzDAO.getArtistsIdsPendingRemove()
         if (pendingRemove.isNotEmpty()) {
-            // TODO delete
-            println("Pending delete ids: $pendingRemove")
-            supabaseDb.bulkRemoveFavoriteArtists(pendingRemove)
-            musicBrainzDAO.bulkDeleteArtistsById(pendingRemove)
+            val removed = supabaseDb.bulkRemoveFavoriteArtists(pendingRemove)
+            removed.forSuccess {
+                musicBrainzDAO.bulkDeleteArtistsById(pendingRemove)
+            }
+            removed.forError { errors += it.type }
         }
 
         // sync artists with local-first approach
@@ -111,45 +118,48 @@ class ApiArtistsRepository(
         val remote = supabaseDb.getRemoteFavoritesArtists()
         remote.forSuccess { remoteArtists ->
             val remoteIds = remoteArtists.map(ArtistRemoteEntity::artistId).toSet()
+            // Set of ids to push from local which are not on remote.
             val toPush = localIdsToPush - remoteIds
+            // Set of ids from remote which are not present locally - need to be fetched.
             val toFetch = remoteIds - localIds
-            val toRemoveLocal = localIds subtract remoteIds
+            // Artists present locally but not on remote, excluding those just added locally.
+            // These were likely removed from another device.
+            val toRemoveLocal = (localIds - remoteIds) - localIdsToPush
 
             if (toPush.isNotEmpty()) {
-                // TODO delete
-                println("Pending push ids: $toPush")
                 val remoteEntities = toPush.map { ArtistRemoteEntity(it) }
-                supabaseDb.bulkAddFavoriteArtists(remoteEntities)
-                musicBrainzDAO.markFavoriteArtistsAsSynced(toPush)
+                val pushed = supabaseDb.bulkAddFavoriteArtists(remoteEntities)
+                pushed.forSuccess {
+                    musicBrainzDAO.markFavoriteArtistsAsSynced(toPush)
+                }
+                pushed.forError { errors += it.type }
             }
 
-            if (toFetch.isNotEmpty()) {
-                // TODO delete
-                println("Pending fetch ids: $toFetch")
-                toFetch.chunked(SearchEngine.LIMIT).forEach { ids ->
-                    val response = searchEngine.fetchArtistsById(ids)
-                    if (response.artists.isNotEmpty()) {
-                        musicBrainzDAO.bulkInsertArtistsDto(response.artists)
+            toFetch.chunked(SearchEngine.LIMIT)
+                .filter { it.isNotEmpty() }
+                .forEach { ids ->
+                val response = searchEngine.fetchArtistsById(ids)
+                response.forSuccess { artists ->
+                    if (artists.isNotEmpty()) {
+                        musicBrainzDAO.bulkInsertArtistsDto(artists)
                     }
                 }
+                response.forError { errors += it.type }
             }
 
             if (toRemoveLocal.isNotEmpty()) {
-                // TODO delete
-                println("Pending remove local ids: $toRemoveLocal")
                 musicBrainzDAO.bulkDeleteArtistsById(toRemoveLocal.toList())
             }
 
             checkPendingActions()
 
-            _syncStatus.update { ArtistsRepository.RemoteSyncStatus.IDLE }
+            _syncStatus.update { RemoteSyncStatus.Idle }
         }
+        remote.forError { errors += it.type }
 
         // emit error status if any error occurred
-        remote.forError { error ->
-            println(error.type)
-            println(error.message)
-            _syncStatus.update { ArtistsRepository.RemoteSyncStatus.ERROR }
+        if (errors.isNotEmpty()) {
+            _syncStatus.update { RemoteSyncStatus.Error(errors) }
         }
     }
 

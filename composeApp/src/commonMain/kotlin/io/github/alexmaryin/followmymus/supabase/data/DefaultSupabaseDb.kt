@@ -54,7 +54,7 @@ class DefaultSupabaseDb(
     }
 
     private suspend fun <T> safeCall(call: suspend () -> T) = try {
-        val result = withContext(Dispatchers.IO) {call() }
+        val result = withContext(Dispatchers.IO) { call() }
         Result.Success(result)
     } catch (e: PostgrestRestException) {
         Result.Error(SupabaseError.SupabaseResponseError(e.message, e.hint))

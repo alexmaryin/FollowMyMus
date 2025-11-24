@@ -8,15 +8,16 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.HasTitleBar
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostEvent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalDecomposeApi::class)
 interface FavoritesHostComponent : Page, BackHandlerOwner, HasTitleBar {
-
     val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>>
-
     override val state: Value<FavoritesHostState>
+    val events: Flow<FavoritesHostEvent>
     operator fun invoke(action: FavoritesHostAction)
 }

@@ -1,13 +1,17 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data
 
+import io.github.alexmaryin.followmymus.core.Result
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.BrainzApiError
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.SearchResponse
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerializationException
 import org.koin.core.annotation.Single
 
 @Single(binds = [SearchEngine::class])
@@ -31,17 +35,16 @@ class ApiSearchEngine(
         }
     }
 
-    override suspend fun fetchArtistsById(ids: List<String>): SearchResponse {
-        return withContext(Dispatchers.IO) {
-            httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
-                url {
-                    parameters.append("query", ids.toArtistIdsQuery())
-                }
-                headers {
-                    append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
-                }
-            }.body()
-        }
+    override suspend fun fetchArtistsById(ids: List<String>) = safeCall {
+        val response: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+            url {
+                parameters.append("query", ids.toArtistIdsQuery())
+            }
+            headers {
+                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+            }
+        }.body()
+        response.artists
     }
 
     private fun String.surroundWithQuotation() = "\"$this\""
@@ -50,4 +53,21 @@ class ApiSearchEngine(
         transform = { "arid:" + it.surroundWithQuotation() },
         separator = " OR "
     )
+
+    private suspend fun <T> safeCall(call: suspend () -> T) = try {
+        val result = withContext(Dispatchers.IO) { call() }
+        Result.Success(result)
+    } catch (_: HttpRequestTimeoutException) {
+        Result.Error(BrainzApiError.Timeout)
+    } catch (e: ServerResponseException) {
+        Result.Error(BrainzApiError.ServerError(e.message))
+    } catch (e: ClientRequestException) {
+        Result.Error(BrainzApiError.NetworkError(e.message))
+    } catch (_: SerializationException) {
+        Result.Error(BrainzApiError.InvalidResponse)
+    } catch (_: IllegalArgumentException) {
+        Result.Error(BrainzApiError.MappingError)
+    } catch (e: Exception) {
+        Result.Error(BrainzApiError.Unknown(e.message))
+    }
 }

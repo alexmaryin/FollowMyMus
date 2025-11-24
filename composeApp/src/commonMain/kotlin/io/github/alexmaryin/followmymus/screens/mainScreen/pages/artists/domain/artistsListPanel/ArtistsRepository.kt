@@ -1,6 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel
 
 import androidx.paging.PagingData
+import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import kotlinx.coroutines.flow.Flow
@@ -19,8 +20,10 @@ interface ArtistsRepository {
     suspend fun checkPendingActions()
     suspend fun syncRemote()
     suspend fun clearLocalData()
-
-    enum class RemoteSyncStatus {
-        IDLE, PROCESS, ERROR
-    }
 }
+
+sealed interface RemoteSyncStatus {
+        data object Idle : RemoteSyncStatus
+        data object Process : RemoteSyncStatus
+        data class Error(val errors: List<ErrorType>) : RemoteSyncStatus
+    }
