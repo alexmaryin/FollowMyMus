@@ -4,16 +4,23 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
 import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
+import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups
+import io.github.alexmaryin.followmymus.screens.utils.toDateCategory
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class FavoritesList(
+    private val sortingType: SortArtists,
     private val context: ComponentContext
 ) : ComponentContext by context, KoinComponent {
 
@@ -22,25 +29,42 @@ class FavoritesList(
 
     val favoriteArtists = repository.getFavoriteArtists().map { list ->
         _state.update { it.copy(favoritesCount = list.size) }
-        list
+        when (sortingType) {
+            SortArtists.NONE -> mapOf("" to list)
+
+            SortArtists.DATE -> list.groupBy { artist -> artist.createdAt.toDateCategory() }
+                .sortDateCategoryGroups()
+
+            SortArtists.COUNTRY -> list.groupBy { artist ->
+                artist.country?.toLocalizedResourceName()?.let { getString(it) } ?: "-"
+            }
+
+            SortArtists.ABC -> list.groupBy { artist -> artist.sortName.first().titlecaseChar() }
+                .sortAbcOrder()
+
+            SortArtists.TYPE -> list.groupBy { artist -> artist.type.name }
+        }
     }
 
-    private val _state by saveableMutableValue(FavoritesListState.serializer(), init = ::FavoritesListState)
+    private val _state by saveableMutableValue(
+        FavoritesListState.serializer(),
+        init = { FavoritesListState(sortingType = sortingType) }
+    )
     val state: Value<FavoritesListState> = _state
 
-    operator fun invoke(action: FavoriteListAction) {
+    operator fun invoke(action: FavoritesListAction) {
         when (action) {
-            is FavoriteListAction.SelectArtist -> TODO()
+            is FavoritesListAction.SelectArtist -> TODO()
 
-            is FavoriteListAction.OpenConfirmToRemove -> _state.update {
+            is FavoritesListAction.OpenConfirmToRemove -> _state.update {
                 it.copy(isRemoveDialogVisible = true, artistToRemove = action.artist)
             }
 
-            FavoriteListAction.DismissRemoveDialog -> _state.update {
+            FavoritesListAction.DismissRemoveDialog -> _state.update {
                 it.copy(isRemoveDialogVisible = false, artistToRemove = null)
             }
 
-            is FavoriteListAction.RemoveFromFavorite -> scope.launch { removeFromFavorite() }
+            is FavoritesListAction.RemoveFromFavorite -> scope.launch { removeFromFavorite() }
         }
     }
 

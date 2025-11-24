@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.more_vert
 import followmymus.composeapp.generated.resources.sync_pend_remove
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoriteListAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.setToRemove
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import org.jetbrains.compose.resources.painterResource
@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ActionsIcon(
     artist: FavoriteArtist,
-    onAction: (FavoriteListAction) -> Unit
+    onAction: (FavoritesListAction) -> Unit
 ) {
     var actionsMenuVisible by remember { mutableStateOf(false) }
 
@@ -43,7 +43,7 @@ fun ActionsIcon(
             text = { Text("Remove from favorites") },
             onClick = {
                 actionsMenuVisible = false
-                onAction(FavoriteListAction.OpenConfirmToRemove(artist.setToRemove()))
+                onAction(FavoritesListAction.OpenConfirmToRemove(artist.setToRemove()))
             },
             leadingIcon = {
                 Icon(

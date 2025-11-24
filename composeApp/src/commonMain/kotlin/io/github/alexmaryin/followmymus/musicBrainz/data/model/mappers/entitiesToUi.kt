@@ -11,6 +11,7 @@ fun ArtistWithRelations.toFavoriteArtist() = FavoriteArtist(
     id = artist.id,
     type = artist.type ?: ArtistType.OTHER,
     name = artist.name,
+    sortName = artist.sortName,
     description = artist.disambiguation,
     country = artist.country,
     area = area?.let { Area(it.name) },

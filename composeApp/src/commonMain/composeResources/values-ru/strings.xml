@@ -93,4 +93,13 @@
     <string name="favorite_artists_list_title">У вас в избранном %1$d исполнителей</string>
     <string name="empty_favorites_placeholder">В избранном пусто</string>
     <string name="begin_area_text">(начало: %1$s)</string>
+    <string name="sort_artists_caption">Сортировать по:</string>
+    <string name="sort_by_date">Дате</string>
+    <string name="sort_by_country">Стране</string>
+    <string name="sort_by_abc">Алфавиту</string>
+    <string name="sort_by_type">Типу</string>
+    <string name="sort_by_none">-</string>
+    <string name="sort_date_today">Сегодня</string>
+    <string name="sort_date_this_week">На этой неделе</string>
+    <string name="sort_date_this_month">В этом месяце</string>
 </resources>

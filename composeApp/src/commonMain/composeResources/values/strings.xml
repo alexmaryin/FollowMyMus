@@ -96,4 +96,13 @@
     <string name="tags_title">Tags</string>
     <string name="empty_favorites_placeholder">Empty Favorites</string>
     <string name="begin_area_text">(begin from: %1$s)</string>
+    <string name="sort_artists_caption">sort artists by:</string>
+    <string name="sort_by_date">Date</string>
+    <string name="sort_by_country">Country</string>
+    <string name="sort_by_abc">Abc</string>
+    <string name="sort_by_type">Type</string>
+    <string name="sort_by_none">-</string>
+    <string name="sort_date_today">Today</string>
+    <string name="sort_date_this_week">This week</string>
+    <string name="sort_date_this_month">This month</string>
 </resources>

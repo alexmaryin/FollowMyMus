@@ -10,13 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoriteListAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 
 @Composable
 fun FavoriteListItem(
     artist: FavoriteArtist,
-    onAction: (FavoriteListAction) -> Unit
+    onAction: (FavoritesListAction) -> Unit
 ) {
     val hasDetails = remember {
         listOf(artist.country, artist.area, artist.beginArea, artist.lifeSpan).any { it != null } ||
@@ -42,7 +42,7 @@ fun FavoriteListItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ActionsIcon(artist, onAction)
-                OpenReleasesIcon { onAction(FavoriteListAction.SelectArtist(artist.id)) }
+                OpenReleasesIcon { onAction(FavoritesListAction.SelectArtist(artist.id)) }
             }
         }
     )

@@ -15,6 +15,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesPanelConfig
@@ -49,9 +50,11 @@ class FavoritesHost(
         lifecycle.doOnStart {
             scope.launch {
                 repository.syncStatus.collect { status ->
-                    avatarState.update { it.copy(
-                        isSyncing = status is RemoteSyncStatus.Process
-                    ) }
+                    avatarState.update {
+                        it.copy(
+                            isSyncing = status is RemoteSyncStatus.Process
+                        )
+                    }
                     if (status is RemoteSyncStatus.Error) {
                         val text = status.errors.joinToString()
                         _events.emit(FavoritesHostEvent.Error(text))
@@ -61,28 +64,34 @@ class FavoritesHost(
             scope.launch {
                 repository.checkPendingActions()
                 repository.hasPendingActions.collect { hasPending ->
-                    avatarState.update { it.copy(
-                        hasPending = hasPending
-                    ) }
+                    avatarState.update {
+                        it.copy(
+                            hasPending = hasPending
+                        )
+                    }
                 }
             }
         }
     }
 
     private val navigation =
-        PanelsNavigation<Unit, FavoritesPanelConfig.ReleasesConfig, FavoritesPanelConfig.MediaDetailsConfig>()
+        PanelsNavigation<FavoritesPanelConfig.ListConfig, FavoritesPanelConfig.ReleasesConfig, FavoritesPanelConfig.MediaDetailsConfig>()
 
     private val _panels = childPanels(
         source = navigation,
         serializers = FavoritesPanelConfig.SERIALIZERS,
-        initialPanels = { Panels(main = Unit) },
+        initialPanels = { Panels(main = FavoritesPanelConfig.ListConfig(SortArtists.NONE)) },
         onStateChanged = { new, _ ->
             _state.update {
-                it.copy(artistIdSelected = new.details?.artistId, releaseIdSelected = new.extra?.releaseId)
+                it.copy(
+                    artistIdSelected = new.details?.artistId,
+                    releaseIdSelected = new.extra?.releaseId,
+                    selectedSorting = new.main.sortingType
+                )
             }
         },
         handleBackButton = true,
-        mainFactory = { _, context -> FavoritesList(context) },
+        mainFactory = ::getFavoritesList,
         detailsFactory = ::getReleasesList,
         extraFactory = ::getMediaDetails
     )
@@ -133,6 +142,9 @@ class FavoritesHost(
         }
     }
 
+    private fun getFavoritesList(config: FavoritesPanelConfig.ListConfig, context: ComponentContext) =
+        FavoritesList(config.sortingType, context)
+
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
         ReleasesList(config.artistId, context)
 
@@ -142,10 +154,16 @@ class FavoritesHost(
     override val contentIsVisible = true
 
     override val content = @Composable {
-        val state = avatarState.subscribeAsState()
+        val avatarState = avatarState.subscribeAsState()
         FavoritesTitleBar(
-            avatarState = state.value,
-            onSyncRequest = ::syncWithRemote
+            avatarState = avatarState.value,
+            onSyncRequest = ::syncWithRemote,
+            selectedSorting = state.value.selectedSorting,
+            onFilterChange = { new ->
+                navigation.navigate { state ->
+                    state.copy(main = FavoritesPanelConfig.ListConfig(new))
+                }
+            }
         )
     }
 }

@@ -11,6 +11,7 @@ data class FavoriteArtist(
     val id: String,
     val type: ArtistType,
     val name: String,
+    val sortName: String,
     val description: String? = null,
     val country: CountryISO? = null,
     val area: Area? = null,
