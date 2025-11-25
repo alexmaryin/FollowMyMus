@@ -10,10 +10,12 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
-import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
+import io.github.alexmaryin.followmymus.screens.commonUi.BackIcon
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
@@ -35,7 +37,8 @@ class FavoritesHost(
     private val repository: ArtistsRepository,
     private val componentContext: ComponentContext,
     nickname: String
-) : FavoritesHostComponent, ComponentContext by componentContext {
+) : FavoritesHostComponent, ComponentContext by componentContext,
+    ScaffoldSlots by DefaultScaffoldSlots {
 
     private val _state by saveableMutableValue(FavoritesHostState.serializer(), init = ::FavoritesHostState)
     override val state: Value<FavoritesHostState> = _state
@@ -43,21 +46,18 @@ class FavoritesHost(
     private val avatarState = MutableValue(AvatarState(nickname))
     private val scope = componentContext.coroutineScope() + SupervisorJob()
 
-    private val _events = MutableSharedFlow<FavoritesHostEvent>()
-    override val events = _events.asSharedFlow()
+    private val _events = MutableSharedFlow<String>()
+    override val snackbarMessages = _events.asSharedFlow()
 
     init {
         lifecycle.doOnStart {
             scope.launch {
                 repository.syncStatus.collect { status ->
                     avatarState.update {
-                        it.copy(
-                            isSyncing = status is RemoteSyncStatus.Process
-                        )
+                        it.copy(isSyncing = status is RemoteSyncStatus.Process)
                     }
                     if (status is RemoteSyncStatus.Error) {
-                        val text = status.errors.joinToString()
-                        _events.emit(FavoritesHostEvent.Error(text))
+                        _events.emit(status.errors.joinToString())
                     }
                 }
             }
@@ -65,9 +65,7 @@ class FavoritesHost(
                 repository.checkPendingActions()
                 repository.hasPendingActions.collect { hasPending ->
                     avatarState.update {
-                        it.copy(
-                            hasPending = hasPending
-                        )
+                        it.copy(hasPending = hasPending)
                     }
                 }
             }
@@ -98,10 +96,11 @@ class FavoritesHost(
 
     override val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>> = _panels
 
-    override fun invoke(action: PageAction) {
-        when (action) {
-            PageAction.Back -> navigation.pop()
-        }
+    private fun onBack() { navigation.pop() }
+
+    override val leadingIcon = @Composable {
+        val state = state.subscribeAsState()
+        if (state.value.backVisible) BackIcon(::onBack)
     }
 
     override fun invoke(action: FavoritesHostAction) {
@@ -133,6 +132,8 @@ class FavoritesHost(
             }
 
             is FavoritesHostAction.SyncRequested -> syncWithRemote()
+
+            FavoritesHostAction.OnBack -> onBack()
         }
     }
 
@@ -151,9 +152,7 @@ class FavoritesHost(
     private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)
 
-    override val contentIsVisible = true
-
-    override val content = @Composable {
+    override val titleContent = @Composable {
         val avatarState = avatarState.subscribeAsState()
         FavoritesTitleBar(
             avatarState = avatarState.value,

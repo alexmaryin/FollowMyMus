@@ -6,9 +6,12 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.AccountPageState
 
 interface AccountHostComponent : Page {
+
+    override val key get() = "AccountHost"
+
     val childStack: Value<ChildStack<*, Child>>
 
-    override val state: Value<AccountPageState>
+    val state: Value<AccountPageState>
     operator fun invoke(action: AccountAction)
 
     sealed interface Child {

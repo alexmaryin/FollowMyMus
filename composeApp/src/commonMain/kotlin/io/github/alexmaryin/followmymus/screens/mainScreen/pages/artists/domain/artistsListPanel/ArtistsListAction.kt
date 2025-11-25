@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel
 
+import androidx.compose.runtime.Composable
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 
 sealed interface ArtistsListAction {
@@ -9,4 +10,6 @@ sealed interface ArtistsListAction {
     data object ToggleSearchTune : ArtistsListAction
     data object Retry : ArtistsListAction
     data object LoadingCompleted : ArtistsListAction
+    data class SetFabVisibility(val isVisible: Boolean) : ArtistsListAction
+    data class ProvideFab(val content:@Composable () -> Unit) : ArtistsListAction
 }

@@ -12,8 +12,8 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrai
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toFavoriteArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote

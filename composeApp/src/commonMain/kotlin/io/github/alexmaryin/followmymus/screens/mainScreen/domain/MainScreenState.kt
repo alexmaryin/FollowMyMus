@@ -4,6 +4,5 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 
 data class MainScreenState(
     val nickname: String = "",
-    val backIconVisible: Boolean = false,
     val activePageIndex: Int = MainPages.RELEASES.index
 )

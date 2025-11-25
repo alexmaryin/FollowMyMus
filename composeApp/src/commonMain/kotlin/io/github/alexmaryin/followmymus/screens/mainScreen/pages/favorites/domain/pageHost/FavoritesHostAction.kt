@@ -11,4 +11,5 @@ sealed interface FavoritesHostAction {
     data object CloseMediaDetails : FavoritesHostAction
     data class SetMode(val mode: ChildPanelsMode) : FavoritesHostAction
     data object SyncRequested : FavoritesHostAction
+    data object OnBack : FavoritesHostAction
 }

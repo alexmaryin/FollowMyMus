@@ -19,7 +19,6 @@ import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.s
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.materialPredictiveBackAnimatable
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.panels.ChildPanelsMode
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost.ArtistsHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.ArtistsPanelUi
@@ -32,7 +31,6 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui
 fun ArtistsPageHostUi(
     component: ArtistsHostComponent
 ) {
-//    val state by component.state.subscribeAsState()
     val panels by component.panels.subscribeAsState()
     val windowSize = currentWindowAdaptiveInfo().windowSizeClass
 
@@ -48,7 +46,7 @@ fun ArtistsPageHostUi(
             predictiveBackParams = {
                 PredictiveBackParams(
                     backHandler = component.backHandler,
-                    onBack = { component(PageAction.Back) },
+                    onBack = { component(ArtistsHostAction.OnBack) },
                     animatable = ::materialPredictiveBackAnimatable
                 )
             }

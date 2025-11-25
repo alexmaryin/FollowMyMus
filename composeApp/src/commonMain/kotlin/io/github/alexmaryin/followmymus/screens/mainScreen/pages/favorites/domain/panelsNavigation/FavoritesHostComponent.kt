@@ -4,20 +4,20 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.panels.ChildPanels
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackHandlerOwner
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.HasTitleBar
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostEvent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalDecomposeApi::class)
-interface FavoritesHostComponent : Page, BackHandlerOwner, HasTitleBar {
+interface FavoritesHostComponent : Page, BackHandlerOwner, ScaffoldSlots {
+
+    override val key get() = "FavoritesHost"
+
     val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>>
-    override val state: Value<FavoritesHostState>
-    val events: Flow<FavoritesHostEvent>
+    val state: Value<FavoritesHostState>
     operator fun invoke(action: FavoritesHostAction)
 }

@@ -3,16 +3,13 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import followmymus.composeapp.generated.resources.Res
-import followmymus.composeapp.generated.resources.app_name
-import followmymus.composeapp.generated.resources.back
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.HasTitleBar
+import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.MainPages
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
@@ -33,32 +30,23 @@ fun MainScreen(
 ) {
     val screenPages by component.pages.subscribeAsState()
     val state by component.state.subscribeAsState()
+    val currentPage = screenPages.items[state.activePageIndex].instance
+    val snackBarHostState = remember { SnackbarHostState() }
 
+    currentPage?.let { page ->
+        ObserveEvents(page.snackbarMessages, page.key) {
+            snackBarHostState.showSnackbar(it)
+            // TODO delete after debug
+            println(it)
+        }
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),
         topBar = {
             TopAppBar(
-                title = {
-                    when (val page = screenPages.items[state.activePageIndex].instance) {
-                        is HasTitleBar if page.contentIsVisible -> {
-                            page.content()
-                        }
-                        else -> {
-                            Text(stringResource(Res.string.app_name))
-                        }
-                    }
-                },
-                navigationIcon = {
-                    if (state.backIconVisible) {
-                        IconButton(onClick = { component(MainScreenAction.BackClick) }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.back),
-                                contentDescription = stringResource(Res.string.back)
-                            )
-                        }
-                    }
-                }
+                title = { currentPage?.titleContent() },
+                navigationIcon = { currentPage?.leadingIcon() }
             )
         },
         bottomBar = {
@@ -80,7 +68,9 @@ fun MainScreen(
                     )
                 }
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
+        floatingActionButton = { currentPage?.fabContent() }
     ) { paddingValues ->
 
         ChildPages(
@@ -91,12 +81,6 @@ fun MainScreen(
             },
             scrollAnimation = PagesScrollAnimation.Default
         ) { index, page ->
-
-            val backIconVisibility by page.state.subscribeAsState()
-
-            LaunchedEffect(backIconVisibility) {
-                component(MainScreenAction.SetBackIconState(backIconVisibility.isBackVisible))
-            }
 
             when (index) {
                 MainPages.ARTISTS.index -> ArtistsPageHostUi(page as ArtistsHostComponent)

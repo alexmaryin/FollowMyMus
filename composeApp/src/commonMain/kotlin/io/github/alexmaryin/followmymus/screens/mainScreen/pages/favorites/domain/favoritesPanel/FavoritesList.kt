@@ -4,9 +4,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
-import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
 import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups

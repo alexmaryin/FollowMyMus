@@ -8,8 +8,10 @@ import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
@@ -64,20 +66,11 @@ class MainPagerComponent(
                     navigation.select(action.index)
                 }
             }
-
-            is MainScreenAction.SetBackIconState -> {
-                _state.update { it.copy(backIconVisible = action.isVisible) }
-            }
-
-            MainScreenAction.BackClick -> {
-                pages.value.items[state.value.activePageIndex].instance?.invoke(PageAction.Back)
-            }
         }
     }
 }
 
-//TODO delete after
-object DummyPage : Page {
-    override val state: Value<PageState> = MutableValue(PageState())
-    override fun invoke(action: PageAction) = Unit
+//TODO delete after implementation all pages
+object DummyPage : Page, ScaffoldSlots by DefaultScaffoldSlots {
+    override val key get() = "Dummy"
 }

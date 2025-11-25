@@ -4,7 +4,6 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -22,10 +21,7 @@ import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.s
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.materialPredictiveBackAnimatable
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.panels.ChildPanelsMode
-import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PageAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostEvent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.mediaPanel.MediaPanelUi
@@ -39,16 +35,10 @@ fun FavoritesPageHostUi(
     val panels by component.panels.subscribeAsState()
     val windowSize = currentWindowAdaptiveInfo().windowSizeClass
 
-    ObserveEvents(component.events) { event ->
-        when (event) {
-            is FavoritesHostEvent.Error -> SnackbarHostState().showSnackbar(event.message)
-        }
-    }
-
     Box(modifier = Modifier.fillMaxSize()) {
         ChildPanels(
             panels = panels,
-            mainChild = { FavoritesPanelUi(it.instance, component.events)},
+            mainChild = { FavoritesPanelUi(it.instance)},
             detailsChild = { ReleasesPanelUi(it.instance) },
             extraChild = { MediaPanelUi(it.instance) },
             layout = HorizontalChildPanelsLayout(dualWeights = 0.4f to 0.6f),
@@ -57,7 +47,7 @@ fun FavoritesPageHostUi(
             predictiveBackParams = {
                 PredictiveBackParams(
                     backHandler = component.backHandler,
-                    onBack = { component(PageAction.Back) },
+                    onBack = { component(FavoritesHostAction.OnBack) },
                     animatable = ::materialPredictiveBackAnimatable
                 )
             }

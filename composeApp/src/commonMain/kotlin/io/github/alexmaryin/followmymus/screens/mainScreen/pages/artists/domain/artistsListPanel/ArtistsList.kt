@@ -10,8 +10,10 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
-import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
+import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost.ArtistsHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistsSearchBar
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -19,7 +21,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class ArtistsList(
-    private val context: ComponentContext
+    private val context: ComponentContext,
+    private val hostAction: (ArtistsHostAction) -> Unit
 ) : ComponentContext by context, KoinComponent {
 
     private val repository by inject<ArtistsRepository>()
@@ -27,6 +30,11 @@ class ArtistsList(
 
     private val _state by saveableMutableValue(ArtistsListState.serializer(), init = ::ArtistsListState)
     val state: Value<ArtistsListState> = _state
+
+    private var providedFab: (@Composable () -> Unit) = {}
+
+    @Composable
+    fun FabContent() { providedFab() }
 
     private val pager = retainedInstance {
         ArtistsPager(repository)
@@ -51,18 +59,25 @@ class ArtistsList(
         when (action) {
             is ArtistsListAction.Search -> startSearch(action.query)
             is ArtistsListAction.ToggleArtistFavorite -> scope.launch { toggleFavorite(action.artist) }
-            is ArtistsListAction.SelectArtist -> TODO()
+            is ArtistsListAction.SelectArtist -> hostAction(ArtistsHostAction.ShowReleases(action.artistId))
             ArtistsListAction.ToggleSearchTune -> TODO()
             ArtistsListAction.Retry -> startSearch(state.value.query)
             ArtistsListAction.LoadingCompleted -> scope.launch {
                 _state.update { it.copy(isLoading = false) }
                 _events.emit(ArtistsListEvent.ScrollUp)
             }
+
+            is ArtistsListAction.SetFabVisibility ->
+                _state.update { it.copy(fabIsVisible = action.isVisible) }
+
+
+            is ArtistsListAction.ProvideFab -> providedFab = action.content
         }
     }
 
     private fun startSearch(query: String) {
         if (query.isBlank()) return
+        hostAction(ArtistsHostAction.CloseReleases)
         _state.update { it.copy(isLoading = true, searchResultsCount = null, query = query) }
         pager.search(query)
     }

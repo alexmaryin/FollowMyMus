@@ -43,7 +43,6 @@ fun ArtistsPanelUi(component: ArtistsList) {
     val listState = rememberLazyListState()
     val artists = component.artists.collectAsLazyPagingItems()
     val scope = rememberCoroutineScope()
-    var delayedFabVisible by remember { mutableStateOf(false) }
 
     val shouldShowFab by remember {
         derivedStateOf {
@@ -57,11 +56,30 @@ fun ArtistsPanelUi(component: ArtistsList) {
     LaunchedEffect(shouldShowFab) {
         if (shouldShowFab) {
             delay(1.seconds)
-            delayedFabVisible = true
+            component(ArtistsListAction.SetFabVisibility(true))
         } else {
-            delayedFabVisible = false
+            component(ArtistsListAction.SetFabVisibility(false))
         }
     }
+
+    component(ArtistsListAction.ProvideFab {
+        AnimatedVisibility(
+            visible = state.fabIsVisible,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            FloatingActionButton(
+                onClick = { scope.launch { listState.animateScrollToItem(0) } },
+                modifier = Modifier.padding(16.dp),
+                shape = CircleShape
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.arrow_up),
+                    contentDescription = "scroll up"
+                )
+            }
+        }
+    })
 
     // This effect added to prolong loading indicator until actual
     // fetching and mapping data from the flow or error occurs.
@@ -119,7 +137,6 @@ fun ArtistsPanelUi(component: ArtistsList) {
                 OnSuccess {
                     LazyColumn(
                         state = listState,
-//                        verticalArrangement = Arrangement.spacedBy(6.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         state.searchResultsCount?.let {
@@ -132,24 +149,6 @@ fun ArtistsPanelUi(component: ArtistsList) {
                         onLastItem { }
                     }
                 }
-            }
-        }
-
-        AnimatedVisibility(
-            visible = delayedFabVisible,
-            modifier = Modifier.align(Alignment.BottomEnd),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            FloatingActionButton(
-                onClick = { scope.launch { listState.animateScrollToItem(0) } },
-                modifier = Modifier.padding(16.dp),
-                shape = CircleShape
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.arrow_up),
-                    contentDescription = "scroll up"
-                )
             }
         }
     }

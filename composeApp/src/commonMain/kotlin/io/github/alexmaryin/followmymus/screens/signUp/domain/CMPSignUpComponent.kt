@@ -6,7 +6,7 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.forError
-import io.github.alexmaryin.followmymus.rootNavigation.ui.saveableMutableValue
+import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.SessionError

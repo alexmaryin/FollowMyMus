@@ -1,10 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager
 
-import com.arkivanov.decompose.value.Value
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 
-interface Page {
-
-    val state: Value<PageState>
-
-    operator fun invoke(action: PageAction)
+interface Page : ScaffoldSlots {
+    val key: String
 }
