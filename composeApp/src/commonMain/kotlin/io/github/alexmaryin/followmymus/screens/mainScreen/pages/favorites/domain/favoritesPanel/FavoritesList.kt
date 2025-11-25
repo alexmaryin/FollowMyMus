@@ -75,5 +75,6 @@ class FavoritesList(
             repository.deleteFromFavorites(it.id)
         }
         _state.update { it.copy(artistToRemove = null, isRemoveDialogVisible = false) }
+        hostAction(FavoritesHostAction.CloseReleases)
     }
 }

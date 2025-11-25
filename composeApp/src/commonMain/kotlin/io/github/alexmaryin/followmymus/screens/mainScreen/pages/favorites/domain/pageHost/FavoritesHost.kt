@@ -117,6 +117,10 @@ class FavoritesHost(
                 navigation.navigate { state -> state.copy(extra = null) }
             }
 
+            FavoritesHostAction.CloseReleases -> {
+                navigation.navigate { state -> state.copy(details = null, extra = null) }
+            }
+
             is FavoritesHostAction.SetMode -> {
                 navigation.navigate { state -> state.copy(mode = action.mode) }
             }
