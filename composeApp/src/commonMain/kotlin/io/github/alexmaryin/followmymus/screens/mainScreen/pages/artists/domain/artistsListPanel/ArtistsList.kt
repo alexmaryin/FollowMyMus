@@ -31,11 +31,6 @@ class ArtistsList(
     private val _state by saveableMutableValue(ArtistsListState.serializer(), init = ::ArtistsListState)
     val state: Value<ArtistsListState> = _state
 
-    private var providedFab: (@Composable () -> Unit) = {}
-
-    @Composable
-    fun FabContent() { providedFab() }
-
     private val pager = retainedInstance {
         ArtistsPager(repository)
     }
@@ -66,12 +61,6 @@ class ArtistsList(
                 _state.update { it.copy(isLoading = false) }
                 _events.emit(ArtistsListEvent.ScrollUp)
             }
-
-            is ArtistsListAction.SetFabVisibility ->
-                _state.update { it.copy(fabIsVisible = action.isVisible) }
-
-
-            is ArtistsListAction.ProvideFab -> providedFab = action.content
         }
     }
 

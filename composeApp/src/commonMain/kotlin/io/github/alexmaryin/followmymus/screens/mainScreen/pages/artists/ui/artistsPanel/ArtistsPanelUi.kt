@@ -43,6 +43,7 @@ fun ArtistsPanelUi(component: ArtistsList) {
     val listState = rememberLazyListState()
     val artists = component.artists.collectAsLazyPagingItems()
     val scope = rememberCoroutineScope()
+    var isFabVisible by remember { mutableStateOf(false) }
 
     val shouldShowFab by remember {
         derivedStateOf {
@@ -56,30 +57,11 @@ fun ArtistsPanelUi(component: ArtistsList) {
     LaunchedEffect(shouldShowFab) {
         if (shouldShowFab) {
             delay(1.seconds)
-            component(ArtistsListAction.SetFabVisibility(true))
+            isFabVisible = true
         } else {
-            component(ArtistsListAction.SetFabVisibility(false))
+            isFabVisible = false
         }
     }
-
-    component(ArtistsListAction.ProvideFab {
-        AnimatedVisibility(
-            visible = state.fabIsVisible,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            FloatingActionButton(
-                onClick = { scope.launch { listState.animateScrollToItem(0) } },
-                modifier = Modifier.padding(16.dp),
-                shape = CircleShape
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.arrow_up),
-                    contentDescription = "scroll up"
-                )
-            }
-        }
-    })
 
     // This effect added to prolong loading indicator until actual
     // fetching and mapping data from the flow or error occurs.
@@ -149,6 +131,24 @@ fun ArtistsPanelUi(component: ArtistsList) {
                         onLastItem { }
                     }
                 }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isFabVisible,
+            modifier = Modifier.align(Alignment.BottomEnd),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            FloatingActionButton(
+                onClick = { scope.launch { listState.animateScrollToItem(0) } },
+                modifier = Modifier.padding(16.dp),
+                shape = CircleShape
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.arrow_up),
+                    contentDescription = "scroll up"
+                )
             }
         }
     }

@@ -80,11 +80,17 @@ class FavoritesHost(
         serializers = FavoritesPanelConfig.SERIALIZERS,
         initialPanels = { Panels(main = FavoritesPanelConfig.ListConfig(SortArtists.NONE)) },
         onStateChanged = { new, _ ->
+            val backIsVisible = when {
+                new.extra != null -> true
+                new.details != null && new.mode == ChildPanelsMode.SINGLE -> true
+                else -> false
+            }
             _state.update {
                 it.copy(
                     artistIdSelected = new.details?.artistId,
                     releaseIdSelected = new.extra?.releaseId,
-                    selectedSorting = new.main.sortingType
+                    selectedSorting = new.main.sortingType,
+                    backVisible = backIsVisible
                 )
             }
         },
@@ -96,7 +102,9 @@ class FavoritesHost(
 
     override val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>> = _panels
 
-    private fun onBack() { navigation.pop() }
+    private fun onBack() {
+        navigation.pop()
+    }
 
     override val leadingIcon = @Composable {
         val state = state.subscribeAsState()
@@ -106,26 +114,20 @@ class FavoritesHost(
     override fun invoke(action: FavoritesHostAction) {
         when (action) {
             FavoritesHostAction.CloseMediaDetails -> {
-                _state.update { it.copy(releaseIdSelected = null) }
                 navigation.navigate { state -> state.copy(extra = null) }
             }
 
-            is FavoritesHostAction.SetMode -> navigation.navigate { state -> state.copy(mode = action.mode) }
+            is FavoritesHostAction.SetMode -> {
+                navigation.navigate { state -> state.copy(mode = action.mode) }
+            }
 
             is FavoritesHostAction.ShowMediaDetails -> {
-                _state.update { it.copy(releaseIdSelected = action.releaseId, backVisible = true) }
                 navigation.navigate { state ->
                     state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId = action.releaseId))
                 }
             }
 
             is FavoritesHostAction.ShowReleases -> {
-                _state.update {
-                    it.copy(
-                        artistIdSelected = action.artistId,
-                        backVisible = panels.value.mode == ChildPanelsMode.SINGLE
-                    )
-                }
                 navigation.navigate { state ->
                     state.copy(details = FavoritesPanelConfig.ReleasesConfig(artistId = action.artistId))
                 }
@@ -144,7 +146,7 @@ class FavoritesHost(
     }
 
     private fun getFavoritesList(config: FavoritesPanelConfig.ListConfig, context: ComponentContext) =
-        FavoritesList(config.sortingType, context)
+        FavoritesList(config.sortingType, context, ::invoke)
 
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
         ReleasesList(config.artistId, context)

@@ -8,6 +8,7 @@ import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
 import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
 import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups
 import io.github.alexmaryin.followmymus.screens.utils.toDateCategory
@@ -21,7 +22,8 @@ import org.koin.core.component.inject
 
 class FavoritesList(
     private val sortingType: SortArtists,
-    private val context: ComponentContext
+    private val context: ComponentContext,
+    private val hostAction: (FavoritesHostAction) -> Unit
 ) : ComponentContext by context, KoinComponent {
 
     private val repository by inject<ArtistsRepository>()
@@ -54,7 +56,7 @@ class FavoritesList(
 
     operator fun invoke(action: FavoritesListAction) {
         when (action) {
-            is FavoritesListAction.SelectArtist -> TODO()
+            is FavoritesListAction.SelectArtist -> hostAction(FavoritesHostAction.ShowReleases(action.artistId))
 
             is FavoritesListAction.OpenConfirmToRemove -> _state.update {
                 it.copy(isRemoveDialogVisible = true, artistToRemove = action.artist)

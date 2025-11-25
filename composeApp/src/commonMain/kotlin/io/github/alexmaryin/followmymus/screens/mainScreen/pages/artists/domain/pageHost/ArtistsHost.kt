@@ -37,8 +37,17 @@ class ArtistsHost(
         serializers = ArtistsPanelConfig.SERIALIZERS,
         initialPanels = { Panels(main = Unit) },
         onStateChanged = { new, _ ->
+            val backIsVisible = when {
+                new.extra != null -> true
+                new.details != null && new.mode == ChildPanelsMode.SINGLE -> true
+                else -> false
+            }
             _state.update {
-                it.copy(artistIdSelected = new.details?.artistId, releaseIdSelected = new.extra?.releaseId)
+                it.copy(
+                    artistIdSelected = new.details?.artistId,
+                    releaseIdSelected = new.extra?.releaseId,
+                    backVisible = backIsVisible
+                )
             }
         },
         handleBackButton = true,
@@ -59,36 +68,27 @@ class ArtistsHost(
         navigation.pop()
     }
 
-    private fun showReleases(artistId: String) {
-        _state.update {
-            it.copy(
-                artistIdSelected = artistId,
-                backVisible = panels.value.mode == ChildPanelsMode.SINGLE
-            )
-        }
-        navigation.navigate { state ->
-            state.copy(details = ArtistsPanelConfig.ReleasesConfig(artistId))
-        }
-    }
-
     override fun invoke(action: ArtistsHostAction) {
         when (action) {
-            is ArtistsHostAction.ShowReleases -> showReleases(action.artistId)
+            is ArtistsHostAction.ShowReleases -> {
+                navigation.navigate { state ->
+                    state.copy(details = ArtistsPanelConfig.ReleasesConfig(action.artistId))
+                }
+            }
 
             ArtistsHostAction.CloseReleases -> {
-                _state.update { it.copy(artistIdSelected = null) }
                 navigation.navigate { state -> state.copy(details = null) }
             }
 
             ArtistsHostAction.CloseMediaDetails -> {
-                _state.update { it.copy(releaseIdSelected = null) }
                 navigation.navigate { state -> state.copy(extra = null) }
             }
 
-            is ArtistsHostAction.SetMode -> navigation.navigate { state -> state.copy(mode = action.mode) }
+            is ArtistsHostAction.SetMode -> {
+                navigation.navigate { state -> state.copy(mode = action.mode) }
+            }
 
             is ArtistsHostAction.ShowMediaDetails -> {
-                _state.update { it.copy(releaseIdSelected = action.releaseId, backVisible = true) }
                 navigation.navigate { state ->
                     state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(action.releaseId))
                 }
@@ -109,6 +109,4 @@ class ArtistsHost(
         if (isSearchVisible) panelState.main.instance.ProvideArtistsSearchBar()
         else DefaultScaffoldSlots.titleContent()
     }
-
-    override val fabContent: @Composable () -> Unit = { panels.value.main.instance.FabContent() }
 }
