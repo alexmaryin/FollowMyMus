@@ -11,9 +11,9 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncSta
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrainzDAO
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toFavoriteArtist
+import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
@@ -78,11 +78,6 @@ class ApiArtistsRepository(
         remoteAdd.forSuccess {
             musicBrainzDAO.updateArtistSyncStatus(artist.id, SyncStatus.OK)
         }
-        // TODO remove after debug
-        remoteAdd.forError { error ->
-            println(error.type)
-            println(error.message)
-        }
     }
 
     override suspend fun deleteFromFavorites(artistId: String) {
@@ -91,15 +86,10 @@ class ApiArtistsRepository(
         remoteRemove.forSuccess {
             musicBrainzDAO.deleteArtistById(artistId)
         }
-        // TODO remove after debug
-        remoteRemove.forError { error ->
-            println(error.type)
-            println(error.message)
-        }
     }
 
     override suspend fun syncRemote() {
-        val errors = mutableListOf<ErrorType>() // collect all errors in process
+        val errors = mutableListOf<ErrorType>() // accumulate all errors
 
         _syncStatus.update { RemoteSyncStatus.Process }
         // remove first local ids marked to pending remove

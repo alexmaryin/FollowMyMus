@@ -19,7 +19,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountPageConfig
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.DEEP_LINK_URL_PREFIX
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.startTransferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager

@@ -41,7 +41,7 @@ class AppModule() {
             })
         }
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000L
+            requestTimeoutMillis = 15000L
             connectTimeoutMillis = 5000L
             socketTimeoutMillis = 5000L
         }

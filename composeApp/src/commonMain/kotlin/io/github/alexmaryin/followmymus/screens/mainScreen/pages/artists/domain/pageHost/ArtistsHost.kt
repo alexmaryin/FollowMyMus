@@ -18,13 +18,15 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import org.koin.core.annotation.Factory
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Factory(binds = [ArtistsHostComponent::class])
 class ArtistsHost(
     private val componentContext: ComponentContext
 ) : ArtistsHostComponent, ComponentContext by componentContext,
-    ScaffoldSlots by DefaultScaffoldSlots {
+    ScaffoldSlots by DefaultScaffoldSlots, KoinComponent {
 
     private val _state = MutableValue(ArtistsHostState())
     override val state: Value<ArtistsHostState> = _state
@@ -59,7 +61,7 @@ class ArtistsHost(
     override val panels: Value<ChildPanels<*, ArtistsList, *, ReleasesList, *, MediaDetails>> = _panels
 
     private fun getReleasesList(config: ArtistsPanelConfig.ReleasesConfig, context: ComponentContext) =
-        ReleasesList(config.artistId, context)
+        ReleasesList(get(), config.artistId, context)
 
     private fun getMediaDetails(config: ArtistsPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)

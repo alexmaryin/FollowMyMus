@@ -17,6 +17,8 @@ data class ArtistDto(
     @SerialName("begin-area") val beginArea: AreaDto?,
     val disambiguation: String?,
     @SerialName("life-span") val lifeSpan: LifeSpanDto?,
-    val tags: List<TagDto> = emptyList()
+    val tags: List<TagDto> = emptyList(),
+    @SerialName("relations") val resources: List<ResourceDto> = emptyList(),
+    @SerialName("release-groups") val releases: List<ReleaseDto> = emptyList()
 )
 

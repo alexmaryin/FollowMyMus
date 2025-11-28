@@ -11,11 +11,11 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
+import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.commonUi.BackIcon
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.ArtistsRepository
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Factory(binds = [FavoritesHostComponent::class])
@@ -38,7 +40,7 @@ class FavoritesHost(
     private val componentContext: ComponentContext,
     nickname: String
 ) : FavoritesHostComponent, ComponentContext by componentContext,
-    ScaffoldSlots by DefaultScaffoldSlots {
+    ScaffoldSlots by DefaultScaffoldSlots, KoinComponent {
 
     private val _state by saveableMutableValue(FavoritesHostState.serializer(), init = ::FavoritesHostState)
     override val state: Value<FavoritesHostState> = _state
@@ -153,7 +155,7 @@ class FavoritesHost(
         FavoritesList(config.sortingType, context, ::invoke)
 
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
-        ReleasesList(config.artistId, context)
+        ReleasesList(get(), config.artistId, context)
 
     private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)

@@ -1,7 +1,9 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data
 
 import io.github.alexmaryin.followmymus.core.Result
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.BrainzApiError
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.CoverArtResponse
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.SearchResponse
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.ktor.client.*
@@ -16,7 +18,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [SearchEngine::class])
 class ApiSearchEngine(
-    val httpClient: HttpClient
+    private val httpClient: HttpClient
 ) : SearchEngine {
 
     override suspend fun searchArtists(query: String, offset: Int, limit: Int): SearchResponse {
@@ -39,12 +41,39 @@ class ApiSearchEngine(
         val response: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
             url {
                 parameters.append("query", ids.toArtistIdsQuery())
+                parameters.append("fmt", "json")
             }
             headers {
                 append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
             }
         }.body()
         response.artists
+    }
+
+    override suspend fun searchCovers(releaseId: String): Result<CoverArtResponse> = safeCall {
+        val response: CoverArtResponse =
+            httpClient.get("${SearchEngine.COVER_ART_BASE_URL}/release-group/$releaseId") {
+            url {
+                parameters.append("fmt", "json")
+            }
+            headers {
+                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+            }
+        }.body()
+        response
+    }
+
+    override suspend fun searchReleases(artistId: String) = safeCall {
+        val response: ArtistDto = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/$artistId/") {
+            url {
+                parameters.append("inc", "url-rels+release-groups")
+                parameters.append("fmt", "json")
+            }
+            headers {
+                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+            }
+        }.body()
+        response
     }
 
     private fun String.surroundWithQuotation() = "\"$this\""

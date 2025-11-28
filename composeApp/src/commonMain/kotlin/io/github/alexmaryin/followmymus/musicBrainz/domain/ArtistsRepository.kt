@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain
+package io.github.alexmaryin.followmymus.musicBrainz.domain
 
 import androidx.paging.PagingData
 import io.github.alexmaryin.followmymus.core.ErrorType
