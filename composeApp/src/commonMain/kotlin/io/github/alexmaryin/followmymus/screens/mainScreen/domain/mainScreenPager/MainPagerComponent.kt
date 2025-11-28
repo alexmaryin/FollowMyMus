@@ -41,17 +41,23 @@ class MainPagerComponent(
                     PagerConfig.Favorites,
                     PagerConfig.Account
                 ),
-                selectedIndex = MainPages.ARTISTS.index
+                selectedIndex = MainPages.FAVORITES.index
             )
         },
+        key = "mainPager",
         handleBackButton = true
     ) { page, context ->
         when (page) {
-            PagerConfig.Artists -> get<ArtistsHostComponent> { parametersOf(context) }
+            PagerConfig.Artists -> get<ArtistsHostComponent> {
+                parametersOf(context)
+            }
+
             PagerConfig.Favorites -> get<FavoritesHostComponent> {
                 parametersOf(context, state.value.nickname)
             }
+
             PagerConfig.Releases -> DummyPage
+
             is PagerConfig.Account -> get<AccountHostComponent> {
                 parametersOf(context, state.value.nickname)
             }

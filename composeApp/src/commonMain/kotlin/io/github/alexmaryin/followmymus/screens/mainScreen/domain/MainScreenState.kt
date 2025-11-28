@@ -4,5 +4,5 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 
 data class MainScreenState(
     val nickname: String = "",
-    val activePageIndex: Int = MainPages.RELEASES.index
+    val activePageIndex: Int = MainPages.FAVORITES.index
 )

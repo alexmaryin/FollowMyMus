@@ -20,8 +20,6 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.Arti
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.FavoritesPageHostUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.releases.ui.SearchPage
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,23 +48,8 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
-                MainPages.entries.forEach { page ->
-                    NavigationBarItem(
-                        selected = page.index == screenPages.selectedIndex,
-                        onClick = { component(MainScreenAction.SelectPage(page.index)) },
-                        icon = {
-                            Icon(
-                                painter = painterResource(
-                                    if (page.index == screenPages.selectedIndex)
-                                        page.iconActiveRes else page.iconRes
-                                ),
-                                contentDescription = page.name
-                            )
-                        },
-                        label = { Text(stringResource(page.titleRes)) }
-                    )
-                }
+            BottomNavBar(screenPages.selectedIndex) { pageIdx ->
+                component(MainScreenAction.SelectPage(pageIdx))
             }
         },
         snackbarHost = { SnackbarHost(snackBarHostState) },
