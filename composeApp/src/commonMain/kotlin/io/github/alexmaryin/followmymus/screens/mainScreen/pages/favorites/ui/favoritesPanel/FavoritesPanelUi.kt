@@ -75,7 +75,11 @@ fun FavoritesPanelUi(component: FavoritesList) {
                         }
 
                         items(favoriteArtists, key = { it.id }) { artist ->
-                            FavoriteListItem(artist, component::invoke)
+                            FavoriteListItem(
+                                artist = artist,
+                                isSelected = state.selectedArtist == artist.id,
+                                onAction = component::invoke
+                            )
                         }
                     }
                 }

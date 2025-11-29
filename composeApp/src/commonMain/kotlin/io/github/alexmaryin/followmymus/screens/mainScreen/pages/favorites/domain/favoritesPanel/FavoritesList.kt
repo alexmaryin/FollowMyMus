@@ -56,7 +56,10 @@ class FavoritesList(
 
     operator fun invoke(action: FavoritesListAction) {
         when (action) {
-            is FavoritesListAction.SelectArtist -> hostAction(FavoritesHostAction.ShowReleases(action.artistId))
+            is FavoritesListAction.SelectArtist -> {
+                _state.update { it.copy(selectedArtist = action.artistId) }
+                hostAction(FavoritesHostAction.ShowReleases(action.artistId))
+            }
 
             is FavoritesListAction.OpenConfirmToRemove -> _state.update {
                 it.copy(isRemoveDialogVisible = true, artistToRemove = action.artist)

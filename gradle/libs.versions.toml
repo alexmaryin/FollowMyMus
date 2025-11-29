@@ -30,6 +30,7 @@ zxing = "3.5.4"
 mockk = "1.14.6"
 room = "2.8.4"
 sqlite = "2.6.2"
+coil = "3.3.0"
 
 # app versions
 android-versionCode = "1"
@@ -87,6 +88,9 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "and
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }

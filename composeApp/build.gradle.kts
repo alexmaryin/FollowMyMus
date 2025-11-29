@@ -124,6 +124,9 @@ kotlin {
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            // Coil
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
         }
 
         commonTest.dependencies {

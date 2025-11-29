@@ -42,7 +42,7 @@ fun ReleaseDto.toRelease() = Release(
     id = id,
     title = title,
     disambiguation = disambiguation,
-    firstReleaseDate = firstReleaseDate.toString(),     // TODO localized date
+    firstReleaseDate = firstReleaseDate,
     primaryType = primaryType,
     secondaryTypes = secondaryTypes,
     coverUrl = coverImages.selectCover()
@@ -52,14 +52,23 @@ fun List<CoverImageDto>.selectCover(): String? {
     if (isEmpty()) return null
 
     val front = firstOrNull { it.type == ImageType.FRONT }
-    if (front != null) return front.thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_250 }?.url
-        ?: front.thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_500 }?.url ?: front.url
+    if (front != null) return front.selectPreview()
 
     val back = firstOrNull { it.type == ImageType.BACK }
-    if (back != null) return back.thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_250 }?.url
-        ?: back.thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_500 }?.url ?: back.url
+    if (back != null) return back.selectPreview()
 
-    return firstOrNull()?.thumbnails?.firstOrNull { it.size == ThumbnailSize.SIZE_250  }?.url
-        ?: firstOrNull()?.thumbnails?.firstOrNull { it.size == ThumbnailSize.SIZE_500 }?.url
-        ?:firstOrNull()?.url
+    return firstOrNull()?.selectPreview()
+}
+
+internal fun CoverImageDto.selectPreview(): String {
+    thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_500 }?.let { return it.url }
+    thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_250 }?.let { return it.url }
+    thumbnails.firstOrNull { it.size == ThumbnailSize.SMALL }?.let { return it.url }
+    return url
+}
+
+internal fun CoverImageDto.selectFull(): String {
+    thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_1200 }?.let { return it.url }
+    thumbnails.firstOrNull { it.size == ThumbnailSize.LARGE }?.let { return it.url }
+    return url
 }

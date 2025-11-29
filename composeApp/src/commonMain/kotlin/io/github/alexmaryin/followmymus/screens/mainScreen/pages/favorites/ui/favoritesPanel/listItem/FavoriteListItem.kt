@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
@@ -16,6 +18,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domai
 @Composable
 fun FavoriteListItem(
     artist: FavoriteArtist,
+    isSelected: Boolean,
     onAction: (FavoritesListAction) -> Unit
 ) {
     val hasDetails = remember {
@@ -44,7 +47,10 @@ fun FavoriteListItem(
                 ActionsIcon(artist, onAction)
                 OpenReleasesIcon { onAction(FavoritesListAction.SelectArtist(artist.id)) }
             }
-        }
+        },
+        colors = ListItemDefaults.colors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Unspecified
+        )
     )
     AnimatedVisibility(visible = detailsVisible) {
         Column(
