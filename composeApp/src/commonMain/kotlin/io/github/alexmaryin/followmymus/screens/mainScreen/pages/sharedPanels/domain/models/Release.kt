@@ -8,7 +8,7 @@ data class Release(
     val id: String,
     val title: String,
     val disambiguation: String?,
-    val firstReleaseDate: LocalDate,
+    val firstReleaseDate: LocalDate?,
     val primaryType: ReleaseType,
     val secondaryTypes: List<SecondaryType>,
     val previewCoverUrl: String?,

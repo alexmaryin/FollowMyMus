@@ -95,7 +95,7 @@ fun ArtistListItem(
                     contentDescription = "Open releases for ${artist.name}",
                     modifier = Modifier
                         .size(32.dp)
-                        .clickable { action(ArtistsListAction.SelectArtist(artist.id)) },
+                        .clickable { action(ArtistsListAction.SelectArtist(artist)) },
                 )
             }
         },

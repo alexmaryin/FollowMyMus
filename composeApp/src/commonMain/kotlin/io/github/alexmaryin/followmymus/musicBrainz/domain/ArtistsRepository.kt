@@ -16,6 +16,7 @@ interface ArtistsRepository {
     fun getFavoriteArtists(): Flow<List<FavoriteArtist>>
     fun getFavoriteArtistsIds(): Flow<List<String>>
     suspend fun addToFavorite(artist: Artist)
+    suspend fun insertArtist(artist: Artist)
     suspend fun deleteFromFavorites(artistId: String)
     suspend fun checkPendingActions()
     suspend fun syncRemote()

@@ -18,20 +18,20 @@ data class ReleaseDto(
     val title: String,
     @SerialName("disambiguation") val disambiguation: String? = null,
     @Serializable(with = ReleaseDateSerializer::class)
-    @SerialName("first-release-date") val firstReleaseDate: LocalDate,
+    @SerialName("first-release-date") val firstReleaseDate: LocalDate?,
     @SerialName("primary-type") val primaryType: ReleaseType = ReleaseType.OTHER,
     @SerialName("secondary-types") val secondaryTypes: List<SecondaryType> = emptyList(),
     val coverImages: List<CoverImageDto> = emptyList()
 )
 
-object ReleaseDateSerializer : KSerializer<LocalDate> {
+object ReleaseDateSerializer : KSerializer<LocalDate?> {
     override val descriptor = PrimitiveSerialDescriptor("ReleaseDate", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): LocalDate {
-        val parts = decoder.decodeString().split('-')
-        require(parts.isNotEmpty() && parts.size <= 3) {
-            "Invalid date format: $decoder. Expected YYYY, YYYY-MM, or YYYY-MM-DD"
-        }
+    override fun deserialize(decoder: Decoder): LocalDate? {
+        val decoded = decoder.decodeString()
+        if (decoded.isBlank()) return null
+        val parts = decoded.split('-')
+        if(parts.isEmpty() && parts.size > 3) return null
 
         val numericParts = parts.map { text ->
             text.toIntOrNull() ?: throw SerializationException("Invalid numeric value in date: $text")
@@ -44,7 +44,7 @@ object ReleaseDateSerializer : KSerializer<LocalDate> {
         }
     }
 
-    override fun serialize(encoder: Encoder, value: LocalDate) {
-        encoder.encodeString(value.toString())
+    override fun serialize(encoder: Encoder, value: LocalDate?) {
+        encoder.encodeString(value?.toString() ?: "")
     }
 }

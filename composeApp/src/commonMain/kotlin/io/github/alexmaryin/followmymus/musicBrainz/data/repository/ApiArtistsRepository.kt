@@ -65,6 +65,17 @@ class ApiArtistsRepository(
 
     override fun getFavoriteArtistsIds(): Flow<List<String>> = dao.getFavoriteArtistsIds()
 
+    override suspend fun insertArtist(artist: Artist) {
+        artist.dtoSource?.let {
+            dao.insertArtist(
+                artist = it.toEntity(false, SyncStatus.PendingRemoteRemove),
+                area = it.area?.toEntity(),
+                beginArea = it.beginArea?.toEntity(),
+                tags = it.tags.map { tag -> tag.toEntity(artist.id) }
+            )
+        }
+    }
+
     override suspend fun addToFavorite(artist: Artist) {
         artist.dtoSource?.let {
             dao.insertFavoriteArtist(

@@ -42,7 +42,7 @@ internal fun ReleaseEntity.toRelease() = Release(
     id = id,
     title = title,
     disambiguation = disambiguation,
-    firstReleaseDate = LocalDate.parse(firstReleaseDate),
+    firstReleaseDate = firstReleaseDate?.let { LocalDate.parse(it) },
     primaryType = primaryType,
     secondaryTypes = if (secondaryTypes.isNullOrBlank()) emptyList() else {
         secondaryTypes.split(",").map { SecondaryType.valueOf(it) }

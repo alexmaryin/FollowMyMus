@@ -4,4 +4,5 @@ sealed interface ReleasesListAction {
     data class SelectRelease(val releaseId: String) : ReleasesListAction
     data class OpenFullCover(val coverUrl: String) : ReleasesListAction
     data object CloseFullCover : ReleasesListAction
+    data object LoadFromRemote : ReleasesListAction
 }

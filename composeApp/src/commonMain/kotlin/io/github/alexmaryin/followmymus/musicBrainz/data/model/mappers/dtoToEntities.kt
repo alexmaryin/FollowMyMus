@@ -53,7 +53,7 @@ fun ReleaseDto.toEntity(artistId: String) = ReleaseEntity(
     artistId = artistId,
     title = title,
     disambiguation = disambiguation,
-    firstReleaseDate = firstReleaseDate.toString(),
+    firstReleaseDate = firstReleaseDate?.toString(),
     primaryType = primaryType,
     secondaryTypes = secondaryTypes.joinToString(",")
 )

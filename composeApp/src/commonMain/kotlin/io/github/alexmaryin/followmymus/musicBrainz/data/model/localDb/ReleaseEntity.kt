@@ -10,7 +10,7 @@ data class ReleaseEntity(
     val artistId: String,
     val title: String,
     val disambiguation: String? = null,
-    val firstReleaseDate: String,
+    val firstReleaseDate: String? = null,
     val primaryType: ReleaseType,
     val secondaryTypes: String? = null,
     val previewCoverUrl: String? = null,

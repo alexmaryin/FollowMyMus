@@ -54,13 +54,20 @@ class ArtistsList(
         when (action) {
             is ArtistsListAction.Search -> startSearch(action.query)
             is ArtistsListAction.ToggleArtistFavorite -> scope.launch { toggleFavorite(action.artist) }
-            is ArtistsListAction.SelectArtist -> hostAction(ArtistsHostAction.ShowReleases(action.artistId))
+            is ArtistsListAction.SelectArtist -> selectArtist(action.artist)
             ArtistsListAction.ToggleSearchTune -> TODO()
             ArtistsListAction.Retry -> startSearch(state.value.query)
             ArtistsListAction.LoadingCompleted -> scope.launch {
                 _state.update { it.copy(isLoading = false) }
                 _events.emit(ArtistsListEvent.ScrollUp)
             }
+        }
+    }
+
+    private fun selectArtist(artist: Artist) {
+        scope.launch {
+            repository.insertArtist(artist)
+            hostAction(ArtistsHostAction.ShowReleases(artist.id))
         }
     }
 

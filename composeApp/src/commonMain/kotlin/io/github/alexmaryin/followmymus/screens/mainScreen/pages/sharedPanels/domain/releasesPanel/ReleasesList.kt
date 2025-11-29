@@ -7,9 +7,9 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
@@ -25,24 +25,20 @@ class ReleasesList(
 
     private val scope = context.coroutineScope() + SupervisorJob()
 
-    val resources = repository.getArtistResources(artistId).shareIn(
-        scope, SharingStarted.WhileSubscribed(5000L), 1
-    )
+    val resources = repository.getArtistResources(artistId)
 
-    val releases = repository.getArtistReleases(artistId).shareIn(
-        scope, SharingStarted.WhileSubscribed(5000L), 1
-    )
+    val releases = repository.getArtistReleases(artistId)
 
     init {
         lifecycle.doOnStart {
+
             scope.launch {
-                releases.collect {
-                    if (it.isEmpty()) {
-                        _state.update { state -> state.copy(isLoading = true) }
-                        repository.syncReleases(artistId)
-                    } else {
-                        _state.update { state -> state.copy(isLoading = false) }
-                    }
+                if (releases.first().isEmpty()) repository.syncReleases(artistId)
+            }
+
+            scope.launch {
+                repository.workState.collect { working ->
+                    _state.update { it.copy(isLoading = working == WorkState.LOADING) }
                 }
             }
         }
@@ -53,6 +49,10 @@ class ReleasesList(
             is ReleasesListAction.OpenFullCover -> _state.update { it.copy(openedCover = action.coverUrl) }
             is ReleasesListAction.SelectRelease -> openMedia(action.releaseId)
             ReleasesListAction.CloseFullCover -> _state.update { it.copy(openedCover = null) }
+            ReleasesListAction.LoadFromRemote -> scope.launch {
+                repository.syncReleases(artistId)
+            }
+
         }
     }
 }

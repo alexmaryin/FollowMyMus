@@ -29,7 +29,7 @@ fun ReleaseListItem(release: Release, actionHandler: (ReleasesListAction) -> Uni
             )
         },
         overlineContent = { Text(text = release.disambiguation ?: "") },
-        supportingContent = { Text(text = release.firstReleaseDate.formatToDayMonthYear()) },
+        supportingContent = { Text(text = release.firstReleaseDate?.formatToDayMonthYear() ?: "") },
         trailingContent = {
             if (release.previewCoverUrl != null) {
                 AsyncImage(
