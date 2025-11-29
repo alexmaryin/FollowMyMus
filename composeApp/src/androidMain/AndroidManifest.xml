@@ -27,12 +27,14 @@
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:scheme="https"
                     android:host="alexmaryin.ru"
-                    android:pathPrefix="/session-transfer"/>
+                    android:pathPrefix="/session-transfer" />
             </intent-filter>
         </activity>
 

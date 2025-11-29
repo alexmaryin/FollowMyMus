@@ -48,8 +48,8 @@ class ApiReleasesRepository(
                 }
                 .collect { (result, release) ->
                     result.forSuccess { coverDto ->
-                        val previewUrl = coverDto.images.selectCover { selectPreview() }
-                        val largeUrl = coverDto.images.selectCover { url }
+                        val previewUrl = coverDto.images.selectCover { selectPreview() }?.httpsReplace()
+                        val largeUrl = coverDto.images.selectCover { url }?.httpsReplace()
                         dao.updateReleaseCovers(release.id, previewUrl, largeUrl)
                     }
                 }
@@ -63,3 +63,5 @@ class ApiReleasesRepository(
         dao.clearReleases(artistId)
     }
 }
+
+private fun String.httpsReplace() = replace("http://", "https://")
