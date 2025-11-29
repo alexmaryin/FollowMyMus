@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ReleasesListState(
     val isLoading: Boolean = false,
-    val selectedRelease: String? = null
+    val selectedRelease: String? = null,
+    val openedCover: String? = null,
 )

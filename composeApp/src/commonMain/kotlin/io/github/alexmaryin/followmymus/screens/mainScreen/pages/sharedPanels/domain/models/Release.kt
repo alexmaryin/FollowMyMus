@@ -11,5 +11,6 @@ data class Release(
     val firstReleaseDate: LocalDate,
     val primaryType: ReleaseType,
     val secondaryTypes: List<SecondaryType>,
-    val coverUrl: String?
+    val previewCoverUrl: String?,
+    val largeCoverUrl: String?
 )

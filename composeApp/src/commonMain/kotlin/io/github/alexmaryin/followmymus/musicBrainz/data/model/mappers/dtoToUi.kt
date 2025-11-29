@@ -1,9 +1,6 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers
 
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.CoverImageDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ReleaseDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ResourceDto
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ImageType
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ThumbnailSize
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
@@ -29,8 +26,13 @@ suspend fun ArtistDto.toArtist(isFavorite: Boolean) = Artist(
 fun ArtistDto.toArtistReleases() = ArtistReleases(
     id = id,
     name = name,
-    resources = resources.map(ResourceDto::toUiResource),
-    releases = releases.map(ReleaseDto::toRelease)
+    resources = resources.map(ResourceDto::toUiResource).groupBy { it.resourceName },
+    releases = releases
+        .map(ReleaseDto::toRelease)
+        .sortedByDescending { it.firstReleaseDate }
+        .groupBy { it.primaryType }.toList()
+        .sortedWith(compareBy { it.first.ordinal })
+        .toMap()
 )
 
 fun ResourceDto.toUiResource() = Resource(
@@ -45,30 +47,34 @@ fun ReleaseDto.toRelease() = Release(
     firstReleaseDate = firstReleaseDate,
     primaryType = primaryType,
     secondaryTypes = secondaryTypes,
-    coverUrl = coverImages.selectCover()
+    previewCoverUrl = coverImages.selectCover { selectPreview() },
+    largeCoverUrl = coverImages.selectCover { url }
 )
 
-fun List<CoverImageDto>.selectCover(): String? {
+internal fun List<CoverImageDto>.selectCover(selector: CoverImageDto.() -> String): String? {
     if (isEmpty()) return null
 
     val front = firstOrNull { it.type == ImageType.FRONT }
-    if (front != null) return front.selectPreview()
+    if (front != null) return front.selector()
 
     val back = firstOrNull { it.type == ImageType.BACK }
-    if (back != null) return back.selectPreview()
+    if (back != null) return back.selector()
 
-    return firstOrNull()?.selectPreview()
+    return firstOrNull()?.selector()
 }
 
 internal fun CoverImageDto.selectPreview(): String {
-    thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_500 }?.let { return it.url }
-    thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_250 }?.let { return it.url }
-    thumbnails.firstOrNull { it.size == ThumbnailSize.SMALL }?.let { return it.url }
-    return url
+    return (thumbnails withSize ThumbnailSize.SIZE_500)
+        ?: (thumbnails withSize ThumbnailSize.SIZE_250)
+        ?: (thumbnails withSize ThumbnailSize.SMALL)
+        ?: url
 }
 
 internal fun CoverImageDto.selectFull(): String {
-    thumbnails.firstOrNull { it.size == ThumbnailSize.SIZE_1200 }?.let { return it.url }
-    thumbnails.firstOrNull { it.size == ThumbnailSize.LARGE }?.let { return it.url }
-    return url
+    return (thumbnails withSize ThumbnailSize.SIZE_1200)
+        ?: (thumbnails withSize ThumbnailSize.LARGE)
+        ?: url
 }
+
+internal infix fun List<ThumbnailDto>.withSize(size: ThumbnailSize): String? =
+    firstOrNull { it.size == size }?.url

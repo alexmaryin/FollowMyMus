@@ -61,7 +61,11 @@ class ArtistsHost(
     override val panels: Value<ChildPanels<*, ArtistsList, *, ReleasesList, *, MediaDetails>> = _panels
 
     private fun getReleasesList(config: ArtistsPanelConfig.ReleasesConfig, context: ComponentContext) =
-        ReleasesList(get(), config.artistId, context)
+        ReleasesList(get(), config.artistId, context) { releaseId ->
+            navigation.navigate { state ->
+                state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(releaseId))
+            }
+        }
 
     private fun getMediaDetails(config: ArtistsPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)

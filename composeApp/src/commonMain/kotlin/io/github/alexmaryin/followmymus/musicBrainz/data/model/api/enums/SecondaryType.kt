@@ -39,5 +39,5 @@ enum class SecondaryType {
     SOUNDTRACK,
 
     @SerialName("Spokenword")
-    SPOKENWORD
+    SPOKEN_WORD
 }

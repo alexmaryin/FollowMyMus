@@ -7,10 +7,10 @@ import kotlinx.serialization.Serializable
 enum class ReleaseType {
     @SerialName("Album")
     ALBUM,
-    @SerialName("Single")
-    SINGLE,
     @SerialName("EP")
     EP,
+    @SerialName("Single")
+    SINGLE,
     @SerialName("Broadcast")
     BROADCAST,
     @SerialName("Other")

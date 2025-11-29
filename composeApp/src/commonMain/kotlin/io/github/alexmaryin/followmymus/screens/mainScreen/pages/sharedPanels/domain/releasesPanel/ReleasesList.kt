@@ -2,6 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.d
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
@@ -16,7 +17,8 @@ import kotlinx.coroutines.plus
 class ReleasesList(
     private val repository: ReleasesRepository,
     private val artistId: String,
-    private val context: ComponentContext
+    private val context: ComponentContext,
+    private val openMedia: (releaseId: String) -> Unit
 ) : ComponentContext by context {
 
     private val _state by saveableMutableValue(ReleasesListState.serializer(), init = ::ReleasesListState)
@@ -38,4 +40,13 @@ class ReleasesList(
             }
         }
     }
+
+    operator fun invoke(action: ReleasesListAction) {
+        when (action) {
+            is ReleasesListAction.OpenFullCover -> _state.update { it.copy(openedCover = action.coverUrl) }
+            is ReleasesListAction.SelectRelease -> openMedia(action.releaseId)
+            ReleasesListAction.CloseFullCover -> _state.update { it.copy(openedCover = null) }
+        }
+    }
+
 }

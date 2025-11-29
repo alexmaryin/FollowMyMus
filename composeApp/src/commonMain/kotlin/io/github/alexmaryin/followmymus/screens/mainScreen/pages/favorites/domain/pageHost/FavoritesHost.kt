@@ -155,7 +155,11 @@ class FavoritesHost(
         FavoritesList(config.sortingType, context, ::invoke)
 
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
-        ReleasesList(get(), config.artistId, context)
+        ReleasesList(get(), config.artistId, context) { releaseId ->
+            navigation.navigate { state ->
+                state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId))
+            }
+        }
 
     private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)
