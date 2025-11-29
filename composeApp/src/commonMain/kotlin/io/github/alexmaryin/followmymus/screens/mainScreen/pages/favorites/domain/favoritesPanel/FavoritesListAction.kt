@@ -5,4 +5,5 @@ sealed interface FavoritesListAction {
     data class OpenConfirmToRemove(val artist: ArtistToRemove) : FavoritesListAction
     data object DismissRemoveDialog : FavoritesListAction
     data object RemoveFromFavorite : FavoritesListAction
+    data class UpdateDetails(val artistId: String) : FavoritesListAction
 }

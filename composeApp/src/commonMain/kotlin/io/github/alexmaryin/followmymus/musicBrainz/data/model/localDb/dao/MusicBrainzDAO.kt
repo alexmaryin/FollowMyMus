@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb
+package io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.dao
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,11 +6,20 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MusicBrainzDAO {
+
+    // Select entities from DB in Flows
+
+    @Query("SELECT * FROM ResourceEntity WHERE artistId = :artistId")
+    fun getArtistResources(artistId: String): Flow<List<ResourceEntity>>
+
+    @Query("SELECT * FROM ReleaseEntity WHERE artistId = :artistId")
+    fun getArtistReleases(artistId: String): Flow<List<ReleaseEntity>>
 
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true")
@@ -28,12 +37,24 @@ interface MusicBrainzDAO {
     @Query("SELECT id FROM ArtistEntity WHERE syncStatus = 'PendingRemoteRemove'")
     suspend fun getArtistsIdsPendingRemove(): List<String>
 
-    @Transaction
-    @Query("SELECT * FROM ArtistEntity WHERE id = :id")
-    suspend fun getArtistById(id: String): ArtistWithRelations?
+
+    // Updates and meta data from DB
 
     @Query("SELECT EXISTS(SELECT * FROM ArtistEntity WHERE syncStatus <> 'OK')")
     suspend fun hasPendingActions(): Boolean
+
+    @Query("UPDATE ArtistEntity SET syncStatus = 'OK' WHERE id IN (:ids)")
+    suspend fun markFavoriteArtistsAsSynced(ids: Set<String>)
+
+    @Query("UPDATE ArtistEntity SET syncStatus = :newStatus, isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateArtistSyncStatus(id: String, newStatus: SyncStatus, isFavorite: Boolean = true)
+
+    @Query("UPDATE ReleaseEntity SET previewCoverUrl = :previewCoverUrl, fullCoverUrl = :fullCoverUrl WHERE id = :id")
+    suspend fun updateReleaseCovers(id: String, previewCoverUrl: String?, fullCoverUrl: String?)
+
+
+
+    // INSERTS
 
     @Upsert
     suspend fun insertArtist(artist: ArtistEntity)
@@ -43,6 +64,18 @@ interface MusicBrainzDAO {
 
     @Upsert
     suspend fun insertTags(tags: List<TagEntity>)
+
+    @Upsert
+    suspend fun insertResources(resources: List<ResourceEntity>)
+
+    @Upsert
+    suspend fun insertReleases(releases: List<ReleaseEntity>)
+
+    @Transaction
+    suspend fun insertDetailsForArtist(resources: List<ResourceEntity>, releases: List<ReleaseEntity>) {
+        insertResources(resources)
+        insertReleases(releases)
+    }
 
     @Transaction
     suspend fun insertArtist(
@@ -77,14 +110,22 @@ interface MusicBrainzDAO {
         }
     }
 
-    @Query("UPDATE ArtistEntity SET syncStatus = :newStatus, isFavorite = :isFavorite WHERE id = :id")
-    suspend fun updateArtistSyncStatus(id: String, newStatus: SyncStatus, isFavorite: Boolean = true)
+
+
+    // DELETE
 
     @Query("DELETE FROM ArtistEntity")
     suspend fun clearArtists()
 
     @Query("DELETE FROM TagEntity")
     suspend fun clearTags()
+
+    @Query("DELETE FROM ResourceEntity WHERE artistId = :artistId")
+    suspend fun clearResources(artistId: String)
+
+    @Query("DELETE FROM ReleaseEntity WHERE artistId = :artistId")
+    suspend fun clearReleases(artistId: String)
+
 
     @Query("DELETE FROM ArtistEntity WHERE id = :id")
     suspend fun deleteArtistById(id: String)
@@ -94,7 +135,4 @@ interface MusicBrainzDAO {
 
     @Query("UPDATE ArtistEntity SET isFavorite = false WHERE id = :id")
     suspend fun removeArtistFromFavorites(id: String)
-
-    @Query("UPDATE ArtistEntity SET syncStatus = 'OK' WHERE id IN (:ids)")
-    suspend fun markFavoriteArtistsAsSynced(ids: Set<String>)
 }

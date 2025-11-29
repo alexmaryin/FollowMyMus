@@ -1,9 +1,9 @@
 package io.github.alexmaryin.followmymus.core.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrainzDAO
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrainzDatabase
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrainzDbFactory
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.dao.MusicBrainzDAO
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
@@ -18,6 +18,5 @@ class DbModule() {
         .build()
 
     @Single
-    fun provideMusicBrainzDao(database: MusicBrainzDatabase): MusicBrainzDAO = database.dao
-
+    fun provideMusicBrainzDao(database: MusicBrainzDatabase): MusicBrainzDAO = database.artistsDao
 }

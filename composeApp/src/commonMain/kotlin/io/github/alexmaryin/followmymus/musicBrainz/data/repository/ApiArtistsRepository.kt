@@ -8,7 +8,7 @@ import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.MusicBrainzDAO
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.dao.MusicBrainzDAO
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toFavoriteArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
@@ -27,7 +27,7 @@ import org.koin.core.parameter.parametersOf
 
 @Factory(binds = [ArtistsRepository::class])
 class ApiArtistsRepository(
-    private val musicBrainzDAO: MusicBrainzDAO,
+    private val dao: MusicBrainzDAO,
     private val supabaseDb: SupabaseDb,
     private val searchEngine: SearchEngine
 ) : ArtistsRepository, KoinComponent {
@@ -57,17 +57,17 @@ class ApiArtistsRepository(
         return pager.flow
     }
 
-    override fun getFavoriteArtists(): Flow<List<FavoriteArtist>> = musicBrainzDAO.getFavoriteArtists().map {
+    override fun getFavoriteArtists(): Flow<List<FavoriteArtist>> = dao.getFavoriteArtists().map {
         it.map { artistWithRelations ->
             artistWithRelations.toFavoriteArtist()
         }
     }
 
-    override fun getFavoriteArtistsIds(): Flow<List<String>> = musicBrainzDAO.getFavoriteArtistsIds()
+    override fun getFavoriteArtistsIds(): Flow<List<String>> = dao.getFavoriteArtistsIds()
 
     override suspend fun addToFavorite(artist: Artist) {
         artist.dtoSource?.let {
-            musicBrainzDAO.insertFavoriteArtist(
+            dao.insertFavoriteArtist(
                 artist = it.toEntity(true, SyncStatus.PendingRemoteAdd),
                 area = it.area?.toEntity(),
                 beginArea = it.beginArea?.toEntity(),
@@ -76,15 +76,15 @@ class ApiArtistsRepository(
         }
         val remoteAdd = supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
         remoteAdd.forSuccess {
-            musicBrainzDAO.updateArtistSyncStatus(artist.id, SyncStatus.OK)
+            dao.updateArtistSyncStatus(artist.id, SyncStatus.OK)
         }
     }
 
     override suspend fun deleteFromFavorites(artistId: String) {
-        musicBrainzDAO.updateArtistSyncStatus(artistId, SyncStatus.PendingRemoteRemove, false)
+        dao.updateArtistSyncStatus(artistId, SyncStatus.PendingRemoteRemove, false)
         val remoteRemove = supabaseDb.removeRemoteFavoriteArtist(artistId)
         remoteRemove.forSuccess {
-            musicBrainzDAO.deleteArtistById(artistId)
+            dao.deleteArtistById(artistId)
         }
     }
 
@@ -93,18 +93,18 @@ class ApiArtistsRepository(
 
         _syncStatus.update { RemoteSyncStatus.Process }
         // remove first local ids marked to pending remove
-        val pendingRemove = musicBrainzDAO.getArtistsIdsPendingRemove()
+        val pendingRemove = dao.getArtistsIdsPendingRemove()
         if (pendingRemove.isNotEmpty()) {
             val removed = supabaseDb.bulkRemoveFavoriteArtists(pendingRemove)
             removed.forSuccess {
-                musicBrainzDAO.bulkDeleteArtistsById(pendingRemove)
+                dao.bulkDeleteArtistsById(pendingRemove)
             }
             removed.forError { errors += it.type }
         }
 
         // sync artists with local-first approach
-        val localIdsToPush = musicBrainzDAO.getIdsToPushAsList().toSet()
-        val localIds = musicBrainzDAO.getIdsAsList().toSet()
+        val localIdsToPush = dao.getIdsToPushAsList().toSet()
+        val localIds = dao.getIdsAsList().toSet()
         val remote = supabaseDb.getRemoteFavoritesArtists()
         remote.forSuccess { remoteArtists ->
             val remoteIds = remoteArtists.map(ArtistRemoteEntity::artistId).toSet()
@@ -120,7 +120,7 @@ class ApiArtistsRepository(
                 val remoteEntities = toPush.map { ArtistRemoteEntity(it) }
                 val pushed = supabaseDb.bulkAddFavoriteArtists(remoteEntities)
                 pushed.forSuccess {
-                    musicBrainzDAO.markFavoriteArtistsAsSynced(toPush)
+                    dao.markFavoriteArtistsAsSynced(toPush)
                 }
                 pushed.forError { errors += it.type }
             }
@@ -131,14 +131,14 @@ class ApiArtistsRepository(
                 val response = searchEngine.fetchArtistsById(ids)
                 response.forSuccess { artists ->
                     if (artists.isNotEmpty()) {
-                        musicBrainzDAO.bulkInsertArtistsDto(artists)
+                        dao.bulkInsertArtistsDto(artists)
                     }
                 }
                 response.forError { errors += it.type }
             }
 
             if (toRemoveLocal.isNotEmpty()) {
-                musicBrainzDAO.bulkDeleteArtistsById(toRemoveLocal.toList())
+                dao.bulkDeleteArtistsById(toRemoveLocal.toList())
             }
 
             checkPendingActions()
@@ -154,11 +154,11 @@ class ApiArtistsRepository(
     }
 
     override suspend fun checkPendingActions() {
-        _hasPendingActions.update { musicBrainzDAO.hasPendingActions() }
+        _hasPendingActions.update { dao.hasPendingActions() }
     }
 
     override suspend fun clearLocalData() {
-        musicBrainzDAO.clearTags()
-        musicBrainzDAO.clearArtists()
+        dao.clearTags()
+        dao.clearArtists()
     }
 }

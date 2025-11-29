@@ -7,6 +7,7 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
 import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
@@ -27,6 +28,7 @@ class FavoritesList(
 ) : ComponentContext by context, KoinComponent {
 
     private val repository by inject<ArtistsRepository>()
+    private val detailsRepository by inject<ReleasesRepository>()
     private val scope = context.coroutineScope() + SupervisorJob()
 
     val favoriteArtists = repository.getFavoriteArtists().map { list ->
@@ -70,6 +72,11 @@ class FavoritesList(
             }
 
             is FavoritesListAction.RemoveFromFavorite -> scope.launch { removeFromFavorite() }
+
+            is FavoritesListAction.UpdateDetails -> scope.launch {
+                detailsRepository.clearDetails(action.artistId)
+                detailsRepository.syncReleases(action.artistId)
+            }
         }
     }
 

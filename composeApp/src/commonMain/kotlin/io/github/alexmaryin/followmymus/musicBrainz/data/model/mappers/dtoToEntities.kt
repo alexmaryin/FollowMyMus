@@ -1,14 +1,8 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers
 
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.AreaDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.LifeSpanDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.TagDto
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.AreaEntity
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.ArtistEntity
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.LifeSpanEntity
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.TagEntity
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.*
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -45,4 +39,21 @@ fun AreaDto.toEntity() = AreaEntity(
     name = name,
     sortName = sortName,
     lifeSpan = lifeSpan?.toEntity()
+)
+
+fun ResourceDto.toEntity(artistId: String) = ResourceEntity(
+    id = url.id,
+    type = type,
+    url = url.resource,
+    artistId = artistId
+)
+
+fun ReleaseDto.toEntity(artistId: String) = ReleaseEntity(
+    id = id,
+    artistId = artistId,
+    title = title,
+    disambiguation = disambiguation,
+    firstReleaseDate = firstReleaseDate.toString(),
+    primaryType = primaryType,
+    secondaryTypes = secondaryTypes.joinToString(",")
 )
