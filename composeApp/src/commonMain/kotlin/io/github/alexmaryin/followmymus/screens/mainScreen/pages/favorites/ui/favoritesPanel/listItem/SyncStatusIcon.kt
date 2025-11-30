@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.sync_ok
@@ -13,7 +14,6 @@ import followmymus.composeapp.generated.resources.sync_pend_remove
 import io.github.alexmaryin.followmymus.core.ui.theme.FollowMyMusTheme
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SyncStatusIcon(syncStatus: SyncStatus, modifier: Modifier = Modifier) {

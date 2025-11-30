@@ -67,7 +67,7 @@ class ArtistsList(
     private fun selectArtist(artist: Artist) {
         scope.launch {
             repository.insertArtist(artist)
-            hostAction(ArtistsHostAction.ShowReleases(artist.id))
+            hostAction(ArtistsHostAction.ShowReleases(artist.id, artist.name))
         }
     }
 

@@ -7,7 +7,7 @@ import kotlinx.serialization.builtins.serializer
 sealed interface ArtistsPanelConfig {
 
     @Serializable
-    data class ReleasesConfig(val artistId: String) : ArtistsPanelConfig
+    data class ReleasesConfig(val artistId: String, val artistName: String) : ArtistsPanelConfig
 
     @Serializable
     data class MediaDetailsConfig(val releaseId: String) : ArtistsPanelConfig

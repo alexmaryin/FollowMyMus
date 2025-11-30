@@ -13,7 +13,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.more_vert
-import followmymus.composeapp.generated.resources.sync_pend_push
 import followmymus.composeapp.generated.resources.sync_pend_remove
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.setToRemove
@@ -49,19 +48,6 @@ fun ActionsIcon(
             leadingIcon = {
                 Icon(
                     painter = painterResource(Res.drawable.sync_pend_remove),
-                    contentDescription = null
-                )
-            }
-        )
-        DropdownMenuItem(
-            text = { Text("Update details") },
-            onClick = {
-                actionsMenuVisible = false
-                onAction(FavoritesListAction.UpdateDetails(artist.id))
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(Res.drawable.sync_pend_push),
                     contentDescription = null
                 )
             }

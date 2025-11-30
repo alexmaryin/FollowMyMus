@@ -34,8 +34,6 @@ fun MainScreen(
     currentPage?.let { page ->
         ObserveEvents(page.snackbarMessages, page.key) {
             snackBarHostState.showSnackbar(it)
-            // TODO delete after debug
-            println(it)
         }
     }
     Scaffold(
@@ -43,8 +41,9 @@ fun MainScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         topBar = {
             TopAppBar(
+                navigationIcon = { currentPage?.leadingIcon() },
                 title = { currentPage?.titleContent() },
-                navigationIcon = { currentPage?.leadingIcon() }
+                actions = { currentPage?.trailingIcon(this) }
             )
         },
         bottomBar = {

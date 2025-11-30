@@ -1,6 +1,11 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost
 
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -17,11 +22,10 @@ import io.github.alexmaryin.followmymus.screens.commonUi.BackIcon
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesPanelConfig
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.FavoritesTitleBar
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.nicknameAvatar.Avatar
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import kotlinx.coroutines.SupervisorJob
@@ -80,7 +84,7 @@ class FavoritesHost(
     private val _panels = childPanels(
         source = navigation,
         serializers = FavoritesPanelConfig.SERIALIZERS,
-        initialPanels = { Panels(main = FavoritesPanelConfig.ListConfig(SortArtists.NONE)) },
+        initialPanels = { Panels(main = FavoritesPanelConfig.ListConfig) },
         onStateChanged = { new, _ ->
             val backIsVisible = when {
                 new.extra != null -> true
@@ -91,13 +95,12 @@ class FavoritesHost(
                 it.copy(
                     artistIdSelected = new.details?.artistId,
                     releaseIdSelected = new.extra?.releaseId,
-                    selectedSorting = new.main.sortingType,
                     backVisible = backIsVisible
                 )
             }
         },
         handleBackButton = true,
-        mainFactory = ::getFavoritesList,
+        mainFactory = { _, ctx -> getFavoritesList(ctx) },
         detailsFactory = ::getReleasesList,
         extraFactory = ::getMediaDetails
     )
@@ -106,11 +109,6 @@ class FavoritesHost(
 
     private fun onBack() {
         navigation.pop()
-    }
-
-    override val leadingIcon = @Composable {
-        val state = state.subscribeAsState()
-        if (state.value.backVisible) BackIcon(::onBack)
     }
 
     override fun invoke(action: FavoritesHostAction) {
@@ -135,7 +133,12 @@ class FavoritesHost(
 
             is FavoritesHostAction.ShowReleases -> {
                 navigation.navigate { state ->
-                    state.copy(details = FavoritesPanelConfig.ReleasesConfig(artistId = action.artistId))
+                    state.copy(
+                        details = FavoritesPanelConfig.ReleasesConfig(
+                            artistId = action.artistId,
+                            artistName = action.artistName
+                        )
+                    )
                 }
             }
 
@@ -151,12 +154,12 @@ class FavoritesHost(
         }
     }
 
-    private fun getFavoritesList(config: FavoritesPanelConfig.ListConfig, context: ComponentContext) =
-        FavoritesList(config.sortingType, context, ::invoke)
+    private fun getFavoritesList(context: ComponentContext) =
+        FavoritesList(get(), context, ::invoke)
 
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
         ReleasesList(
-            get(), config.artistId, context,
+            get(), config.artistId, config.artistName, context,
             openMedia = { releaseId ->
                 navigation.navigate { state ->
                     state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId))
@@ -164,21 +167,36 @@ class FavoritesHost(
             }
         )
 
-
     private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
         MediaDetails(config.releaseId, context)
 
+
+    // Title bar overriding and propagating to children panels
+
+    override val leadingIcon = @Composable {
+        val state = state.subscribeAsState()
+        if (state.value.backVisible) BackIcon(::onBack)
+    }
+
     override val titleContent = @Composable {
+        val panelsState by panels.subscribeAsState()
+        val releasesPanel = panelsState.details?.instance
+        val mediaPanel = panelsState.extra?.instance
+        val singleMode = panelsState.mode == ChildPanelsMode.SINGLE
+        val title = when {
+            mediaPanel != null -> mediaPanel.titleContent
+            singleMode && releasesPanel != null -> releasesPanel.titleContent
+            else -> panelsState.main.instance.titleContent
+        }
+        title()
+    }
+
+    override val trailingIcon: @Composable (RowScope.() -> Unit) = {
         val avatarState = avatarState.subscribeAsState()
-        FavoritesTitleBar(
-            avatarState = avatarState.value,
-            onSyncRequest = ::syncWithRemote,
-            selectedSorting = state.value.selectedSorting,
-            onFilterChange = { new ->
-                navigation.navigate { state ->
-                    state.copy(main = FavoritesPanelConfig.ListConfig(new))
-                }
-            }
+        Avatar(
+            state = avatarState.value,
+            modifier = Modifier.padding(4.dp),
+            onSyncRequest = ::syncWithRemote
         )
     }
 }

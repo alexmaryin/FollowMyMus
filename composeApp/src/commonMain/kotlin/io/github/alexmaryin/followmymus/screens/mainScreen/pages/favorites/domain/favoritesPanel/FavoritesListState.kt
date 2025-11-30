@@ -11,7 +11,7 @@ data class FavoritesListState(
     val isSyncing: Boolean = false,
     val isRemoveDialogVisible: Boolean = false,
     val artistToRemove: ArtistToRemove? = null,
-    val sortingType: SortArtists,
+    val sortingType: SortArtists = SortArtists.NONE,
     val selectedArtist: String? = null,
 )
 

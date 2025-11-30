@@ -17,7 +17,7 @@ enum class SecondaryType {
     @SerialName("Demo")
     DEMO,
 
-    @SerialName("Dj-Mix")
+    @SerialName("DJ-mix")
     DJ_MIX,
 
     @SerialName("Field Recording")

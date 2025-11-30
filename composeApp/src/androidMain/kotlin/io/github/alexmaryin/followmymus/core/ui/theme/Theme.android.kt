@@ -81,6 +81,7 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun FollowMyMusTheme(
     darkTheme: Boolean,
@@ -97,7 +98,7 @@ actual fun FollowMyMusTheme(
         else -> lightScheme
     }
 
-    MaterialTheme(
+    MaterialExpressiveTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
         content = content

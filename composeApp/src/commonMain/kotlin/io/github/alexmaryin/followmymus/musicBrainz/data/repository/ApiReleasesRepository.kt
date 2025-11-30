@@ -1,5 +1,7 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
+import io.github.alexmaryin.followmymus.core.ErrorType
+import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.dao.MusicBrainzDAO
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.*
@@ -17,6 +19,8 @@ class ApiReleasesRepository(
 ) : ReleasesRepository {
 
     override val workState = MutableStateFlow(WorkState.IDLE)
+
+    override val errors = MutableSharedFlow<ErrorType>(replay = 1)
 
     override fun getArtistReleases(artistId: String) = dao.getArtistReleases(artistId)
         .map { it.groupByPrimary() }
@@ -52,8 +56,15 @@ class ApiReleasesRepository(
                         val largeUrl = coverDto.images.selectCover { url }?.httpsReplace()
                         dao.updateReleaseCovers(release.id, previewUrl, largeUrl)
                     }
+                    result.forError { error ->
+                        errors.emit(error.type)
+                    }
                 }
 
+            workState.update { WorkState.IDLE }
+        }
+        releasesResult.forError { error ->
+            errors.emit(error.type)
             workState.update { WorkState.IDLE }
         }
     }

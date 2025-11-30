@@ -45,7 +45,7 @@ fun FavoriteListItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ActionsIcon(artist, onAction)
-                OpenReleasesIcon { onAction(FavoritesListAction.SelectArtist(artist.id)) }
+                OpenReleasesIcon { onAction(FavoritesListAction.SelectArtist(artist.id, artist.name)) }
             }
         },
         colors = ListItemDefaults.colors(

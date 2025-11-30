@@ -5,7 +5,7 @@ import com.arkivanov.decompose.router.panels.ChildPanelsMode
 
 @OptIn(ExperimentalDecomposeApi::class)
 sealed interface ArtistsHostAction {
-    data class ShowReleases(val artistId: String): ArtistsHostAction
+    data class ShowReleases(val artistId: String, val artistName: String): ArtistsHostAction
     data class ShowMediaDetails(val releaseId: String): ArtistsHostAction
     data object CloseReleases : ArtistsHostAction
     data object CloseMediaDetails : ArtistsHostAction

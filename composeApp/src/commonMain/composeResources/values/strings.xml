@@ -10,8 +10,11 @@
     <string name="credentials_invalid">Nickname or password are invalid</string>
     <string name="qr_invalid">QR code is not valid</string>
     <string name="invalid_response_api">Invalid response from web service</string>
+    <string name="mapping_error">Got unexpected data from server</string>
     <string name="server_error_code">Server error %1$d: %2$s</string>
+    <string name="server_error">Server error %1$s</string>
     <string name="network_error_msg">Network error: %1$s</string>
+    <string name="timeout_error_msg">Timeout for response</string>
     <!--    Pages titles-->
     <string name="artists_page_title">Artists</string>
     <string name="releases_page_title">Releases</string>
