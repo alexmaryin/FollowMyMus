@@ -3,20 +3,23 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.f
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.favorite_artists_list_title
 import followmymus.composeapp.generated.resources.remove_artist_dialog_text
 import followmymus.composeapp.generated.resources.remove_artist_dialog_title
+import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
@@ -25,6 +28,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.fa
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ListHeader
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FavoritesPanelUi(component: FavoritesList) {
     val state by component.state.subscribeAsState()
@@ -45,8 +49,8 @@ fun FavoritesPanelUi(component: FavoritesList) {
     ) {
         when {
             state.isLoading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                VinylLoadingIndicator(
+                    modifier = Modifier.align(Alignment.Center).size(100.dp)
                 )
             }
 

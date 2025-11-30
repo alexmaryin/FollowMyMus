@@ -7,12 +7,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +25,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
+import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchError
 import io.github.alexmaryin.followmymus.screens.commonUi.EmptyListPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
@@ -36,6 +39,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ArtistsPanelUi(component: ArtistsList) {
 
@@ -83,15 +87,15 @@ fun ArtistsPanelUi(component: ArtistsList) {
         modifier = Modifier.fillMaxSize()
     ) {
         if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+            VinylLoadingIndicator(
+                modifier = Modifier.align(Alignment.Center).size(150.dp)
             )
         } else {
             HandlePagingItems(artists) {
 
                 OnEmpty { EmptyListPlaceholder() }
 
-                OnRefresh { CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) }
+                OnRefresh { VinylLoadingIndicator(modifier = Modifier.align(Alignment.Center).size(150.dp)) }
 
                 OnError { error ->
                     val errorText = when (error) {
@@ -127,7 +131,7 @@ fun ArtistsPanelUi(component: ArtistsList) {
                         onPagingItems({ it.id }) { artist ->
                             ArtistListItem(artist, component::invoke)
                         }
-                        onAppendItem { CircularProgressIndicator(Modifier.padding(6.dp)) }
+                        onAppendItem { LoadingIndicator(Modifier.padding(6.dp)) }
                         onLastItem { }
                     }
                 }
