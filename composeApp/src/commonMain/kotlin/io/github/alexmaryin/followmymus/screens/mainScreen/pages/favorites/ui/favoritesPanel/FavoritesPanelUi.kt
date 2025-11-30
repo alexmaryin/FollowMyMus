@@ -15,17 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import followmymus.composeapp.generated.resources.Res
-import followmymus.composeapp.generated.resources.favorite_artists_list_title
-import followmymus.composeapp.generated.resources.remove_artist_dialog_text
-import followmymus.composeapp.generated.resources.remove_artist_dialog_title
+import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.SortKeyType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.EmptyFavoritesPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.listItem.FavoriteListItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ListHeader
+import io.github.alexmaryin.followmymus.screens.utils.DateCategory
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -72,9 +72,25 @@ fun FavoritesPanelUi(component: FavoritesList) {
                     }
 
                     favoriteArtists.forEach { (key, favoriteArtists) ->
-                        if (key.isNotBlank()) {
-                            stickyHeader(key = key) {
-                                ListHeader(key)
+                        if (key !is SortKeyType.None) {
+                            stickyHeader(key = key.key) {
+                                val caption = when (key) {
+                                    is SortKeyType.Abc -> key.letter
+
+                                    is SortKeyType.Country -> {
+                                        val resource = key.country.toLocalizedResourceName()
+                                        stringResource(resource ?: Res.string.ISO_unknown)
+                                    }
+
+                                    is SortKeyType.Date -> when (key.date) {
+                                        is DateCategory.ByYear -> key.date.year.toString()
+                                        is DateCategory.Recent -> stringResource(key.date.type.titleRes)
+                                    }
+
+                                    is SortKeyType.Type -> key.value.name
+                                    else -> ""
+                                }
+                                ListHeader(caption)
                             }
                         }
 

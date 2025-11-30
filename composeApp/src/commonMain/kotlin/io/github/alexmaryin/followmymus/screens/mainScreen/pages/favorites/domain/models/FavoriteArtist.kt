@@ -13,7 +13,7 @@ data class FavoriteArtist(
     val name: String,
     val sortName: String,
     val description: String? = null,
-    val country: CountryISO? = null,
+    val country: CountryISO = CountryISO("unknown"),
     val area: Area? = null,
     val beginArea: Area? = null,
     val lifeSpan: LifeSpan? = null,

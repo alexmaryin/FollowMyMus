@@ -248,4 +248,5 @@
     <string name="ISO_ZA">South Africa</string>
     <string name="ISO_ZM">Zambia</string>
     <string name="ISO_ZW">Zimbabwe</string>
+    <string name="ISO_unknown">-</string>
 </resources>

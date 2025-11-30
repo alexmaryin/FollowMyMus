@@ -15,7 +15,7 @@ data class ArtistEntity(
     val type: ArtistType?,
     val name: String,
     val sortName: String,
-    val country: CountryISO?,
+    val country: CountryISO = CountryISO("unknown"),
     val areaId: String?,
     val beginAreaId: String?,
     val disambiguation: String?,

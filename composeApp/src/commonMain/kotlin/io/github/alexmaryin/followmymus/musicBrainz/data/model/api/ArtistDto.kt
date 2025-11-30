@@ -12,7 +12,7 @@ data class ArtistDto(
     val score: Int?,
     val name: String,
     @SerialName("sort-name") val sortName: String,
-    val country: CountryISO?,
+    val country: CountryISO = CountryISO("unknown"),
     val area: AreaDto?,
     @SerialName("begin-area") val beginArea: AreaDto?,
     val disambiguation: String?,

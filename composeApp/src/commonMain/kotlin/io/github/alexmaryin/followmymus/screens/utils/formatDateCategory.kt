@@ -4,12 +4,12 @@ import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.sort_date_this_month
 import followmymus.composeapp.generated.resources.sort_date_this_week
 import followmymus.composeapp.generated.resources.sort_date_today
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.SortKeyType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -22,11 +22,6 @@ enum class RecentDate(val titleRes: StringResource) {
     TODAY(Res.string.sort_date_today),
     THIS_WEEK(Res.string.sort_date_this_week),
     THIS_MONTH(Res.string.sort_date_this_month)
-}
-
-suspend fun DateCategory.toTitle() = when (this) {
-    is DateCategory.Recent -> getString(this.type.titleRes)
-    is DateCategory.ByYear -> this.year.toString()
 }
 
 fun Instant.toDateCategory(
@@ -43,7 +38,7 @@ fun Instant.toDateCategory(
     }
 }
 
-suspend fun Map<DateCategory, List<FavoriteArtist>>.sortDateCategoryGroups(): Map<String, List<FavoriteArtist>> {
+fun Map<DateCategory, List<FavoriteArtist>>.sortDateCategoryGroups(): Map<SortKeyType.Date, List<FavoriteArtist>> {
 
     val sorted = toList().sortedWith { (key1, _), (key2, _) ->
         when {
@@ -58,7 +53,7 @@ suspend fun Map<DateCategory, List<FavoriteArtist>>.sortDateCategoryGroups(): Ma
 
             else -> 0
         }
-    }.associate { (category, list) -> category.toTitle() to list }
+    }.associate { (category, list) -> SortKeyType.Date(category) to list }
 
     return sorted
 }
