@@ -16,8 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.SubcomposeAsyncImage
 
-// TODO take in account scale coefficient for panning
-
 @Composable
 fun CoverView(url: String, onDismiss: () -> Unit) {
     Dialog(
@@ -26,8 +24,8 @@ fun CoverView(url: String, onDismiss: () -> Unit) {
         var scale by remember { mutableFloatStateOf(1f) }
         var offset by remember { mutableStateOf(Offset.Zero) }
         val state = rememberTransformableState { zoomChange, panChange, _ ->
-            scale *= zoomChange
-            offset += panChange
+            scale = (scale * zoomChange).coerceAtLeast(0.8f)
+            offset += panChange * scale
         }
 
         SubcomposeAsyncImage(
