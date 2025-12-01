@@ -15,6 +15,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
+import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
@@ -28,16 +29,15 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domai
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.nicknameAvatar.Avatar
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
-@OptIn(ExperimentalDecomposeApi::class)
+@OptIn(ExperimentalDecomposeApi::class, ExperimentalCoroutinesApi::class)
 @Factory(binds = [FavoritesHostComponent::class])
 class FavoritesHost(
     private val repository: ArtistsRepository,
@@ -50,33 +50,7 @@ class FavoritesHost(
     override val state: Value<FavoritesHostState> = _state
 
     private val avatarState = MutableValue(AvatarState(nickname))
-    private val scope = componentContext.coroutineScope() + SupervisorJob()
-
-    private val _events = MutableSharedFlow<String>()
-    override val snackbarMessages = _events.asSharedFlow()
-
-    init {
-        lifecycle.doOnStart {
-            scope.launch {
-                repository.syncStatus.collect { status ->
-                    avatarState.update {
-                        it.copy(isSyncing = status is RemoteSyncStatus.Process)
-                    }
-                    if (status is RemoteSyncStatus.Error) {
-                        _events.emit(status.errors.joinToString())
-                    }
-                }
-            }
-            scope.launch {
-                repository.checkPendingActions()
-                repository.hasPendingActions.collect { hasPending ->
-                    avatarState.update {
-                        it.copy(hasPending = hasPending)
-                    }
-                }
-            }
-        }
-    }
+    private val scope = componentContext.coroutineScope()
 
     private val navigation =
         PanelsNavigation<FavoritesPanelConfig.ListConfig, FavoritesPanelConfig.ReleasesConfig, FavoritesPanelConfig.MediaDetailsConfig>()
@@ -106,6 +80,43 @@ class FavoritesHost(
     )
 
     override val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>> = _panels
+
+    private val _events = Channel<String>(Channel.BUFFERED)
+    override val snackbarMessages = _events.receiveAsFlow()
+
+    init {
+        panels.asFlow().flatMapLatest { updatePanels ->
+            merge(
+                updatePanels.main.instance.snackbarMessages,
+                updatePanels.details?.instance?.snackbarMessages ?: emptyFlow(),
+                updatePanels.extra?.instance?.snackbarMessages ?: emptyFlow()
+            )
+        }
+            .onEach { message -> _events.send(message) }
+            .launchIn(scope)
+
+
+        lifecycle.doOnStart {
+            scope.launch {
+                repository.syncStatus.collect { status ->
+                    avatarState.update {
+                        it.copy(isSyncing = status is RemoteSyncStatus.Process)
+                    }
+                    if (status is RemoteSyncStatus.Error) {
+                        _events.send(status.errors.joinToString())
+                    }
+                }
+            }
+            scope.launch {
+                repository.checkPendingActions()
+                repository.hasPendingActions.collect { hasPending ->
+                    avatarState.update {
+                        it.copy(hasPending = hasPending)
+                    }
+                }
+            }
+        }
+    }
 
     private fun onBack() {
         navigation.pop()

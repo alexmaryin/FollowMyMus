@@ -14,13 +14,10 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesListTitle
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import org.jetbrains.compose.resources.getString
 
 class ReleasesList(
@@ -33,10 +30,10 @@ class ReleasesList(
 
     private val _state by saveableMutableValue(ReleasesListState.serializer(), init = ::ReleasesListState)
     val state: Value<ReleasesListState> = _state
-    private val scope = context.coroutineScope() + SupervisorJob()
+    private val scope = context.coroutineScope()
 
-    private val errors = MutableSharedFlow<String>()
-    override val snackbarMessages: SharedFlow<String> = errors.asSharedFlow()
+    private val errors = Channel<String>(Channel.CONFLATED)
+    override val snackbarMessages get() = errors.receiveAsFlow()
 
     val resources = repository.getArtistResources(artistId)
 
@@ -46,7 +43,9 @@ class ReleasesList(
         lifecycle.doOnStart {
 
             scope.launch {
-                if (releases.first().isEmpty()) repository.syncReleases(artistId)
+                if (releases.first().isEmpty()) {
+                    repository.syncReleases(artistId)
+                }
             }
 
             scope.launch {
@@ -59,16 +58,21 @@ class ReleasesList(
                 repository.errors.collect {
                     val message = when (it) {
                         BrainzApiError.InvalidResponse -> getString(Res.string.invalid_response_api)
+
                         BrainzApiError.MappingError -> getString(Res.string.mapping_error)
-                        is BrainzApiError.NetworkError -> it.message?.let { msg ->
-                            getString(Res.string.network_error_msg, msg)
-                        } ?: getString(Res.string.network_error)
+
+                        is BrainzApiError.NetworkError if it.message != null ->
+                            getString(Res.string.network_error_msg, it.message)
 
                         is BrainzApiError.ServerError -> getString(Res.string.server_error_code, it.message ?: "")
+
                         BrainzApiError.Timeout -> getString(Res.string.timeout_error_msg)
-                        else -> getString(Res.string.network_error)
+
+                        is BrainzApiError.Unknown -> getString(Res.string.network_error_msg, it.message ?: "")
+
+                        else -> null
                     }
-                    errors.emit(message)
+                    message?.let { errors.send(message) }
                 }
             }
         }

@@ -3,13 +3,13 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.MainPages
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
@@ -31,11 +31,14 @@ fun MainScreen(
     val currentPage = screenPages.items[state.activePageIndex].instance
     val snackBarHostState = remember { SnackbarHostState() }
 
-    currentPage?.let { page ->
-        ObserveEvents(page.snackbarMessages, page.key) {
-            snackBarHostState.showSnackbar(it)
+    currentPage?.let {
+        LaunchedEffect(it.key) {
+            it.snackbarMessages.collect { message ->
+                snackBarHostState.showSnackbar(message)
+            }
         }
     }
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),

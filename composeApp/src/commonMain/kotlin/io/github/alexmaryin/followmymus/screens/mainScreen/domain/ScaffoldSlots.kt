@@ -5,8 +5,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.jetbrains.compose.resources.stringResource
 
 interface ScaffoldSlots {
@@ -14,11 +14,11 @@ interface ScaffoldSlots {
     val leadingIcon: @Composable () -> Unit
     val trailingIcon: @Composable RowScope.() -> Unit
     val fabContent: @Composable () -> Unit
-    val snackbarMessages: SharedFlow<String>
+    val snackbarMessages: Flow<String>
 }
 
 object DefaultScaffoldSlots : ScaffoldSlots {
-    override val snackbarMessages = MutableSharedFlow<String>()
+    override val snackbarMessages = emptyFlow<String>()
     override val fabContent: @Composable () -> Unit = {}
     override val leadingIcon: @Composable () -> Unit = {}
     override val trailingIcon: @Composable RowScope.() -> Unit = {}
