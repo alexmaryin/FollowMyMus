@@ -13,6 +13,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesListTitle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -33,7 +34,7 @@ class ReleasesList(
     val state: Value<ReleasesListState> = _state
     private val scope = context.coroutineScope()
 
-    private val errors = Channel<String>(Channel.CONFLATED)
+    private val errors = Channel<SnackbarMsg>()
     override val snackbarMessages get() = errors.receiveAsFlow().distinctUntilChanged()
 
     val resources = repository.getArtistResources(artistId)
@@ -75,7 +76,11 @@ class ReleasesList(
 
                         else -> null
                     }
-                    message?.let { errors.send(message) }
+                    message?.let { msg ->
+                        errors.send(
+                            SnackbarMsg(key = artistId, message = msg)
+                        )
+                    }
                 }
             }
         }

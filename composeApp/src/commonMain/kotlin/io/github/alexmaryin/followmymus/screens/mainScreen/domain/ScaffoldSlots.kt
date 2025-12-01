@@ -14,11 +14,13 @@ interface ScaffoldSlots {
     val leadingIcon: @Composable () -> Unit
     val trailingIcon: @Composable RowScope.() -> Unit
     val fabContent: @Composable () -> Unit
-    val snackbarMessages: Flow<String>
+    val snackbarMessages: Flow<SnackbarMsg>
 }
 
+data class SnackbarMsg(val key: String, val message: String)
+
 object DefaultScaffoldSlots : ScaffoldSlots {
-    override val snackbarMessages = emptyFlow<String>()
+    override val snackbarMessages = emptyFlow<SnackbarMsg>()
     override val fabContent: @Composable () -> Unit = {}
     override val leadingIcon: @Composable () -> Unit = {}
     override val trailingIcon: @Composable RowScope.() -> Unit = {}

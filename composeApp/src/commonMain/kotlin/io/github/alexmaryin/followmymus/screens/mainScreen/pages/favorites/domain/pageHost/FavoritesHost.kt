@@ -22,6 +22,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.commonUi.BackIcon
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
@@ -81,7 +82,7 @@ class FavoritesHost(
 
     override val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>> = _panels
 
-    private val _events = Channel<String>(Channel.CONFLATED)
+    private val _events = Channel<SnackbarMsg>()
     override val snackbarMessages = _events.receiveAsFlow().distinctUntilChanged()
 
     init {
@@ -92,6 +93,7 @@ class FavoritesHost(
                 updatePanels.extra?.instance?.snackbarMessages ?: emptyFlow()
             )
         }
+            .distinctUntilChanged()
             .onEach { message -> _events.send(message) }
             .launchIn(scope)
 
@@ -103,7 +105,9 @@ class FavoritesHost(
                         it.copy(isSyncing = status is RemoteSyncStatus.Process)
                     }
                     if (status is RemoteSyncStatus.Error) {
-                        _events.send(status.errors.joinToString())
+                        _events.send(
+                            SnackbarMsg(key, status.errors.joinToString())
+                        )
                     }
                 }
             }

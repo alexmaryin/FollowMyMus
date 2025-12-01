@@ -9,6 +9,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import org.koin.core.annotation.Single
 
@@ -20,7 +21,8 @@ class ApiReleasesRepository(
 
     override val workState = MutableStateFlow(WorkState.IDLE)
 
-    override val errors = MutableSharedFlow<ErrorType>(replay = 1)
+    private val _errors = Channel<ErrorType>()
+    override val errors = _errors.receiveAsFlow()
 
     override fun getArtistReleases(artistId: String) = dao.getArtistReleases(artistId)
         .map { it.groupByCategories() }
@@ -57,14 +59,14 @@ class ApiReleasesRepository(
                         dao.updateReleaseCovers(release.id, previewUrl, largeUrl)
                     }
                     result.forError { error ->
-                        errors.emit(error.type)
+                        _errors.send(error.type)
                     }
                 }
 
             workState.update { WorkState.IDLE }
         }
         releasesResult.forError { error ->
-            errors.emit(error.type)
+            _errors.send(error.type)
             workState.update { WorkState.IDLE }
         }
     }
