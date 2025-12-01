@@ -23,7 +23,7 @@ class ApiReleasesRepository(
     override val errors = MutableSharedFlow<ErrorType>(replay = 1)
 
     override fun getArtistReleases(artistId: String) = dao.getArtistReleases(artistId)
-        .map { it.groupByPrimary() }
+        .map { it.groupByCategories() }
 
     override fun getArtistResources(artistId: String) = dao.getArtistResources(artistId)
         .map { it.groupByType() }

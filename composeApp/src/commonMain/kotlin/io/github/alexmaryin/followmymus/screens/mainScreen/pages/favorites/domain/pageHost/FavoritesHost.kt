@@ -81,8 +81,8 @@ class FavoritesHost(
 
     override val panels: Value<ChildPanels<*, FavoritesList, *, ReleasesList, *, MediaDetails>> = _panels
 
-    private val _events = Channel<String>(Channel.BUFFERED)
-    override val snackbarMessages = _events.receiveAsFlow()
+    private val _events = Channel<String>(Channel.CONFLATED)
+    override val snackbarMessages = _events.receiveAsFlow().distinctUntilChanged()
 
     init {
         panels.asFlow().flatMapLatest { updatePanels ->

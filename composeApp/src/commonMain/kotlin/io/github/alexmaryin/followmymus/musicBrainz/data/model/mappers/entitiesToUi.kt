@@ -32,10 +32,10 @@ internal fun List<ResourceEntity>.groupByType() =
     map { Resource(it.type, it.url) }
         .groupBy { it.resourceName }
 
-internal fun List<ReleaseEntity>.groupByPrimary() = map { it.toRelease() }
+internal fun List<ReleaseEntity>.groupByCategories() = map { it.toRelease() }
     .sortedByDescending { it.firstReleaseDate }
-    .groupBy { it.primaryType }.toList()
-    .sortedWith(compareBy { it.first.ordinal })
+    .groupBy { (listOf(it.primaryType) + it.secondaryTypes).joinToString(" + ") }.toList()
+    .sortedWith(compareBy { it.first })
     .toMap()
 
 internal fun ReleaseEntity.toRelease() = Release(

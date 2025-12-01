@@ -57,7 +57,6 @@ class ReleasesList(
 
             scope.launch {
                 repository.errors.collect {
-                    println("BRAINZ ERROR: $it")
                     val message = when (it) {
                         BrainzApiError.InvalidResponse -> getString(Res.string.invalid_response_api)
 

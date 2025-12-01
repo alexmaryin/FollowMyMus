@@ -2,6 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.f
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
@@ -37,7 +38,10 @@ fun FavoriteListItem(
                 DetailsOpenIcon(hasDetails) { detailsVisible = it }
             }
         },
-        headlineContent = artistNameLabel(artist.name),
+        headlineContent = artistNameLabel(
+            artist.name, modifier = Modifier
+                .clickable { onAction(FavoritesListAction.SelectArtist(artist.id, artist.name)) }
+        ),
         overlineContent = { artistDescription(artist.description) },
         trailingContent = {
             Row(

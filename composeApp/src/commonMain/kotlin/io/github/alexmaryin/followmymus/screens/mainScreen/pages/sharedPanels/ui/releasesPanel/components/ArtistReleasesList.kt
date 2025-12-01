@@ -11,13 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ReleaseType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Release
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 
 @Composable
 fun ArtistReleasesList(
-    releases: Map<ReleaseType, List<Release>>,
+    releases: Map<String, List<Release>>,
     actionHandler: (ReleasesListAction) -> Unit
 ) {
     val releasesState = rememberLazyListState()
@@ -26,7 +25,7 @@ fun ArtistReleasesList(
         releases.forEach { (type, releases) ->
             stickyHeader {
                 Text(
-                    text = type.name,
+                    text = type,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .fillMaxWidth()
