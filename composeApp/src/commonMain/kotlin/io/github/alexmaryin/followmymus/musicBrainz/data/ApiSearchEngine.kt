@@ -53,13 +53,13 @@ class ApiSearchEngine(
     override suspend fun searchCovers(releaseId: String): Result<CoverArtResponse> = safeCall {
         val response: CoverArtResponse =
             httpClient.get("${SearchEngine.COVER_ART_BASE_URL}/release-group/$releaseId") {
-            url {
-                parameters.append("fmt", "json")
-            }
-            headers {
-                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
-            }
-        }.body()
+                url {
+                    parameters.append("fmt", "json")
+                }
+                headers {
+                    append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+                }
+            }.body()
         response
     }
 
@@ -96,6 +96,11 @@ class ApiSearchEngine(
         Result.Error(BrainzApiError.InvalidResponse)
     } catch (_: IllegalArgumentException) {
         Result.Error(BrainzApiError.MappingError)
+    } catch (e: NoTransformationFoundException) {
+        println(e.message)
+        if (e.message.contains("coverart"))
+            Result.Error(BrainzApiError.NoCoverError) else
+            Result.Error(BrainzApiError.MappingError)
     } catch (e: Exception) {
         Result.Error(BrainzApiError.Unknown(e.message))
     }

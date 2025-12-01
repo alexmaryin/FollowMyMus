@@ -7,6 +7,7 @@ sealed class BrainzApiError : ErrorType() {
     data object Timeout : BrainzApiError()
     data object InvalidResponse : BrainzApiError()
     data object MappingError : BrainzApiError()
+    data object NoCoverError : BrainzApiError()
     data class ServerError(val message: String?) : BrainzApiError()
     data class Unknown(val message: String?) : BrainzApiError()
 }

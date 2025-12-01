@@ -15,6 +15,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffol
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesListTitle
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class ReleasesList(
     private val scope = context.coroutineScope()
 
     private val errors = Channel<String>(Channel.CONFLATED)
-    override val snackbarMessages get() = errors.receiveAsFlow()
+    override val snackbarMessages get() = errors.receiveAsFlow().distinctUntilChanged()
 
     val resources = repository.getArtistResources(artistId)
 
@@ -56,6 +57,7 @@ class ReleasesList(
 
             scope.launch {
                 repository.errors.collect {
+                    println("BRAINZ ERROR: $it")
                     val message = when (it) {
                         BrainzApiError.InvalidResponse -> getString(Res.string.invalid_response_api)
 
@@ -67,6 +69,8 @@ class ReleasesList(
                         is BrainzApiError.ServerError -> getString(Res.string.server_error_code, it.message ?: "")
 
                         BrainzApiError.Timeout -> getString(Res.string.timeout_error_msg)
+
+                        BrainzApiError.NoCoverError -> getString(Res.string.no_cover_error_msg)
 
                         is BrainzApiError.Unknown -> getString(Res.string.network_error_msg, it.message ?: "")
 
