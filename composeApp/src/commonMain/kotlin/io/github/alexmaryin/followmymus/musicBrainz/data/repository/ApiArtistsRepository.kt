@@ -7,7 +7,9 @@ import androidx.paging.PagingSource
 import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.ArtistEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.dao.MusicBrainzDAO
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toFavoriteArtist
@@ -65,10 +67,10 @@ class ApiArtistsRepository(
 
     override fun getFavoriteArtistsIds(): Flow<List<String>> = dao.getFavoriteArtistsIds()
 
-    override suspend fun insertArtist(artist: Artist) {
+    private suspend fun insertArtist(artist: Artist, transform:  ArtistDto.() -> ArtistEntity) {
         artist.dtoSource?.let {
             dao.insertArtist(
-                artist = it.toEntity(false, SyncStatus.PendingRemoteRemove),
+                artist = transform(it),
                 area = it.area?.toEntity(),
                 beginArea = it.beginArea?.toEntity(),
                 tags = it.tags.map { tag -> tag.toEntity(artist.id) }
@@ -76,15 +78,12 @@ class ApiArtistsRepository(
         }
     }
 
+    override suspend fun cacheArtist(artist: Artist) = insertArtist(artist) {
+        toEntity(false, SyncStatus.PendingRemoteRemove)
+    }
+
     override suspend fun addToFavorite(artist: Artist) {
-        artist.dtoSource?.let {
-            dao.insertFavoriteArtist(
-                artist = it.toEntity(true, SyncStatus.PendingRemoteAdd),
-                area = it.area?.toEntity(),
-                beginArea = it.beginArea?.toEntity(),
-                tags = it.tags.map { tag -> tag.toEntity(artist.id) }
-            )
-        }
+        insertArtist(artist) { toEntity(true, SyncStatus.PendingRemoteAdd) }
         val remoteAdd = supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
         remoteAdd.forSuccess {
             dao.updateArtistSyncStatus(artist.id, SyncStatus.OK)

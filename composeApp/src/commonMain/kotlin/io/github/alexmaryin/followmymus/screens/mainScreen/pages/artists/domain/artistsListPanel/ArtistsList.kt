@@ -18,15 +18,14 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.arti
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 class ArtistsList(
+    private val repository: ArtistsRepository,
     private val context: ComponentContext,
     private val hostAction: (ArtistsHostAction) -> Unit
 ) : ComponentContext by context, KoinComponent {
 
-    private val repository by inject<ArtistsRepository>()
-    private val scope = context.coroutineScope() + SupervisorJob()
+    private val scope = context.coroutineScope()
 
     private val _state by saveableMutableValue(ArtistsListState.serializer(), init = ::ArtistsListState)
     val state: Value<ArtistsListState> = _state
@@ -42,6 +41,7 @@ class ArtistsList(
     init {
         // When the component is created/recreated, check if there's a query in the saved state and restore search.
         if (state.value.query.isNotBlank()) pager.search(state.value.query)
+        else hostAction(ArtistsHostAction.CloseReleases)
 
         scope.launch {
             repository.searchCount.collect { total ->
@@ -66,7 +66,7 @@ class ArtistsList(
 
     private fun selectArtist(artist: Artist) {
         scope.launch {
-            repository.insertArtist(artist)
+            repository.cacheArtist(artist)
             hostAction(ArtistsHostAction.ShowReleases(artist.id, artist.name))
         }
     }
@@ -102,7 +102,8 @@ class ArtistsList(
             .cachedIn(scope)
             .combine(repository.getFavoriteArtistsIds()) { pagingData, favoriteIds ->
                 pagingData.map { artist ->
-                    artist.copy(isFavorite = artist.id in favoriteIds)
+                    if (artist.id in favoriteIds)
+                        artist.copy(isFavorite = true) else artist
                 }
             }
 

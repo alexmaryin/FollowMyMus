@@ -6,7 +6,6 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
-import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.rootNavigation.RootComponent.Child
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.PagerComponent
@@ -14,10 +13,7 @@ import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.getNickname
 import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
@@ -30,13 +26,7 @@ class MainRootComponent(
     override val state = MutableValue(RootState())
 
     private val sessionManager by inject<SessionManager>()
-    private val scope = componentContext.coroutineScope() + SupervisorJob()
-
-    init {
-        lifecycle.doOnStart {
-            observeSessionStatus()
-        }
-    }
+    private val scope = componentContext.coroutineScope()
 
     private val navigation = StackNavigation<Config>()
 
@@ -47,7 +37,10 @@ class MainRootComponent(
         handleBackButton = true
     ) { config, context ->
         when (config) {
-            is Config.Splash -> Child.Splash
+            is Config.Splash -> {
+                scope.launch { observeSessionStatus() }
+                Child.Splash
+            }
 
             is Config.Login -> Child.LoginChild(
                 login(config.qrCode, context) { navigation.replaceCurrent(Config.SignUp) }
@@ -79,10 +72,9 @@ class MainRootComponent(
         nickName: String
     ) = get<PagerComponent> { parametersOf(componentContext, nickName) }
 
-    private fun observeSessionStatus() = scope.launch {
+    private suspend fun observeSessionStatus() {
 
-        sessionManager.sessionStatus().collectLatest { sessionStatus ->
-            println(sessionStatus)
+        sessionManager.sessionStatus().collect { sessionStatus ->
             when (sessionStatus) {
                 is SessionStatus.Authenticated -> navigation.replaceAll(
                     Config.MainScreen(

@@ -53,7 +53,7 @@ class ArtistsHost(
             }
         },
         handleBackButton = true,
-        mainFactory = { _, context -> ArtistsList(context, ::invoke) },
+        mainFactory = { _, context -> ArtistsList(get(),context, ::invoke) },
         detailsFactory = ::getReleasesList,
         extraFactory = ::getMediaDetails
     )

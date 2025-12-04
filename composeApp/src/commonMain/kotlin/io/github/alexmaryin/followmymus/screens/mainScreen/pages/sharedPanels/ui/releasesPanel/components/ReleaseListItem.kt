@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.vinyl_fallback
+import followmymus.composeapp.generated.resources.vinyl_loading
 import followmymus.composeapp.generated.resources.vinyl_placeholder
 import io.github.alexmaryin.followmymus.musicBrainz.data.utils.formatToDayMonthYear
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Release
@@ -41,8 +42,8 @@ fun ReleaseListItem(release: Release, actionHandler: (ReleasesListAction) -> Uni
                             }
                         },
                     contentDescription = "cover image for ${release.title}",
-                    fallback = painterResource(Res.drawable.vinyl_fallback),
-                    placeholder = painterResource(Res.drawable.vinyl_placeholder),
+                    fallback = painterResource(Res.drawable.vinyl_placeholder),
+                    placeholder = painterResource(Res.drawable.vinyl_loading),
                     error = painterResource(Res.drawable.vinyl_fallback)
                 )
             } else {

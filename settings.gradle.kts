@@ -12,6 +12,10 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            name = "kotzilla"
+            url = uri("https://repository.kotzilla.io/repository/kotzilla-platform/")
+        }
     }
 }
 
@@ -25,6 +29,10 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven {
+            name = "kotzilla"
+            url = uri("https://repository.kotzilla.io/repository/kotzilla-platform/")
+        }
     }
 }
 

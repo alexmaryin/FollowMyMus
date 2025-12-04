@@ -5,18 +5,17 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ArtistType
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.CountryISO
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesListTitle
-import io.github.alexmaryin.followmymus.screens.utils.DateCategory
 import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
 import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups
 import io.github.alexmaryin.followmymus.screens.utils.toDateCategory
@@ -58,6 +57,22 @@ class FavoritesList(
             }
         }
 
+    init {
+        lifecycle.doOnStart {
+            scope.launch {
+                if (favoriteArtists.first().isEmpty()) {
+                    repository.syncRemote()
+                }
+            }
+
+            scope.launch {
+                repository.syncStatus.collect { status ->
+                    _state.update { state -> state.copy(isLoading = status == RemoteSyncStatus.Process) }
+                }
+            }
+        }
+    }
+
     operator fun invoke(action: FavoritesListAction) {
         when (action) {
             is FavoritesListAction.SelectArtist -> {
@@ -78,6 +93,8 @@ class FavoritesList(
             is FavoritesListAction.ChangeSorting -> {
                 _state.update { it.copy(sortingType = action.newSort) }
             }
+
+            FavoritesListAction.Refresh -> scope.launch { repository.syncRemote() }
         }
     }
 
@@ -96,12 +113,4 @@ class FavoritesList(
             invoke(FavoritesListAction.ChangeSorting(newSort))
         }
     }
-}
-
-sealed class SortKeyType(val key: String) {
-    data object None : SortKeyType("")
-    data class Date(val date: DateCategory) : SortKeyType(date.toString())
-    data class Country(val country: CountryISO) : SortKeyType(country.country)
-    data class Abc(val letter: String) : SortKeyType(letter)
-    data class Type(val value: ArtistType) : SortKeyType(value.name)
 }

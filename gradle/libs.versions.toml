@@ -32,6 +32,7 @@ mockk = "1.14.6"
 room = "2.8.4"
 sqlite = "2.6.2"
 coil = "3.3.0"
+kotzilla = "1.4.0"
 
 # app versions
 android-versionCode = "1"
@@ -107,6 +108,8 @@ mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
 android-test-compose = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
 android-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
 
+kotzilla-sdk-compose = { group = "io.kotzilla", name = "kotzilla-sdk-compose", version.ref = "kotzilla" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -118,3 +121,4 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotzilla = { id = "io.kotzilla.kotzilla-plugin", version.ref = "kotzilla" }

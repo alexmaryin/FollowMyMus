@@ -14,6 +14,8 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.*
 
@@ -23,8 +25,10 @@ expect fun getHttpEngine(): HttpClientEngine
 @ComponentScan("io.github.alexmaryin.followmymus.**")
 class AppModule() {
 
+    private val ktorEngine by lazy { getHttpEngine() }
+
     @Single
-    fun provideMusicBrainzClient() = HttpClient(getHttpEngine()) {
+    fun provideMusicBrainzClient() = HttpClient(ktorEngine) {
         install(Logging) {
             logger = object : Logger {
                 override fun log(message: String) {
@@ -56,12 +60,14 @@ class AppModule() {
         supabaseUrl = supabaseUrl(BuildKonfig.projectId),
         supabaseKey = BuildKonfig.publishableKey
     ) {
+        coroutineDispatcher = Dispatchers.IO
+        httpEngine = ktorEngine
         install(Auth)
         install(Realtime)
         install(Postgrest)
     }
 
-    @Factory
+    @Single
     fun provideAuth(supabase: SupabaseClient) = supabase.auth
 
     @Factory

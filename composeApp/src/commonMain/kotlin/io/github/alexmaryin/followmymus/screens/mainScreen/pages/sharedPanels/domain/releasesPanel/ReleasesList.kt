@@ -6,9 +6,8 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
-import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.BrainzApiError
+import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.getUiDescription
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 class ReleasesList(
     private val repository: ReleasesRepository,
@@ -58,24 +56,7 @@ class ReleasesList(
 
             scope.launch {
                 repository.errors.collect {
-                    val message = when (it) {
-                        BrainzApiError.InvalidResponse -> getString(Res.string.invalid_response_api)
-
-                        BrainzApiError.MappingError -> getString(Res.string.mapping_error)
-
-                        is BrainzApiError.NetworkError if it.message != null ->
-                            getString(Res.string.network_error_msg, it.message)
-
-                        is BrainzApiError.ServerError -> getString(Res.string.server_error_code, it.message ?: "")
-
-                        BrainzApiError.Timeout -> getString(Res.string.timeout_error_msg)
-
-                        BrainzApiError.NoCoverError -> getString(Res.string.no_cover_error_msg)
-
-                        is BrainzApiError.Unknown -> getString(Res.string.network_error_msg, it.message ?: "")
-
-                        else -> null
-                    }
+                    val message = it.getUiDescription()
                     message?.let { msg ->
                         errors.send(
                             SnackbarMsg(key = artistId, message = msg)
