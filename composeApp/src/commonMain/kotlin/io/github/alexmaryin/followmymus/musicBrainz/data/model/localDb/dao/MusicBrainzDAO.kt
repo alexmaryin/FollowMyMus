@@ -25,6 +25,10 @@ interface MusicBrainzDAO {
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true")
     fun getFavoriteArtists(): Flow<List<ArtistWithRelations>>
 
+    @Transaction
+    @Query("SELECT EXISTS(SELECT 1 FROM ArtistEntity WHERE id = :artistId)")
+    suspend fun isArtistExists(artistId: String): Boolean
+
     @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true")
     fun getFavoriteArtistsIds(): Flow<List<String>>
 

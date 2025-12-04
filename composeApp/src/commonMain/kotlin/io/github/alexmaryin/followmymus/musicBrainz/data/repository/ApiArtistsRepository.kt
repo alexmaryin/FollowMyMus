@@ -78,8 +78,11 @@ class ApiArtistsRepository(
         }
     }
 
-    override suspend fun cacheArtist(artist: Artist) = insertArtist(artist) {
-        toEntity(false, SyncStatus.PendingRemoteRemove)
+    override suspend fun cacheArtist(artist: Artist) {
+        if (dao.isArtistExists(artist.id)) return
+        insertArtist(artist) {
+            toEntity( false, SyncStatus.PendingRemoteRemove)
+        }
     }
 
     override suspend fun addToFavorite(artist: Artist) {
