@@ -2,6 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.d
 
 sealed interface ReleasesListAction {
     data class SelectRelease(val releaseId: String) : ReleasesListAction
+    data object DeselectRelease : ReleasesListAction
     data class OpenFullCover(val coverUrl: String) : ReleasesListAction
     data object CloseFullCover : ReleasesListAction
     data object LoadFromRemote : ReleasesListAction

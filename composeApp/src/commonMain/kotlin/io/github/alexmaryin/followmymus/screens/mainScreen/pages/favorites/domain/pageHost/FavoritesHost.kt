@@ -24,12 +24,14 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffol
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesPanelConfig
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.nicknameAvatar.Avatar
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -123,18 +125,15 @@ class FavoritesHost(
     }
 
     private fun onBack() {
+        if (state.value.releaseIdSelected != null)
+            panels.value.details?.instance(ReleasesListAction.DeselectRelease)
+        else if (state.value.artistIdSelected != null)
+            panels.value.main.instance(FavoritesListAction.DeselectArtist)
         navigation.pop()
     }
 
     override fun invoke(action: FavoritesHostAction) {
         when (action) {
-            FavoritesHostAction.CloseMediaDetails -> {
-                navigation.navigate { state -> state.copy(extra = null) }
-            }
-
-            FavoritesHostAction.CloseReleases -> {
-                navigation.navigate { state -> state.copy(details = null, extra = null) }
-            }
 
             is FavoritesHostAction.SetMode -> {
                 navigation.navigate { state -> state.copy(mode = action.mode) }
@@ -155,6 +154,12 @@ class FavoritesHost(
                         )
                     )
                 }
+            }
+
+            FavoritesHostAction.CloseReleases -> navigation.dismissDetails()
+
+            FavoritesHostAction.RefreshReleases -> {
+                panels.value.details?.instance?.invoke(ReleasesListAction.LoadFromRemote)
             }
 
             is FavoritesHostAction.SyncRequested -> syncWithRemote()

@@ -5,11 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -17,7 +14,7 @@ import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.favorite_artists_list_title
 import followmymus.composeapp.generated.resources.remove_artist_dialog_text
 import followmymus.composeapp.generated.resources.remove_artist_dialog_title
-import io.github.alexmaryin.followmymus.core.ui.RefreshVinylIndicator
+import io.github.alexmaryin.followmymus.core.ui.PullToRefreshMobile
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
@@ -34,7 +31,6 @@ fun FavoritesPanelUi(component: FavoritesList) {
     val state by component.state.subscribeAsState()
     val listState = rememberLazyListState()
     val favoriteArtists by component.favoriteArtists.collectAsStateWithLifecycle(emptyMap())
-    val pullToRefreshState = rememberPullToRefreshState()
 
     if (state.isRemoveDialogVisible) {
         ConfirmationDialog(
@@ -48,17 +44,9 @@ fun FavoritesPanelUi(component: FavoritesList) {
     if (state.favoritesCount == 0) {
         EmptyFavoritesPlaceholder()
     } else {
-        PullToRefreshBox(
+        PullToRefreshMobile(
             isRefreshing = state.isLoading,
-            state = pullToRefreshState,
-            onRefresh = { component(FavoritesListAction.Refresh) },
-            indicator = {
-                RefreshVinylIndicator(
-                    state = pullToRefreshState,
-                    isRefreshing = state.isLoading,
-                    modifier = Modifier.align(Alignment.TopCenter)
-                )
-            }
+            onRefresh = { component(FavoritesListAction.Refresh) }
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),

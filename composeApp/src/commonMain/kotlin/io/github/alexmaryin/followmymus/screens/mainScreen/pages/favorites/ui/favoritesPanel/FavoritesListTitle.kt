@@ -14,7 +14,7 @@ import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
 import followmymus.composeapp.generated.resources.tune
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.FilterDropDown
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.FavoritesActions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -22,29 +22,35 @@ import org.jetbrains.compose.resources.stringResource
 fun FavoritesListTitle(
     modifier: Modifier = Modifier,
     selectedSorting: SortArtists,
-    onFilterChange: (SortArtists) -> Unit
+    isRefreshEnabled: Boolean,
+    onFilterChange: (SortArtists) -> Unit,
+    onRefresh: () -> Unit
 ) {
-    var isFilterVisible by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf(selectedSorting) }
+    var isActionsVisible by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = { isFilterVisible = !isFilterVisible },
+            onClick = { isActionsVisible = !isActionsVisible },
             modifier = Modifier.padding(4.dp)
         ) {
             Icon(
                 painter = painterResource(Res.drawable.tune),
                 contentDescription = "filter artists"
             )
-            FilterDropDown(
-                isVisible = isFilterVisible,
-                selected = selectedFilter,
-                onDismiss = { isFilterVisible = false },
-                onChange = { new ->
-                    selectedFilter = new
-                    isFilterVisible = false
+            FavoritesActions(
+                isVisible = isActionsVisible,
+                selected = selectedSorting,
+                isRefreshEnabled = isRefreshEnabled,
+                onDismiss = { isActionsVisible = false },
+                onSortChange = { new ->
+                    isActionsVisible = false
                     onFilterChange(new)
+                },
+                onRefresh = {
+                    isActionsVisible = false
+                    onRefresh()
                 }
             )
         }

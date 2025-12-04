@@ -1,7 +1,9 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
@@ -59,11 +61,7 @@ class FavoritesList(
 
     init {
         lifecycle.doOnStart {
-            scope.launch {
-                if (favoriteArtists.first().isEmpty()) {
-                    repository.syncRemote()
-                }
-            }
+            startSync { favoriteArtists.first().isEmpty() }
 
             scope.launch {
                 repository.syncStatus.collect { status ->
@@ -71,6 +69,10 @@ class FavoritesList(
                 }
             }
         }
+    }
+
+    private fun startSync(trigger: suspend () -> Boolean = { true }) = scope.launch {
+        if (trigger()) repository.syncRemote()
     }
 
     operator fun invoke(action: FavoritesListAction) {
@@ -94,7 +96,12 @@ class FavoritesList(
                 _state.update { it.copy(sortingType = action.newSort) }
             }
 
-            FavoritesListAction.Refresh -> scope.launch { repository.syncRemote() }
+            FavoritesListAction.Refresh -> startSync()
+
+            FavoritesListAction.DeselectArtist -> {
+                _state.update { it.copy(selectedArtist = null) }
+                hostAction(FavoritesHostAction.CloseReleases)
+            }
         }
     }
 
@@ -103,14 +110,20 @@ class FavoritesList(
             scope.launch {
                 repository.deleteFromFavorites(artist.id)
                 _state.update { it.copy(artistToRemove = null, isRemoveDialogVisible = false) }
-                hostAction(FavoritesHostAction.CloseReleases)
+                hostAction(FavoritesHostAction.OnBack)
             }
         }
     }
 
     override val titleContent = @Composable {
-        FavoritesListTitle(selectedSorting = state.value.sortingType) { newSort ->
-            invoke(FavoritesListAction.ChangeSorting(newSort))
-        }
+        val titleState by state.subscribeAsState()
+        FavoritesListTitle(
+            selectedSorting = titleState.sortingType,
+            isRefreshEnabled = titleState.selectedArtist != null,
+            onFilterChange = { newSort ->
+                invoke(FavoritesListAction.ChangeSorting(newSort))
+            },
+            onRefresh = { hostAction(FavoritesHostAction.RefreshReleases) }
+        )
     }
 }

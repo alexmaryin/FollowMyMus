@@ -9,16 +9,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.refresh_icon
 import followmymus.composeapp.generated.resources.sort_artists_caption
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun FilterDropDown(
+fun FavoritesActions(
     isVisible: Boolean,
     selected: SortArtists,
+    isRefreshEnabled: Boolean,
     onDismiss: () -> Unit,
-    onChange: (SortArtists) -> Unit
+    onSortChange: (SortArtists) -> Unit,
+    onRefresh: () -> Unit
 ) {
     DropdownMenu(
         expanded = isVisible,
@@ -26,12 +30,13 @@ fun FilterDropDown(
         shape = RoundedCornerShape(28.dp),
         containerColor = MaterialTheme.colorScheme.surface
     ) {
-        Column(modifier = Modifier.padding(4.dp)) {
+        Column(
+            modifier = Modifier.padding(4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
             Text(
                 text = stringResource(Res.string.sort_artists_caption),
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleSmall
             )
@@ -42,7 +47,7 @@ fun FilterDropDown(
                         selected = filter == selected,
                         onClick = {
                             val new = if (filter == selected) SortArtists.NONE else filter
-                            onChange(new)
+                            onSortChange(new)
                         },
                         shape = SegmentedButtonDefaults.itemShape(index, SortArtists.entries.size - 1),
                         label = {
@@ -54,6 +59,18 @@ fun FilterDropDown(
                     )
                 }
             }
+            OutlinedButton(
+                onClick = onRefresh,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isRefreshEnabled,
+                border = SegmentedButtonDefaults.borderStroke( MaterialTheme.colorScheme.outline)
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.refresh_icon),
+                    contentDescription = null
+                )
+                Text(text = "Refresh releases list")
+            }
         }
     }
 }
@@ -64,11 +81,13 @@ fun FilterDropDownPreview() {
     Surface(
         Modifier.fillMaxSize()
     ) {
-        FilterDropDown(
+        FavoritesActions(
             isVisible = true,
             selected = SortArtists.NONE,
+            isRefreshEnabled = false,
             onDismiss = {},
-            onChange = {}
+            onSortChange = {},
+            onRefresh = {},
         )
     }
 }

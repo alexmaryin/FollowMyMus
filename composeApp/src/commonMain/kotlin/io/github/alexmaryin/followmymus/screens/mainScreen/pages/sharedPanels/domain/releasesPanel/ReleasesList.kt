@@ -71,6 +71,7 @@ class ReleasesList(
         when (action) {
             is ReleasesListAction.OpenFullCover -> _state.update { it.copy(openedCover = action.coverUrl) }
             is ReleasesListAction.SelectRelease -> openMedia(action.releaseId)
+            ReleasesListAction.DeselectRelease -> _state.update { it.copy(selectedRelease = null) }
             ReleasesListAction.CloseFullCover -> _state.update { it.copy(openedCover = null) }
             ReleasesListAction.LoadFromRemote -> scope.launch { repository.syncReleases(artistId) }
         }

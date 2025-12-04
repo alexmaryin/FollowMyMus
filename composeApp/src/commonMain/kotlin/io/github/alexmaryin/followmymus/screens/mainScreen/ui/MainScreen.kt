@@ -19,7 +19,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsPageHostUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.FavoritesPageHostUi
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.releases.ui.SearchPage
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui.SearchPage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

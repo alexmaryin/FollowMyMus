@@ -9,4 +9,5 @@ sealed interface FavoritesListAction {
     data object RemoveFromFavorite : FavoritesListAction
     data object DismissRemoveDialog : FavoritesListAction
     data object Refresh : FavoritesListAction
+    data object DeselectArtist : FavoritesListAction
 }
