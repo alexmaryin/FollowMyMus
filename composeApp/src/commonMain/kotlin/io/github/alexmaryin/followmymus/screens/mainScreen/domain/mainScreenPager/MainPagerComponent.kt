@@ -11,10 +11,11 @@ import com.arkivanov.decompose.value.update
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.MainScreenState
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
+import kotlinx.coroutines.channels.Channel
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -77,6 +78,8 @@ class MainPagerComponent(
 }
 
 //TODO delete after implementation all pages
-object DummyPage : Page, ScaffoldSlots by DefaultScaffoldSlots {
+object DummyPage : Page {
     override val key get() = "Dummy"
+    override val scaffoldSlots = DefaultScaffoldSlots
+    override val events = Channel<SnackbarMsg>()
 }

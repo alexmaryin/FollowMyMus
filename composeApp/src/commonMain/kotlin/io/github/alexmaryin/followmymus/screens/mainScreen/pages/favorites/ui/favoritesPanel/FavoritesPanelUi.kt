@@ -32,6 +32,7 @@ fun FavoritesPanelUi(component: FavoritesList) {
     val listState = rememberLazyListState()
     val favoriteArtists by component.favoriteArtists.collectAsStateWithLifecycle(emptyMap())
 
+
     if (state.isRemoveDialogVisible) {
         ConfirmationDialog(
             title = stringResource(Res.string.remove_artist_dialog_title),

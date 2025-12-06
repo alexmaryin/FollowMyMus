@@ -4,7 +4,6 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.panels.ChildPanels
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackHandlerOwner
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost.ArtistsHostAction
@@ -13,10 +12,9 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.do
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 
 @OptIn(ExperimentalDecomposeApi::class)
-interface ArtistsHostComponent : Page, BackHandlerOwner, ScaffoldSlots {
+interface ArtistsHostComponent : Page, BackHandlerOwner {
 
     override val key get() = "ArtistsHost"
-
 
     val panels: Value<ChildPanels<*, ArtistsList, *, ReleasesList, *, MediaDetails>>
 

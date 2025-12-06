@@ -47,7 +47,7 @@ class ApiReleasesRepository(
             artistDto.releases
                 .sortedWith(compareByDescending { it.firstReleaseDate })
                 .asFlow()
-                .flatMapMerge(concurrency = 5) { release ->
+                .flatMapMerge(concurrency = 25) { release ->
                     flow {
                         emit(searchEngine.searchCovers(release.id) to release)
                     }

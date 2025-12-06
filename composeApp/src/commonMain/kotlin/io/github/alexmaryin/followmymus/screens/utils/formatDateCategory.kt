@@ -40,7 +40,7 @@ fun Instant.toDateCategory(
 
 fun Map<DateCategory, List<FavoriteArtist>>.sortDateCategoryGroups(): Map<SortKeyType.Date, List<FavoriteArtist>> {
 
-    val sorted = toList().sortedWith { (key1, _), (key2, _) ->
+    val sorted = entries.sortedWith { (key1, _), (key2, _) ->
         when {
             key1 is DateCategory.Recent && key2 is DateCategory.Recent ->
                 key1.type.ordinal.compareTo(key2.type.ordinal)

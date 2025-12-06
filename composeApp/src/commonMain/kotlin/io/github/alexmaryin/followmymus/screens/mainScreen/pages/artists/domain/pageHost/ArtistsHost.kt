@@ -1,22 +1,19 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.panels.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
-import io.github.alexmaryin.followmymus.screens.commonUi.BackIcon
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsPanelConfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsHostSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
+import kotlinx.coroutines.channels.Channel
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -25,11 +22,13 @@ import org.koin.core.component.get
 @Factory(binds = [ArtistsHostComponent::class])
 class ArtistsHost(
     private val componentContext: ComponentContext
-) : ArtistsHostComponent, ComponentContext by componentContext,
-    ScaffoldSlots by DefaultScaffoldSlots, KoinComponent {
+) : ArtistsHostComponent, ComponentContext by componentContext, KoinComponent {
 
     private val _state = MutableValue(ArtistsHostState())
     override val state: Value<ArtistsHostState> = _state
+
+    override val events = Channel<SnackbarMsg>()
+    override val scaffoldSlots = ArtistsHostSlots(this)
 
     private val navigation =
         PanelsNavigation<Unit, ArtistsPanelConfig.ReleasesConfig, ArtistsPanelConfig.MediaDetailsConfig>()
@@ -38,6 +37,7 @@ class ArtistsHost(
         source = navigation,
         serializers = ArtistsPanelConfig.SERIALIZERS,
         initialPanels = { Panels(main = Unit) },
+        key = "ArtistsPanels",
         onStateChanged = { new, _ ->
             val backIsVisible = when {
                 new.extra != null -> true
@@ -105,17 +105,5 @@ class ArtistsHost(
 
             ArtistsHostAction.OnBack -> onBack()
         }
-    }
-
-    override val leadingIcon = @Composable {
-        val state = state.subscribeAsState()
-        if (state.value.backVisible) BackIcon(::onBack)
-    }
-
-    override val titleContent = @Composable {
-        val panelState by panels.subscribeAsState()
-        val isSearchVisible = panelState.mode != ChildPanelsMode.SINGLE || panelState.details == null
-        if (isSearchVisible) panelState.main.instance.ProvideArtistsSearchBar()
-        else DefaultScaffoldSlots.titleContent()
     }
 }

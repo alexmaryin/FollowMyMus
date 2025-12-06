@@ -77,7 +77,7 @@ fun ArtistsPanelUi(component: ArtistsList) {
         }
     }
 
-    ObserveEvents(component.events) { event ->
+    ObserveEvents(component.listEvents) { event ->
         when (event) {
             ArtistsListEvent.ScrollUp -> listState.animateScrollToItem(0)
         }

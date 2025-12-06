@@ -1,8 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain
 
-import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
@@ -12,20 +10,19 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.core.system.FileHandler
-import io.github.alexmaryin.followmymus.screens.commonUi.BackIcon
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
+import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountPageConfig
-import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.AccountPageSlots
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.DEEP_LINK_URL_PREFIX
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.startTransferSession
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
@@ -42,12 +39,14 @@ class AccountPage(
     private val repository: ArtistsRepository,
     private val componentContext: ComponentContext,
     private val nickname: String,
-) : Page, AccountHostComponent, ComponentContext by componentContext, KoinComponent,
-    ScaffoldSlots by DefaultScaffoldSlots {
+) : AccountHostComponent, ComponentContext by componentContext, KoinComponent {
     private val _state by saveableMutableValue(
         AccountPageState.serializer(),
         init = { AccountPageState(nickname = nickname) })
     override val state get() = _state
+
+    override val events = Channel<SnackbarMsg>()
+    override val scaffoldSlots = AccountPageSlots(this)
 
     private val navigation = StackNavigation<AccountPageConfig>()
 
@@ -69,13 +68,6 @@ class AccountPage(
         }
     }
 
-    override val leadingIcon = @Composable {
-        val state = state.subscribeAsState()
-        if (state.value.backVisible) BackIcon {
-            _state.update { it.copy(backVisible = false) }
-            navigation.bringToFront(AccountPageConfig.Account(nickname))
-        }
-    }
 
     override fun invoke(action: AccountAction) {
         when (action) {
@@ -113,6 +105,11 @@ class AccountPage(
             is AccountAction.DynamicChange -> _state.update { it.copy(dynamicMode = action.dynamicMode) }
 
             is AccountAction.DownloadQR -> scope.launch { FileHandler().saveQR(action.image) }
+
+            AccountAction.OnBack -> {
+                _state.update { it.copy(backVisible = false) }
+                navigation.bringToFront(AccountPageConfig.Account(nickname))
+            }
         }
     }
 

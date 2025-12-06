@@ -1,6 +1,5 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel
 
-import androidx.compose.runtime.Composable
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -12,10 +11,13 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.pageHost.ArtistsHostAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components.ArtistsSearchBar
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.ArtistsPanelSlots
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 
@@ -23,8 +25,11 @@ class ArtistsList(
     private val repository: ArtistsRepository,
     private val context: ComponentContext,
     private val hostAction: (ArtistsHostAction) -> Unit
-) : ComponentContext by context, KoinComponent {
+) : Page, ComponentContext by context, KoinComponent {
 
+    override val key = "ArtistsList"
+    override val events = Channel<SnackbarMsg>()
+    override val scaffoldSlots = ArtistsPanelSlots(this)
     private val scope = context.coroutineScope()
 
     private val _state by saveableMutableValue(ArtistsListState.serializer(), init = ::ArtistsListState)
@@ -35,8 +40,8 @@ class ArtistsList(
     }
     val artists: Flow<PagingData<Artist>> = pager.artists
 
-    private val _events = MutableSharedFlow<ArtistsListEvent>()
-    val events = _events.asSharedFlow()
+    private val _listEvents = MutableSharedFlow<ArtistsListEvent>()
+    val listEvents = _listEvents.asSharedFlow()
 
     init {
         // When the component is created/recreated, check if there's a query in the saved state and restore search.
@@ -55,11 +60,11 @@ class ArtistsList(
             is ArtistsListAction.Search -> startSearch(action.query)
             is ArtistsListAction.ToggleArtistFavorite -> scope.launch { toggleFavorite(action.artist) }
             is ArtistsListAction.SelectArtist -> selectArtist(action.artist)
-            ArtistsListAction.ToggleSearchTune -> TODO()
+            ArtistsListAction.ToggleSearchTune -> {}
             ArtistsListAction.Retry -> startSearch(state.value.query)
             ArtistsListAction.LoadingCompleted -> scope.launch {
                 _state.update { it.copy(isLoading = false) }
-                _events.emit(ArtistsListEvent.ScrollUp)
+                _listEvents.emit(ArtistsListEvent.ScrollUp)
             }
         }
     }
@@ -85,9 +90,6 @@ class ArtistsList(
             repository.addToFavorite(artist)
         }
     }
-
-    @Composable
-    fun ProvideArtistsSearchBar() = ArtistsSearchBar(::invoke)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private class ArtistsPager(

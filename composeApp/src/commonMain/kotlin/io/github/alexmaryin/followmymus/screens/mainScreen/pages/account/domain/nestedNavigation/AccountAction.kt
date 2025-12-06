@@ -12,6 +12,7 @@ sealed interface AccountAction {
     data object LanguageClick : AccountAction
     data object ThemeClick : AccountAction
     data object DynamicClick : AccountAction
+    data object OnBack : AccountAction
     data class LanguageChange(val language: Language) : AccountAction
     data class ThemeChange(val theme: ThemeMode) : AccountAction
     data class DynamicChange(val dynamicMode: DynamicMode) : AccountAction

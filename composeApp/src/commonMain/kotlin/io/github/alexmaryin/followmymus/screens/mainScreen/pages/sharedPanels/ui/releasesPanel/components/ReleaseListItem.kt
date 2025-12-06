@@ -38,6 +38,7 @@ fun ReleaseListItem(release: Release, actionHandler: (ReleasesListAction) -> Uni
                     modifier = Modifier.size(150.dp)
                         .clickable {
                             release.largeCoverUrl?.let {
+                                println("Open large cover $it")
                                 actionHandler(ReleasesListAction.OpenFullCover(it))
                             }
                         },

@@ -1,9 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
@@ -12,15 +9,17 @@ import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
+import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesListTitle
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelSlots
 import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
+import io.github.alexmaryin.followmymus.screens.utils.sortCountryOrder
 import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups
 import io.github.alexmaryin.followmymus.screens.utils.toDateCategory
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -29,7 +28,14 @@ class FavoritesList(
     private val repository: ArtistsRepository,
     private val context: ComponentContext,
     private val hostAction: (FavoritesHostAction) -> Unit
-) : ComponentContext by context, KoinComponent, ScaffoldSlots by DefaultScaffoldSlots {
+) : Page, ComponentContext by context, KoinComponent {
+
+    override val key = "FavoritesList"
+    override val events = Channel<SnackbarMsg>()
+    override val scaffoldSlots = FavoritesPanelSlots(
+        component = this,
+        onRefreshReleases = { hostAction(FavoritesHostAction.RefreshReleases) }
+    )
 
     private val scope = context.coroutineScope()
 
@@ -51,6 +57,7 @@ class FavoritesList(
                     .sortDateCategoryGroups()
 
                 SortArtists.COUNTRY -> artists.groupBy { artist -> SortKeyType.Country(artist.country) }
+                    .sortCountryOrder()
 
                 SortArtists.ABC -> artists.groupBy { artist -> artist.sortName.first().titlecaseChar() }
                     .sortAbcOrder()
@@ -113,17 +120,5 @@ class FavoritesList(
                 hostAction(FavoritesHostAction.OnBack)
             }
         }
-    }
-
-    override val titleContent = @Composable {
-        val titleState by state.subscribeAsState()
-        FavoritesListTitle(
-            selectedSorting = titleState.sortingType,
-            isRefreshEnabled = titleState.selectedArtist != null,
-            onFilterChange = { newSort ->
-                invoke(FavoritesListAction.ChangeSorting(newSort))
-            },
-            onRefresh = { hostAction(FavoritesHostAction.RefreshReleases) }
-        )
     }
 }
