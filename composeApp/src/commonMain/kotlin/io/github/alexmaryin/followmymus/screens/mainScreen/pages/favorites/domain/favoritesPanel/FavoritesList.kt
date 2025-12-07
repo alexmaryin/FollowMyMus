@@ -44,13 +44,13 @@ class FavoritesList(
     )
     val state: Value<FavoritesListState> = _state
 
-    val favoriteArtists: Flow<Map<out SortKeyType, List<FavoriteArtist>>> = repository.getFavoriteArtists()
+    val favoriteArtists: Flow<LinkedHashMap<out SortKeyType, List<FavoriteArtist>>> = repository.getFavoriteArtists()
         .onEach { artists ->
             if (state.value.favoritesCount != artists.size)
                 _state.update { it.copy(favoritesCount = artists.size) }
         }
         .combine(state.asFlow().map { it.sortingType }.distinctUntilChanged()) { artists, sorting ->
-            when (sorting) {
+            val data = when (sorting) {
                 SortArtists.NONE -> mapOf(SortKeyType.None to artists)
 
                 SortArtists.DATE -> artists.groupBy { artist -> artist.createdAt.toDateCategory() }
@@ -64,6 +64,7 @@ class FavoritesList(
 
                 SortArtists.TYPE -> artists.groupBy { artist -> SortKeyType.Type(artist.type) }
             }
+            LinkedHashMap(data)
         }
 
     init {

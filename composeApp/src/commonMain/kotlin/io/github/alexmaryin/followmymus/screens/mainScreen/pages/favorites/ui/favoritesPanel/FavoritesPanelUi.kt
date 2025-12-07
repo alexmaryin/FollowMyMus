@@ -1,11 +1,14 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,8 +33,8 @@ import org.jetbrains.compose.resources.stringResource
 fun FavoritesPanelUi(component: FavoritesList) {
     val state by component.state.subscribeAsState()
     val listState = rememberLazyListState()
-    val favoriteArtists by component.favoriteArtists.collectAsStateWithLifecycle(emptyMap())
-
+    val favoriteArtists by component.favoriteArtists.collectAsStateWithLifecycle(linkedMapOf())
+    val hideHeader by derivedStateOf { listState.firstVisibleItemIndex > 0 }
 
     if (state.isRemoveDialogVisible) {
         ConfirmationDialog(
@@ -49,32 +52,33 @@ fun FavoritesPanelUi(component: FavoritesList) {
             isRefreshing = state.isLoading,
             onRefresh = { component(FavoritesListAction.Refresh) }
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                state = listState,
-            ) {
-                item {
-                    ListHeader(
-                        stringResource(
-                            Res.string.favorite_artists_list_title, state.favoritesCount
-                        )
+            Column {
+                AnimatedVisibility(!hideHeader) {
+                    val headerCaption = stringResource(
+                        Res.string.favorite_artists_list_title,
+                        state.favoritesCount
                     )
+                    ListHeader(headerCaption)
                 }
-
-                favoriteArtists.forEach { (key, favoriteArtists) ->
-                    if (key !is SortKeyType.None) {
-                        stickyHeader(key = key.key) {
-                            val caption = key.caption()
-                            ListHeader(caption)
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = listState,
+                ) {
+                    favoriteArtists.forEach { (key, favoriteArtists) ->
+                        if (key !is SortKeyType.None) {
+                            stickyHeader(key = key.key) {
+                                val caption = key.caption()
+                                ListHeader(caption)
+                            }
                         }
-                    }
 
-                    items(favoriteArtists, key = { it.id }) { artist ->
-                        FavoriteListItem(
-                            artist = artist,
-                            isSelected = state.selectedArtist == artist.id,
-                            onAction = component::invoke
-                        )
+                        items(favoriteArtists, key = { it.id }) { artist ->
+                            FavoriteListItem(
+                                artist = artist,
+                                isSelected = state.selectedArtist == artist.id,
+                                onAction = component::invoke
+                            )
+                        }
                     }
                 }
             }
