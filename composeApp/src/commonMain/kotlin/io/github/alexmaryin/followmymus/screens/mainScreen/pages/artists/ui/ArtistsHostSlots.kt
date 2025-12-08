@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.ExperimentalDecomposeApi
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 @OptIn(ExperimentalDecomposeApi::class)
 class ArtistsHostSlots(
     private val component: ArtistsHostComponent
-) : ScaffoldSlots by DefaultScaffoldSlots  {
+) : ScaffoldSlots by DefaultScaffoldSlots {
 
     override val snackbarMessages: Flow<SnackbarMsg> =
         component.events.receiveAsFlow().distinctUntilChanged()
@@ -39,5 +40,18 @@ class ArtistsHostSlots(
             else -> panelsState.main.instance.scaffoldSlots.titleContent
         }
         title()
+    }
+
+    override val trailingIcon: @Composable (RowScope.() -> Unit) = {
+        val panelsState by component.panels.subscribeAsState()
+        val releasesPanel = panelsState.details?.instance
+        val mediaPanel = panelsState.extra?.instance
+        val singleMode = panelsState.mode == ChildPanelsMode.SINGLE
+        val trailing = when {
+            mediaPanel != null -> mediaPanel.scaffoldSlots.trailingIcon
+            singleMode && releasesPanel != null -> panelsState.main.instance.scaffoldSlots.trailingIcon
+            else -> DefaultScaffoldSlots.trailingIcon
+        }
+        trailing()
     }
 }

@@ -44,7 +44,7 @@ fun ArtistListItem(
         },
         leadingContent = {
             ArtistFavoriteIcon(artist.isFavorite) {
-                action(ArtistsListAction.ToggleArtistFavorite(artist))
+                action(ArtistsListAction.ToggleArtistFavorite(artist.id, artist.isFavorite))
             }
         },
         trailingContent = {

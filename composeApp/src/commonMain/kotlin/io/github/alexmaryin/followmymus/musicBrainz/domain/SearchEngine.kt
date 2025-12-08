@@ -8,6 +8,8 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.SearchRespons
 interface SearchEngine {
     suspend fun searchArtists(query: String, offset: Int = 0, limit: Int = LIMIT): SearchResponse
 
+    fun getArtistFromCache(artistId: String): ArtistDto?
+
     suspend fun fetchArtistsById(ids: List<String>): Result<List<ArtistDto>>
 
     suspend fun searchReleases(artistId: String): Result<ArtistDto>

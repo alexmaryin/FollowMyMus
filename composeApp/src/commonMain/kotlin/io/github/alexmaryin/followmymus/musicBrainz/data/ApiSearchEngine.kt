@@ -21,9 +21,11 @@ class ApiSearchEngine(
     private val httpClient: HttpClient
 ) : SearchEngine {
 
+    val artistCache = mutableMapOf<String, ArtistDto>()
+
     override suspend fun searchArtists(query: String, offset: Int, limit: Int): SearchResponse {
         return withContext(Dispatchers.IO) {
-            httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+            val body: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
                 url {
                     parameters.append("query", query.surroundWithQuotation())
                     parameters.append("fmt", "json")
@@ -34,7 +36,14 @@ class ApiSearchEngine(
                     append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
                 }
             }.body()
+            if (artistCache.size > SearchEngine.LIMIT * 2) artistCache.clear()
+            artistCache.putAll(body.artists.associateBy { it.id })
+            body
         }
+    }
+
+    override fun getArtistFromCache(artistId: String): ArtistDto? = artistCache[artistId].also {
+        println("Successfully extract $it")
     }
 
     override suspend fun fetchArtistsById(ids: List<String>) = safeCall {

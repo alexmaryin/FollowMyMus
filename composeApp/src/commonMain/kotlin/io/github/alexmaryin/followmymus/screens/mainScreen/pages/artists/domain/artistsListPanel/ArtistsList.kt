@@ -58,7 +58,7 @@ class ArtistsList(
     operator fun invoke(action: ArtistsListAction) {
         when (action) {
             is ArtistsListAction.Search -> startSearch(action.query)
-            is ArtistsListAction.ToggleArtistFavorite -> scope.launch { toggleFavorite(action.artist) }
+            is ArtistsListAction.ToggleArtistFavorite -> toggleFavorite(action.artistId, action.isFavorite)
             is ArtistsListAction.OpenReleases -> openReleases(action.artist)
             ArtistsListAction.CloseReleases -> closeReleases()
             ArtistsListAction.ToggleSearchTune -> {}
@@ -71,15 +71,15 @@ class ArtistsList(
     }
 
     private fun openReleases(artist: Artist) {
-        _state.update { it.copy(openedArtistId = artist.id) }
+        _state.update { it.copy(openedArtistId = artist.id, isOpenedArtistFavorite = artist.isFavorite) }
         scope.launch {
-            repository.cacheArtist(artist)
+            repository.cacheArtist(artist.id)
             hostAction(ArtistsHostAction.ShowReleases(artist.id, artist.name))
         }
     }
 
     private fun closeReleases() {
-        _state.update { it.copy(openedArtistId = null) }
+        _state.update { it.copy(openedArtistId = null, isOpenedArtistFavorite = false) }
         hostAction(ArtistsHostAction.CloseReleases)
     }
 
@@ -90,11 +90,14 @@ class ArtistsList(
         pager.search(query)
     }
 
-    private suspend fun toggleFavorite(artist: Artist) {
-        if (artist.isFavorite) {
-            repository.deleteFromFavorites(artist.id)
+    private fun toggleFavorite(artistId: String, isFavorite: Boolean) = scope.launch {
+        if (isFavorite) {
+            repository.deleteFromFavorites(artistId)
         } else {
-            repository.addToFavorite(artist)
+            repository.addToFavorite(artistId)
+        }
+        if (state.value.openedArtistId != null) _state.update {
+            it.copy(isOpenedArtistFavorite = !isFavorite)
         }
     }
 

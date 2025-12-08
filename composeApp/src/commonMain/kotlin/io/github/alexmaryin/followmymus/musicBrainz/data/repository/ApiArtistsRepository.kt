@@ -67,25 +67,25 @@ class ApiArtistsRepository(
 
     override fun getFavoriteArtistsIds(): Flow<List<String>> = dao.getFavoriteArtistsIds()
 
-    private suspend fun insertArtist(artist: Artist, transform:  ArtistDto.() -> ArtistEntity) {
-        artist.dtoSource?.let {
-            dao.insertArtist(
-                artist = transform(it),
-                area = it.area?.toEntity(),
-                beginArea = it.beginArea?.toEntity(),
-                tags = it.tags.map { tag -> tag.toEntity(artist.id) }
-            )
-        }
+    private suspend fun insertArtist(artist: ArtistDto, transform: ArtistDto.() -> ArtistEntity) {
+        dao.insertArtist(
+            artist = transform(artist),
+            area = artist.area?.toEntity(),
+            beginArea = artist.beginArea?.toEntity(),
+            tags = artist.tags.map { tag -> tag.toEntity(artist.id) }
+        )
     }
 
-    override suspend fun cacheArtist(artist: Artist) {
-        if (dao.isArtistExists(artist.id)) return
+    override suspend fun cacheArtist(artistId: String) {
+        if (dao.isArtistExists(artistId)) return
+        val artist = searchEngine.getArtistFromCache(artistId) ?: return
         insertArtist(artist) {
-            toEntity( false, SyncStatus.PendingRemoteRemove)
+            toEntity(false, SyncStatus.PendingRemoteRemove)
         }
     }
 
-    override suspend fun addToFavorite(artist: Artist) {
+    override suspend fun addToFavorite(artistId: String) {
+        val artist = searchEngine.getArtistFromCache(artistId) ?: return
         insertArtist(artist) { toEntity(true, SyncStatus.PendingRemoteAdd) }
         val remoteAdd = supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
         remoteAdd.forSuccess {
@@ -141,14 +141,14 @@ class ApiArtistsRepository(
             toFetch.chunked(SearchEngine.LIMIT)
                 .filter { it.isNotEmpty() }
                 .forEach { ids ->
-                val response = searchEngine.fetchArtistsById(ids)
-                response.forSuccess { artists ->
-                    if (artists.isNotEmpty()) {
-                        dao.bulkInsertArtistsDto(artists)
+                    val response = searchEngine.fetchArtistsById(ids)
+                    response.forSuccess { artists ->
+                        if (artists.isNotEmpty()) {
+                            dao.bulkInsertArtistsDto(artists)
+                        }
                     }
+                    response.forError { errors += it.type }
                 }
-                response.forError { errors += it.type }
-            }
 
             if (toRemoveLocal.isNotEmpty()) {
                 dao.bulkDeleteArtistsById(toRemoveLocal.toList())
