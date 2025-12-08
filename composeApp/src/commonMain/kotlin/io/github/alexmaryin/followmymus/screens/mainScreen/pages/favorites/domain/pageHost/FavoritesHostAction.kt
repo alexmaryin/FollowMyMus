@@ -13,4 +13,5 @@ sealed interface FavoritesHostAction {
     data object OnBack : FavoritesHostAction
     data object RefreshReleases: FavoritesHostAction
     data object CloseReleases: FavoritesHostAction
+    data object CloseMediaDetails : FavoritesHostAction
 }

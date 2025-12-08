@@ -1,6 +1,5 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,18 +42,24 @@ fun ArtistsSearchBar(
                 onSearch = searchFun,
                 placeholder = { Text(stringResource(Res.string.search_placeholder)) },
                 leadingIcon = {
-                    Icon(
-                        painter = painterResource(Res.drawable.tune),
-                        contentDescription = "search options",
-                        modifier = Modifier.clickable { action(ArtistsListAction.ToggleSearchTune) }
-                    )
+                    IconButton(
+                        onClick = { action(ArtistsListAction.ToggleSearchTune) }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.tune),
+                            contentDescription = "search options",
+                        )
+                    }
                 },
                 trailingIcon = {
-                    Icon(
-                        painter = painterResource(Res.drawable.search),
-                        contentDescription = "start search",
-                        modifier = Modifier.clickable { searchFun(queryState.text.toString()) }
-                    )
+                    IconButton(
+                        onClick = { searchFun(queryState.text.toString()) }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.search),
+                            contentDescription = "start search",
+                        )
+                    }
                 },
                 colors = SearchBarDefaults.inputFieldColors(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,

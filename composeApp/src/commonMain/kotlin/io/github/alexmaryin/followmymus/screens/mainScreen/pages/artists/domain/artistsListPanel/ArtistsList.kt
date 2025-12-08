@@ -59,7 +59,8 @@ class ArtistsList(
         when (action) {
             is ArtistsListAction.Search -> startSearch(action.query)
             is ArtistsListAction.ToggleArtistFavorite -> scope.launch { toggleFavorite(action.artist) }
-            is ArtistsListAction.SelectArtist -> selectArtist(action.artist)
+            is ArtistsListAction.OpenReleases -> openReleases(action.artist)
+            ArtistsListAction.CloseReleases -> closeReleases()
             ArtistsListAction.ToggleSearchTune -> {}
             ArtistsListAction.Retry -> startSearch(state.value.query)
             ArtistsListAction.LoadingCompleted -> scope.launch {
@@ -69,11 +70,17 @@ class ArtistsList(
         }
     }
 
-    private fun selectArtist(artist: Artist) {
+    private fun openReleases(artist: Artist) {
+        _state.update { it.copy(openedArtistId = artist.id) }
         scope.launch {
             repository.cacheArtist(artist)
             hostAction(ArtistsHostAction.ShowReleases(artist.id, artist.name))
         }
+    }
+
+    private fun closeReleases() {
+        _state.update { it.copy(openedArtistId = null) }
+        hostAction(ArtistsHostAction.CloseReleases)
     }
 
     private fun startSearch(query: String) {

@@ -7,4 +7,5 @@ data class ArtistsListState(
     val query: String = "",
     val isLoading: Boolean = false,
     val searchResultsCount: Int? = null,
+    val openedArtistId: String? = null
 )

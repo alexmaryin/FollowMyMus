@@ -3,16 +3,18 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.panels.*
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
+import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsPanelConfig
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsHostSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import kotlinx.coroutines.channels.Channel
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
@@ -24,7 +26,7 @@ class ArtistsHost(
     private val componentContext: ComponentContext
 ) : ArtistsHostComponent, ComponentContext by componentContext, KoinComponent {
 
-    private val _state = MutableValue(ArtistsHostState())
+    private val _state by saveableMutableValue(ArtistsHostState.serializer(), init = ::ArtistsHostState)
     override val state: Value<ArtistsHostState> = _state
 
     override val events = Channel<SnackbarMsg>()
@@ -53,7 +55,7 @@ class ArtistsHost(
             }
         },
         handleBackButton = true,
-        mainFactory = { _, context -> ArtistsList(get(),context, ::invoke) },
+        mainFactory = { _, context -> ArtistsList(get(), context, ::invoke) },
         detailsFactory = ::getReleasesList,
         extraFactory = ::getMediaDetails
     )
@@ -74,6 +76,10 @@ class ArtistsHost(
         MediaDetails(config.releaseId, context)
 
     private fun onBack() {
+        if (state.value.releaseIdSelected != null)
+            panels.value.details?.instance(ReleasesListAction.DeselectRelease)
+        else if (state.value.artistIdSelected != null)
+            panels.value.main.instance(ArtistsListAction.CloseReleases)
         navigation.pop()
     }
 
@@ -81,17 +87,18 @@ class ArtistsHost(
         when (action) {
             is ArtistsHostAction.ShowReleases -> {
                 navigation.navigate { state ->
-                    state.copy(details = ArtistsPanelConfig.ReleasesConfig(action.artistId, action.artistName))
+                    state.copy(
+                        details = ArtistsPanelConfig.ReleasesConfig(
+                            artistId = action.artistId,
+                            artistName = action.artistName
+                        )
+                    )
                 }
             }
 
-            ArtistsHostAction.CloseReleases -> {
-                navigation.navigate { state -> state.copy(details = null) }
-            }
+            ArtistsHostAction.CloseReleases -> navigation.dismissDetails()
 
-            ArtistsHostAction.CloseMediaDetails -> {
-                navigation.navigate { state -> state.copy(extra = null) }
-            }
+            ArtistsHostAction.CloseMediaDetails -> navigation.dismissExtra()
 
             is ArtistsHostAction.SetMode -> {
                 navigation.navigate { state -> state.copy(mode = action.mode) }

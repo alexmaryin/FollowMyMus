@@ -129,7 +129,8 @@ fun ArtistsPanelUi(component: ArtistsList) {
                             item { ListHeader(stringResource(Res.string.artists_search_header, it)) }
                         }
                         onPagingItems({ it.id }) { artist ->
-                            ArtistListItem(artist, component::invoke)
+                            val isOpened = artist.id == state.openedArtistId
+                            ArtistListItem(artist, isOpened, component::invoke)
                         }
                         onAppendItem { LoadingIndicator(Modifier.padding(6.dp)) }
                         onLastItem { }

@@ -45,7 +45,7 @@ fun SearchPage() {
             state = listState
         ) {
             items(items) { item ->
-                ArtistListItem(artist = item) {}
+                ArtistListItem(artist = item, false) {}
             }
         }
 

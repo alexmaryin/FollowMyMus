@@ -148,6 +148,8 @@ class FavoritesHost(
 
             FavoritesHostAction.CloseReleases -> navigation.dismissDetails()
 
+            FavoritesHostAction.CloseMediaDetails -> navigation.dismissExtra()
+
             FavoritesHostAction.RefreshReleases -> {
                 panels.value.details?.instance?.invoke(ReleasesListAction.LoadFromRemote)
             }
