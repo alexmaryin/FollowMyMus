@@ -6,7 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.buildDetails
+import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.buildDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import kotlinx.coroutines.launch
 

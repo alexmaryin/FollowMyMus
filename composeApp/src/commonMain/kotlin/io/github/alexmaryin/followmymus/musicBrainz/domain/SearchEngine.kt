@@ -1,9 +1,9 @@
 package io.github.alexmaryin.followmymus.musicBrainz.domain
 
 import io.github.alexmaryin.followmymus.core.Result
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.ArtistDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.CoverArtResponse
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.SearchResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.CoverArtResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.SearchResponse
 
 interface SearchEngine {
     suspend fun searchArtists(query: String, offset: Int = 0, limit: Int = LIMIT): SearchResponse

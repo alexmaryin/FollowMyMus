@@ -9,6 +9,7 @@ import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
@@ -26,6 +27,7 @@ import org.koin.core.component.KoinComponent
 
 class FavoritesList(
     private val repository: ArtistsRepository,
+    private val syncRepository: SyncRepository,
     private val context: ComponentContext,
     private val hostAction: (FavoritesHostAction) -> Unit
 ) : Page, ComponentContext by context, KoinComponent {
@@ -72,7 +74,7 @@ class FavoritesList(
             startSync { favoriteArtists.first().isEmpty() }
 
             scope.launch {
-                repository.syncStatus.collect { status ->
+                syncRepository.syncStatus.collect { status ->
                     _state.update { state -> state.copy(isLoading = status == RemoteSyncStatus.Process) }
                 }
             }
@@ -80,7 +82,7 @@ class FavoritesList(
     }
 
     private fun startSync(trigger: suspend () -> Boolean = { true }) = scope.launch {
-        if (trigger()) repository.syncRemote()
+        if (trigger()) syncRepository.syncRemote()
     }
 
     operator fun invoke(action: FavoritesListAction) {

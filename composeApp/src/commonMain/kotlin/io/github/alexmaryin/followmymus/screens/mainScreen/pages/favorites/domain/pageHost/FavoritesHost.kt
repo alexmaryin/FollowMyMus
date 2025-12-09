@@ -9,8 +9,8 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
-import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
@@ -32,7 +32,7 @@ import org.koin.core.component.get
 @OptIn(ExperimentalDecomposeApi::class, ExperimentalCoroutinesApi::class)
 @Factory(binds = [FavoritesHostComponent::class])
 class FavoritesHost(
-    private val repository: ArtistsRepository,
+    private val syncRepository: SyncRepository,
     private val componentContext: ComponentContext,
     nickname: String
 ) : FavoritesHostComponent, ComponentContext by componentContext, KoinComponent {
@@ -92,7 +92,7 @@ class FavoritesHost(
 
         lifecycle.doOnStart {
             scope.launch {
-                repository.syncStatus.collect { status ->
+                syncRepository.syncStatus.collect { status ->
                     _state.update {
                         it.copy(avatar = it.avatar.copy(isSyncing = status is RemoteSyncStatus.Process))
                     }
@@ -104,8 +104,8 @@ class FavoritesHost(
                 }
             }
             scope.launch {
-                repository.checkPendingActions()
-                repository.hasPendingActions.collect { hasPending ->
+                syncRepository.checkPendingActions()
+                syncRepository.hasPendingActions.collect { hasPending ->
                     _state.update {
                         it.copy(avatar = it.avatar.copy(hasPending = hasPending))
                     }
@@ -161,11 +161,11 @@ class FavoritesHost(
     }
 
     private fun syncWithRemote() = scope.launch {
-        repository.syncRemote()
+        syncRepository.syncRemote()
     }
 
     private fun getFavoritesList(context: ComponentContext) =
-        FavoritesList(get(), context, ::invoke)
+        FavoritesList(get(), syncRepository, context, ::invoke)
 
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
         ReleasesList(

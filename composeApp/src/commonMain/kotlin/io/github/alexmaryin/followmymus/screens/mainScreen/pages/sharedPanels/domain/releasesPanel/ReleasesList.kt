@@ -6,7 +6,7 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.getUiDescription
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.getUiDescription
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg

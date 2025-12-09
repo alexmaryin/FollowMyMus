@@ -14,7 +14,3 @@ interface ReleasesRepository {
     suspend fun syncReleases(artistId: String)
     suspend fun clearDetails(artistId: String)
 }
-
-enum class WorkState {
-    IDLE, LOADING, COVERING
-}

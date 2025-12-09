@@ -10,7 +10,7 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.core.system.FileHandler
-import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.data.repository.RoomRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
@@ -36,7 +36,7 @@ import kotlin.uuid.Uuid
 @Factory(binds = [AccountHostComponent::class])
 class AccountPage(
     private val sessionManager: SessionManager,
-    private val repository: ArtistsRepository,
+    private val repository: RoomRepository,
     private val componentContext: ComponentContext,
     private val nickname: String,
 ) : AccountHostComponent, ComponentContext by componentContext, KoinComponent {

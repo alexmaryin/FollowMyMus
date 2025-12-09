@@ -2,7 +2,7 @@ package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.toArtist
+import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import org.koin.core.annotation.Factory

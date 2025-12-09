@@ -1,8 +1,8 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models
 
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ArtistType
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.CountryISO
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ArtistType
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.CountryISO
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.SyncStatus
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 

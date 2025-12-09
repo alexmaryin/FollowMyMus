@@ -3,8 +3,10 @@ package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.localDb.dao.MusicBrainzDAO
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.mappers.*
+import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ReleasesDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ResourceDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.TransactionalDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.*
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
@@ -16,7 +18,9 @@ import org.koin.core.annotation.Single
 @Single(binds = [ReleasesRepository::class])
 class ApiReleasesRepository(
     private val searchEngine: SearchEngine,
-    private val dao: MusicBrainzDAO
+    private val releaseDao: ReleasesDao,
+    private val resourceDao: ResourceDao,
+    private val transactionalDao: TransactionalDao
 ) : ReleasesRepository {
 
     override val workState = MutableStateFlow(WorkState.IDLE)
@@ -24,10 +28,10 @@ class ApiReleasesRepository(
     private val _errors = Channel<ErrorType>()
     override val errors = _errors.receiveAsFlow()
 
-    override fun getArtistReleases(artistId: String) = dao.getArtistReleases(artistId)
+    override fun getArtistReleases(artistId: String) = releaseDao.getArtistReleases(artistId)
         .map { it.groupByCategories() }
 
-    override fun getArtistResources(artistId: String) = dao.getArtistResources(artistId)
+    override fun getArtistResources(artistId: String) = resourceDao.getArtistResources(artistId)
         .map { it.groupByType() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,9 +41,11 @@ class ApiReleasesRepository(
 
         val releasesResult = searchEngine.searchReleases(artistId)
         releasesResult.forSuccess { artistDto ->
-            dao.insertDetailsForArtist(
+            transactionalDao.insertDetails(
                 resources = artistDto.resources.map { it.toEntity(artistDto.id) },
-                releases = artistDto.releases.map { it.toEntity(artistDto.id) }
+                releases = artistDto.releases.map { it.toEntity(artistDto.id) },
+                resourceDao = resourceDao,
+                releasesDao = releaseDao
             )
 
             workState.update { WorkState.COVERING }
@@ -56,7 +62,7 @@ class ApiReleasesRepository(
                     result.forSuccess { coverDto ->
                         val previewUrl = coverDto.images.selectCover { selectPreview() }?.httpsReplace()
                         val largeUrl = coverDto.images.selectCover { url }?.httpsReplace()
-                        dao.updateReleaseCovers(release.id, previewUrl, largeUrl)
+                        releaseDao.updateReleaseCovers(release.id, previewUrl, largeUrl)
                     }
                     result.forError { error ->
                         _errors.send(error.type)
@@ -72,8 +78,8 @@ class ApiReleasesRepository(
     }
 
     override suspend fun clearDetails(artistId: String) {
-        dao.clearResources(artistId)
-        dao.clearReleases(artistId)
+        resourceDao.clearResources(artistId)
+        releaseDao.clearReleases(artistId)
     }
 }
 

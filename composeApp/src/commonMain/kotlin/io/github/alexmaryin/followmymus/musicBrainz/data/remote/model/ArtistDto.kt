@@ -1,0 +1,24 @@
+package io.github.alexmaryin.followmymus.musicBrainz.data.remote.model
+
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ArtistType
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.CountryISO
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ArtistDto(
+    val id: String,
+    val type: ArtistType?,
+    val score: Int?,
+    val name: String,
+    @SerialName("sort-name") val sortName: String,
+    val country: CountryISO = CountryISO("unknown"),
+    val area: AreaDto?,
+    @SerialName("begin-area") val beginArea: AreaDto?,
+    val disambiguation: String?,
+    @SerialName("life-span") val lifeSpan: LifeSpanDto?,
+    val tags: List<TagDto> = emptyList(),
+    @SerialName("relations") val resources: List<ResourceDto> = emptyList(),
+    @SerialName("release-groups") val releases: List<ReleaseDto> = emptyList()
+)
+

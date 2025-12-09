@@ -12,7 +12,7 @@ import followmymus.composeapp.generated.resources.sync_ok
 import followmymus.composeapp.generated.resources.sync_pend_push
 import followmymus.composeapp.generated.resources.sync_pend_remove
 import io.github.alexmaryin.followmymus.core.ui.theme.FollowMyMusTheme
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.SyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.SyncStatus
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

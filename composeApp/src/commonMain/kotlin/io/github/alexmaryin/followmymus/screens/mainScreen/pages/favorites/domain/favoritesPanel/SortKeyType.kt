@@ -3,9 +3,9 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.doma
 import androidx.compose.runtime.Composable
 import followmymus.composeapp.generated.resources.ISO_unknown
 import followmymus.composeapp.generated.resources.Res
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.ArtistType
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.CountryISO
-import io.github.alexmaryin.followmymus.musicBrainz.data.model.api.enums.toLocalizedResourceName
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ArtistType
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.CountryISO
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.toLocalizedResourceName
 import io.github.alexmaryin.followmymus.screens.utils.DateCategory
 import org.jetbrains.compose.resources.stringResource
 
