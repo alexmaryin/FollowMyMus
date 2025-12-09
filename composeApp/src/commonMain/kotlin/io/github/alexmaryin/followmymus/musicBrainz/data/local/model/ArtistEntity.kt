@@ -1,15 +1,17 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.local.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ArtistType
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.CountryISO
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.SyncStatus
 import kotlin.time.Instant
 
-@Entity
+@Entity(
+    indices = [
+        Index("sortName"),
+        Index("country"),
+    ]
+)
 data class ArtistEntity(
     @PrimaryKey(autoGenerate = false) val id: String,
     val type: ArtistType?,

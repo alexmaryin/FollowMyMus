@@ -18,6 +18,9 @@ interface ArtistDao {
     @Upsert
     suspend fun insertArtist(artist: ArtistEntity)
 
+    @Upsert
+    suspend fun insertArtists(artists: List<ArtistEntity>)
+
     @Query("DELETE FROM ArtistEntity WHERE id = :id")
     suspend fun deleteArtist(id: String)
 

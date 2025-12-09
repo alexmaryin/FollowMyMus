@@ -13,8 +13,14 @@ interface ArtistRelationsDao {
     suspend fun insertArea(area: AreaEntity)
 
     @Upsert
+    suspend fun insertAreas(areas: List<AreaEntity>)
+
+    @Upsert
     suspend fun insertTags(tags: List<TagEntity>)
 
     @Query("DELETE FROM TagEntity")
     suspend fun clearTags()
+
+    @Query("DELETE FROM AreaEntity")
+    suspend fun clearAreas()
 }

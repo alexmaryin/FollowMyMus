@@ -17,4 +17,7 @@ interface ResourceDao {
 
     @Query("DELETE FROM ResourceEntity WHERE artistId = :artistId")
     suspend fun clearResources(artistId: String)
+
+    @Query("DELETE FROM ResourceEntity")
+    suspend fun clear()
 }

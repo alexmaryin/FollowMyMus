@@ -8,7 +8,7 @@ interface SyncDao {
     @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true AND syncStatus = 'PendingRemoteAdd'")
     suspend fun getIdsToPushAsList(): List<String>
 
-    @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true")
+    @Query("SELECT id FROM ArtistEntity")
     suspend fun getIdsAsList(): List<String>
 
     @Query("SELECT id FROM ArtistEntity WHERE syncStatus = 'PendingRemoteRemove'")

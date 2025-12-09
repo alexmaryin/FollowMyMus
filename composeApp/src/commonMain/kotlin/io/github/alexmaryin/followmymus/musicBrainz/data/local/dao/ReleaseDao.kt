@@ -20,4 +20,7 @@ interface ReleasesDao {
 
     @Query("DELETE FROM ReleaseEntity WHERE artistId = :artistId")
     suspend fun clearReleases(artistId: String)
+
+    @Query("DELETE FROM ReleaseEntity")
+    suspend fun clear()
 }

@@ -16,10 +16,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.SortKeyType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
-import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
-import io.github.alexmaryin.followmymus.screens.utils.sortCountryOrder
-import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups
-import io.github.alexmaryin.followmymus.screens.utils.toDateCategory
+import io.github.alexmaryin.followmymus.screens.utils.*
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
 import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -83,6 +80,7 @@ class ApiArtistsRepository(
                         .sortAbcOrder()
 
                     SortArtists.TYPE -> favorites.groupBy { artist -> SortKeyType.Type(artist.type) }
+                        .sortTypeOrder()
                 }
             }
             groupedFavorites

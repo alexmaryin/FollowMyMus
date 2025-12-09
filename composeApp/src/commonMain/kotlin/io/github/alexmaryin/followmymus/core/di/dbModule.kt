@@ -4,7 +4,6 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.db.MusicBrainzDatabase
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.db.MusicBrainzDbFactory
-import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
@@ -18,24 +17,24 @@ class DbModule() {
         .setDriver(BundledSQLiteDriver())
         .build()
 
-    @Factory
+    @Single
     fun provideArtistDao(database: MusicBrainzDatabase): ArtistDao = database.artistDao
 
-    @Factory
+    @Single
     fun provideTransactionalDao(database: MusicBrainzDatabase): TransactionalDao = database.transactionalDao
 
-    @Factory
+    @Single
     fun provideRelationDao(database: MusicBrainzDatabase): ArtistRelationsDao = database.artistRelationDao
 
-    @Factory
+    @Single
     fun provideSyncDao(database: MusicBrainzDatabase): SyncDao = database.syncDao
 
-    @Factory
+    @Single
     fun provideReleaseDao(database: MusicBrainzDatabase): ReleasesDao = database.releaseDao
 
-    @Factory
+    @Single
     fun provideResourceDao(database: MusicBrainzDatabase): ResourceDao = database.resourceDao
 
-    @Factory
+    @Single
     fun provideFavoriteDao(database: MusicBrainzDatabase): FavoriteDao = database.favoriteDao
 }

@@ -73,9 +73,7 @@ class ApiSyncRepository(
                 .forEach { ids ->
                     val response = searchEngine.fetchArtistsById(ids)
                     response.forSuccess { artists ->
-                        artists.forEach { artist ->
-                            dbRepository.insertArtist(artist) { toEntity(true, SyncStatus.OK) }
-                        }
+                        dbRepository.bulkInsertArtists(artists) { toEntity(true, SyncStatus.OK) }
                     }
                     response.forError { errors += it.type }
                 }

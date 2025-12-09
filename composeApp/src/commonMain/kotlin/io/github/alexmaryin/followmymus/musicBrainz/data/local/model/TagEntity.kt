@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
             entity = ArtistEntity::class,
             parentColumns = ["id"],
             childColumns = ["artistId"],
-            onDelete = ForeignKey.Companion.CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index("artistId")]

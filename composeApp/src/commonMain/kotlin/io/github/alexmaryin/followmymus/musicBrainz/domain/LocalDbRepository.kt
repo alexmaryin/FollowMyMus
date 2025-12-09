@@ -5,5 +5,6 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
 
 interface LocalDbRepository {
     suspend fun insertArtist(artist: ArtistDto, transform: ArtistDto.() -> ArtistEntity)
+    suspend fun bulkInsertArtists(artists: List<ArtistDto>, transform: ArtistDto.() -> ArtistEntity)
     suspend fun clearLocalData()
 }

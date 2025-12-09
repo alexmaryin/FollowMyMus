@@ -17,9 +17,22 @@ interface TransactionalDao {
         artistDao: ArtistDao
     ) {
         artistDao.insertArtist(artist)
+        relationsDao.insertTags(tags)
         area?.let { relationsDao.insertArea(it) }
         beginArea?.let { relationsDao.insertArea(it) }
+    }
+
+    @Transaction
+    suspend fun bulkInsertArtistsWithRelations(
+        artists: List<ArtistEntity>,
+        areas: List<AreaEntity>,
+        tags: List<TagEntity>,
+        relationsDao: ArtistRelationsDao,
+        artistDao: ArtistDao
+    ) {
+        artistDao.insertArtists(artists)
         relationsDao.insertTags(tags)
+        relationsDao.insertAreas(areas)
     }
 
     @Transaction
