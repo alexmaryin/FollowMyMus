@@ -12,16 +12,12 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelSlots
-import io.github.alexmaryin.followmymus.screens.utils.sortAbcOrder
-import io.github.alexmaryin.followmymus.screens.utils.sortCountryOrder
-import io.github.alexmaryin.followmymus.screens.utils.sortDateCategoryGroups
-import io.github.alexmaryin.followmymus.screens.utils.toDateCategory
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -46,27 +42,11 @@ class FavoritesList(
     )
     val state: Value<FavoritesListState> = _state
 
-    val favoriteArtists: Flow<LinkedHashMap<out SortKeyType, List<FavoriteArtist>>> = repository.getFavoriteArtists()
-        .onEach { artists ->
-            if (state.value.favoritesCount != artists.size)
-                _state.update { it.copy(favoritesCount = artists.size) }
-        }
-        .combine(state.asFlow().map { it.sortingType }.distinctUntilChanged()) { artists, sorting ->
-            val data = when (sorting) {
-                SortArtists.NONE -> mapOf(SortKeyType.None to artists)
-
-                SortArtists.DATE -> artists.groupBy { artist -> artist.createdAt.toDateCategory() }
-                    .sortDateCategoryGroups()
-
-                SortArtists.COUNTRY -> artists.groupBy { artist -> SortKeyType.Country(artist.country) }
-                    .sortCountryOrder()
-
-                SortArtists.ABC -> artists.groupBy { artist -> artist.sortName.first().titlecaseChar() }
-                    .sortAbcOrder()
-
-                SortArtists.TYPE -> artists.groupBy { artist -> SortKeyType.Type(artist.type) }
-            }
-            LinkedHashMap(data)
+    val favoriteArtists = repository.getFavoriteArtists(state.asFlow().map { it.sortingType })
+        .onEach { grouped ->
+            val count = grouped.values.sumOf { it.size }
+            if (state.value.favoritesCount != count)
+                _state.update { it.copy(favoritesCount = count) }
         }
 
     init {

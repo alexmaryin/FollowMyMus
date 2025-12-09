@@ -31,6 +31,7 @@ abstract class MusicBrainzDatabase : RoomDatabase(){
     abstract val releaseDao: ReleasesDao
     abstract val resourceDao: ResourceDao
     abstract val syncDao: SyncDao
+    abstract val favoriteDao: FavoriteDao
 
     companion object {
         const val DB_NAME = "musicbrainz.db"
