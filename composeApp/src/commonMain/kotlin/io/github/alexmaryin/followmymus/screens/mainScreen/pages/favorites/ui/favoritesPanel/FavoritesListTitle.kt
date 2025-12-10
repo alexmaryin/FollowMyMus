@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.app_name
 import followmymus.composeapp.generated.resources.tune
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.FavoritesActions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

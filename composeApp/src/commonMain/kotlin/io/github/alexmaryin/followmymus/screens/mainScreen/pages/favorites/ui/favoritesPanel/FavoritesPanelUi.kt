@@ -18,11 +18,11 @@ import followmymus.composeapp.generated.resources.favorite_artists_list_title
 import followmymus.composeapp.generated.resources.remove_artist_dialog_text
 import followmymus.composeapp.generated.resources.remove_artist_dialog_title
 import io.github.alexmaryin.followmymus.core.ui.PullToRefreshMobile
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortKeyType
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.caption
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.SortKeyType
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.caption
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.components.EmptyFavoritesPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.listItem.FavoriteListItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.components.ListHeader

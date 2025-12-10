@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.refresh_icon
 import followmymus.composeapp.generated.resources.sort_artists_caption
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

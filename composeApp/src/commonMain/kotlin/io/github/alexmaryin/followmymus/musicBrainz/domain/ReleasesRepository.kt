@@ -1,6 +1,7 @@
 package io.github.alexmaryin.followmymus.musicBrainz.domain
 
 import io.github.alexmaryin.followmymus.core.ErrorType
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Release
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Resource
 import kotlinx.coroutines.flow.Flow

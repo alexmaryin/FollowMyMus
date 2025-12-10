@@ -1,10 +1,10 @@
 package io.github.alexmaryin.followmymus.musicBrainz.domain
 
 import androidx.paging.PagingData
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.SortKeyType
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortKeyType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

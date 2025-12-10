@@ -8,7 +8,7 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
-import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page

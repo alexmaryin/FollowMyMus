@@ -8,7 +8,7 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.getUiDescription
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
-import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPanelSlots

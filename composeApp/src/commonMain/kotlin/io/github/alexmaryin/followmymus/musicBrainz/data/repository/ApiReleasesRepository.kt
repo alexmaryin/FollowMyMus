@@ -9,7 +9,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.Transactional
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.*
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
-import io.github.alexmaryin.followmymus.musicBrainz.domain.WorkState
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

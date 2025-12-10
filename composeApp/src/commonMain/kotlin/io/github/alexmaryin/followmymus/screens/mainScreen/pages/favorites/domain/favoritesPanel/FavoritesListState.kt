@@ -1,7 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
 
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
 import kotlinx.serialization.Serializable
 
 @Serializable

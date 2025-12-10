@@ -8,7 +8,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchError
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SearchError
 import io.ktor.client.call.*
 import io.ktor.client.network.sockets.*
 import io.ktor.client.plugins.*

@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
+package io.github.alexmaryin.followmymus.musicBrainz.domain.models
 
 import androidx.compose.runtime.Composable
 import followmymus.composeapp.generated.resources.ISO_unknown
@@ -6,7 +6,6 @@ import followmymus.composeapp.generated.resources.Res
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ArtistType
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.CountryISO
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.toLocalizedResourceName
-import io.github.alexmaryin.followmymus.screens.utils.DateCategory
 import org.jetbrains.compose.resources.stringResource
 
 sealed class SortKeyType(val key: String) {

@@ -1,6 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
 
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
 
 sealed interface FavoritesListAction {
     data class SelectArtist(val artistId: String, val artistName: String) : FavoritesListAction

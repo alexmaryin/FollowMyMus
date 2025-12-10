@@ -7,7 +7,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.SyncDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.SyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.domain.LocalDbRepository
-import io.github.alexmaryin.followmymus.musicBrainz.domain.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb

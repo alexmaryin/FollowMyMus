@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.musicBrainz.domain
+package io.github.alexmaryin.followmymus.musicBrainz.domain.models
 
 import io.github.alexmaryin.followmymus.core.ErrorType
 

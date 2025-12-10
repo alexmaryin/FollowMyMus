@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.musicBrainz.domain
 
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
 import kotlinx.coroutines.flow.StateFlow
 
 interface SyncRepository {

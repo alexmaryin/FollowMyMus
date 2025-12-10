@@ -1,7 +1,8 @@
 package io.github.alexmaryin.followmymus.screens.utils
 
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
-import kotlinx.coroutines.test.runTest
+import io.github.alexmaryin.followmymus.musicBrainz.data.utils.toDateCategory
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.DateCategory
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RecentDate
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -44,34 +45,5 @@ class FormatDateCategoryTest {
         val category = lastYear.toDateCategory(timeZone)
         val expectedYear = lastYear.toLocalDateTime(timeZone).year
         assertEquals(DateCategory.ByYear(expectedYear), category)
-    }
-
-    @Test
-    fun `sortDateCategoryGroups sorts groups correctly`() = runTest {
-        val today = DateCategory.Recent(RecentDate.TODAY)
-        val thisWeek = DateCategory.Recent(RecentDate.THIS_WEEK)
-        val thisMonth = DateCategory.Recent(RecentDate.THIS_MONTH)
-        val year2023 = DateCategory.ByYear(2023)
-        val year2022 = DateCategory.ByYear(2022)
-
-        val map = mapOf(
-            year2022 to emptyList<FavoriteArtist>(),
-            thisMonth to emptyList(),
-            year2023 to emptyList(),
-            today to emptyList(),
-            thisWeek to emptyList()
-        )
-
-        val sortedMap = map.sortDateCategoryGroups()
-
-        val expectedOrder = listOf(
-            today.toTitle(),
-            thisWeek.toTitle(),
-            thisMonth.toTitle(),
-            year2023.toTitle(),
-            year2022.toTitle()
-        )
-
-        assertEquals(expectedOrder, sortedMap.keys.toList())
     }
 }

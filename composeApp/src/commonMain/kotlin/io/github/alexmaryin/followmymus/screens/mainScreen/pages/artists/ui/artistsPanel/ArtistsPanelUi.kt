@@ -26,7 +26,7 @@ import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
-import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchError
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SearchError
 import io.github.alexmaryin.followmymus.screens.commonUi.EmptyListPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
