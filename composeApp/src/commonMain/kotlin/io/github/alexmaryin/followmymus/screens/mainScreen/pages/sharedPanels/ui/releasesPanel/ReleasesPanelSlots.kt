@@ -6,6 +6,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.ScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.ReleasesListTitle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
 

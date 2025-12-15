@@ -16,12 +16,13 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.do
 
 @Composable
 fun ArtistReleasesList(
+    modifier: Modifier = Modifier,
     releases: Map<String, List<Release>>,
     actionHandler: (ReleasesListAction) -> Unit
 ) {
     val releasesState = rememberLazyListState()
 
-    LazyColumn(state = releasesState) {
+    LazyColumn(state = releasesState, modifier = modifier) {
         releases.forEach { (type, releases) ->
             stickyHeader {
                 Text(

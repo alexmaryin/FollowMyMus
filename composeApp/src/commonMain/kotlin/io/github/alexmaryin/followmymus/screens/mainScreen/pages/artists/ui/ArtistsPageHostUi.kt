@@ -24,7 +24,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.artistsPanel.ArtistsPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.mediaPanel.MediaPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPanelUi
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPlaceholder
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.ReleasesPlaceholder
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Composable

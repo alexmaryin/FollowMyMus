@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel
+package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Row
@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.more_vert
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.TitleActions
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

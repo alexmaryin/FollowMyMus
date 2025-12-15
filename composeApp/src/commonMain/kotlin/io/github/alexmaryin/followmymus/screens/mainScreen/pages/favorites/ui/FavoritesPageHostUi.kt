@@ -26,7 +26,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domai
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.mediaPanel.MediaPanelUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPanelUi
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.ReleasesPlaceholder
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.ReleasesPlaceholder
 
 @Composable
 fun FavoritesPageHostUi(

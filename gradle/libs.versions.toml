@@ -32,7 +32,7 @@ mockk = "1.14.7"
 room = "2.8.4"
 sqlite = "2.6.2"
 coil = "3.3.0"
-kotzilla = "1.4.0"
+kotzilla = "1.4.1"
 
 # app versions
 android-versionCode = "1"
