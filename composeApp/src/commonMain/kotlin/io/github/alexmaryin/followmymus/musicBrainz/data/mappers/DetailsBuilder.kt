@@ -20,7 +20,7 @@ class DetailsBuilder(
     fun build(): String = content.joinToString(separator = separator, postfix = ".")
 
     suspend fun country() {
-        artist.country?.toLocalizedResourceName()?.let {
+        artist.country.toLocalizedResourceName()?.let {
             content += getString(it)
         }
     }
