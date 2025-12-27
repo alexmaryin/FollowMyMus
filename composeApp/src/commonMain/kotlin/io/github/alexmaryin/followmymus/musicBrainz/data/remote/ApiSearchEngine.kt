@@ -2,18 +2,16 @@ package io.github.alexmaryin.followmymus.musicBrainz.data.remote
 
 import io.github.alexmaryin.followmymus.core.Result
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.BrainzApiError
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.CoverArtResponse
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.SearchResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.MediaDto
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchArtistResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchMediaResponse
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerializationException
 import org.koin.core.annotation.Single
 
 @Single(binds = [SearchEngine::class])
@@ -23,9 +21,9 @@ class ApiSearchEngine(
 
     val artistCache = mutableMapOf<String, ArtistDto>()
 
-    override suspend fun searchArtists(query: String, offset: Int, limit: Int): SearchResponse {
+    override suspend fun searchArtists(query: String, offset: Int, limit: Int): SearchArtistResponse {
         return withContext(Dispatchers.IO) {
-            val body: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+            val body: SearchArtistResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
                 url {
                     parameters.append("query", query.surroundWithQuotation())
                     parameters.append("fmt", "json")
@@ -42,12 +40,10 @@ class ApiSearchEngine(
         }
     }
 
-    override fun getArtistFromCache(artistId: String): ArtistDto? = artistCache[artistId].also {
-        println("Successfully extract $it")
-    }
+    override fun getArtistFromCache(artistId: String): ArtistDto? = artistCache[artistId]
 
     override suspend fun fetchArtistsById(ids: List<String>) = safeCall {
-        val response: SearchResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
+        val response: SearchArtistResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/artist/") {
             url {
                 parameters.append("query", ids.toArtistIdsQuery())
                 parameters.append("fmt", "json")
@@ -57,19 +53,6 @@ class ApiSearchEngine(
             }
         }.body()
         response.artists
-    }
-
-    override suspend fun searchCovers(releaseId: String): Result<CoverArtResponse> = safeCall {
-        val response: CoverArtResponse =
-            httpClient.get("${SearchEngine.COVER_ART_BASE_URL}/release-group/$releaseId") {
-                url {
-                    parameters.append("fmt", "json")
-                }
-                headers {
-                    append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
-                }
-            }.body()
-        response
     }
 
     override suspend fun searchReleases(artistId: String) = safeCall {
@@ -85,32 +68,24 @@ class ApiSearchEngine(
         response
     }
 
+    override suspend fun searchMedia(releaseId: String): Result<List<MediaDto>> = safeCall {
+        val response: SearchMediaResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/release/") {
+            url {
+                parameters.append("release-group", releaseId)
+                parameters.append("inc", "media+recordings+url-rels")
+                parameters.append("fmt", "json")
+            }
+            headers {
+                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+            }
+        }.body()
+        response.releases
+    }
+
     private fun String.surroundWithQuotation() = "\"$this\""
 
     private fun List<String>.toArtistIdsQuery() = joinToString(
         transform = { "arid:" + it.surroundWithQuotation() },
         separator = " OR "
     )
-
-    private suspend fun <T> safeCall(call: suspend () -> T) = try {
-        val result = withContext(Dispatchers.IO) { call() }
-        Result.Success(result)
-    } catch (_: HttpRequestTimeoutException) {
-        Result.Error(BrainzApiError.Timeout)
-    } catch (e: ServerResponseException) {
-        Result.Error(BrainzApiError.ServerError(e.message))
-    } catch (e: ClientRequestException) {
-        Result.Error(BrainzApiError.NetworkError(e.message))
-    } catch (_: SerializationException) {
-        Result.Error(BrainzApiError.InvalidResponse)
-    } catch (_: IllegalArgumentException) {
-        Result.Error(BrainzApiError.MappingError)
-    } catch (e: NoTransformationFoundException) {
-        println(e.message)
-        if (e.message.contains("coverart"))
-            Result.Error(BrainzApiError.NoCoverError) else
-            Result.Error(BrainzApiError.MappingError)
-    } catch (e: Exception) {
-        Result.Error(BrainzApiError.Unknown(e.message))
-    }
 }

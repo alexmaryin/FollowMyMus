@@ -57,3 +57,40 @@ fun ReleaseDto.toEntity(artistId: String) = ReleaseEntity(
     primaryType = primaryType,
     secondaryTypes = secondaryTypes.joinToString(",")
 )
+
+fun MediaDto.toEntity(releaseId: String) = MediaEntity(
+    id = id,
+    releaseId = releaseId,
+    title = title,
+    disambiguation = disambiguation,
+    status = status,
+    country = country,
+    date = date?.toString(),
+    barcode = barcode,
+    quality = quality,
+)
+
+fun MediaItemDto.toEntity(mediaId: String) = MediaItemEntity(
+    id = id,
+    mediaId = mediaId,
+    position = position,
+    format = format,
+    title = title,
+    trackCount = trackCount,
+)
+
+fun TrackDto.toEntity(mediaId: String, mediaItemId: String) = TrackEntity(
+    id = id,
+    mediaId = mediaId,
+    mediaItemId = mediaItemId,
+    position = position,
+    title = title,
+    lengthMs = lengthMs
+)
+
+fun ResourceDto.toMediaResourceEntity(mediaId: String) = MediaResourceEntity(
+    id = url.id,
+    type = type,
+    url = url.resource,
+    mediaId = mediaId,
+)

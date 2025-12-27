@@ -6,7 +6,7 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.getUiDescription
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.getUiDescription
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
@@ -21,7 +21,7 @@ class ReleasesList(
     private val artistId: String,
     private val artistName: String,
     private val context: ComponentContext,
-    private val openMedia: (releaseId: String) -> Unit,
+    private val openMedia: (releaseId: String, releaseName: String) -> Unit,
 ) : Page, ComponentContext by context {
 
     private val _state by saveableMutableValue(ReleasesListState.serializer(), init = {
@@ -71,7 +71,7 @@ class ReleasesList(
     operator fun invoke(action: ReleasesListAction) {
         when (action) {
             is ReleasesListAction.OpenFullCover -> _state.update { it.copy(openedCover = action.coverUrl) }
-            is ReleasesListAction.SelectRelease -> openMedia(action.releaseId)
+            is ReleasesListAction.SelectRelease -> openMedia(action.releaseId, action.releaseName)
             ReleasesListAction.DeselectRelease -> _state.update { it.copy(selectedRelease = null) }
             ReleasesListAction.CloseFullCover -> _state.update { it.copy(openedCover = null) }
             ReleasesListAction.LoadFromRemote -> scope.launch { repository.syncReleases(artistId) }

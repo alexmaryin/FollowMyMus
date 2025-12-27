@@ -243,6 +243,8 @@
     <string name="ISO_VU">Vanuatu</string>
     <string name="ISO_WF">Wallis and Futuna</string>
     <string name="ISO_WS">Samoa</string>
+    <string name="ISO_XE">Europe</string>
+    <string name="ISO_XW">Worldwide</string>
     <string name="ISO_YE">Yemen</string>
     <string name="ISO_YT">Mayotte</string>
     <string name="ISO_ZA">South Africa</string>

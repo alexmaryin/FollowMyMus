@@ -65,15 +65,15 @@ class ArtistsHost(
     private fun getReleasesList(config: ArtistsPanelConfig.ReleasesConfig, context: ComponentContext) =
         ReleasesList(
             get(), config.artistId, config.artistName, context,
-            openMedia = { releaseId ->
+            openMedia = { releaseId, releaseName ->
                 navigation.navigate { state ->
-                    state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(releaseId))
+                    state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(releaseId, releaseName))
                 }
             }
         )
 
     private fun getMediaDetails(config: ArtistsPanelConfig.MediaDetailsConfig, context: ComponentContext) =
-        MediaDetails(config.releaseId, context)
+        MediaDetails(config.releaseId, config.releaseName, get(), context)
 
     private fun onBack() {
         if (state.value.releaseIdSelected != null)
@@ -106,7 +106,7 @@ class ArtistsHost(
 
             is ArtistsHostAction.ShowMediaDetails -> {
                 navigation.navigate { state ->
-                    state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(action.releaseId))
+                    state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(action.releaseId, action.releaseName))
                 }
             }
 

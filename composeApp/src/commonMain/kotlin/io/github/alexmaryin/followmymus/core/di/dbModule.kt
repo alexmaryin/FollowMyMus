@@ -38,4 +38,7 @@ class DbModule {
 
     @Factory
     fun provideFavoriteDao(database: MusicBrainzDatabase): FavoriteDao = database.favoriteDao
+
+    @Factory
+    fun provideMediaDao(database: MusicBrainzDatabase): MediaDao = database.mediaDao
 }

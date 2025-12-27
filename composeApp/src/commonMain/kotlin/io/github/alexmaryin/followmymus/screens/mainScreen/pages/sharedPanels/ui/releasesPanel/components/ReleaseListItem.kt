@@ -25,7 +25,7 @@ fun ReleaseListItem(release: Release, actionHandler: (ReleasesListAction) -> Uni
             Text(
                 text = release.title,
                 modifier = Modifier.clickable {
-                    actionHandler(ReleasesListAction.SelectRelease(release.id))
+                    actionHandler(ReleasesListAction.SelectRelease(release.id, release.title))
                 }
             )
         },

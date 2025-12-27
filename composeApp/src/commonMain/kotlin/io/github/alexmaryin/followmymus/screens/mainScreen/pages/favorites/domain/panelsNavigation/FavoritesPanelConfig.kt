@@ -12,7 +12,7 @@ sealed interface FavoritesPanelConfig {
     data class ReleasesConfig(val artistId: String, val artistName: String) : FavoritesPanelConfig
 
     @Serializable
-    data class MediaDetailsConfig(val releaseId: String) : FavoritesPanelConfig
+    data class MediaDetailsConfig(val releaseId: String, val releaseName: String) : FavoritesPanelConfig
 
     companion object {
         val SERIALIZERS = Triple(ListConfig.serializer(), ReleasesConfig.serializer(), MediaDetailsConfig.serializer())

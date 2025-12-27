@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.musicBrainz.data.remote.model
+package io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api
 
 import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ErrorType

@@ -7,6 +7,8 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ReleasesDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ResourceDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.TransactionalDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.*
+import io.github.alexmaryin.followmymus.musicBrainz.data.utils.httpsReplace
+import io.github.alexmaryin.followmymus.musicBrainz.domain.CoversEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
@@ -18,6 +20,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [ReleasesRepository::class])
 class ApiReleasesRepository(
     private val searchEngine: SearchEngine,
+    private val coversEngine: CoversEngine,
     private val releaseDao: ReleasesDao,
     private val resourceDao: ResourceDao,
     private val transactionalDao: TransactionalDao
@@ -55,7 +58,7 @@ class ApiReleasesRepository(
                 .asFlow()
                 .flatMapMerge(concurrency = 25) { release ->
                     flow {
-                        emit(searchEngine.searchCovers(release.id) to release)
+                        emit(coversEngine.getReleaseCovers(release.id) to release)
                     }
                 }
                 .collect { (result, release) ->
@@ -82,5 +85,3 @@ class ApiReleasesRepository(
         releaseDao.clearReleases(artistId)
     }
 }
-
-private fun String.httpsReplace() = replace("http://", "https://")

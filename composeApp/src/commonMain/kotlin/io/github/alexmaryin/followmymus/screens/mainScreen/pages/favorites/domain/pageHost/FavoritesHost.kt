@@ -9,8 +9,8 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
-import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesListAction
@@ -131,7 +131,10 @@ class FavoritesHost(
 
             is FavoritesHostAction.ShowMediaDetails -> {
                 navigation.navigate { state ->
-                    state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId = action.releaseId))
+                    state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(
+                        releaseId = action.releaseId,
+                        releaseName = action.releaseName
+                    ))
                 }
             }
 
@@ -170,13 +173,13 @@ class FavoritesHost(
     private fun getReleasesList(config: FavoritesPanelConfig.ReleasesConfig, context: ComponentContext) =
         ReleasesList(
             get(), config.artistId, config.artistName, context,
-            openMedia = { releaseId ->
+            openMedia = { releaseId, releaseName ->
                 navigation.navigate { state ->
-                    state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId))
+                    state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId, releaseName))
                 }
             }
         )
 
     private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
-        MediaDetails(config.releaseId, context)
+        MediaDetails(config.releaseId, config.releaseName, get(), context)
 }

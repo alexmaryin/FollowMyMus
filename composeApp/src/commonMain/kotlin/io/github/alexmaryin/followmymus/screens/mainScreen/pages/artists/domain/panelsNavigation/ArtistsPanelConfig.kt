@@ -10,7 +10,7 @@ sealed interface ArtistsPanelConfig {
     data class ReleasesConfig(val artistId: String, val artistName: String) : ArtistsPanelConfig
 
     @Serializable
-    data class MediaDetailsConfig(val releaseId: String) : ArtistsPanelConfig
+    data class MediaDetailsConfig(val releaseId: String, val releaseName: String) : ArtistsPanelConfig
 
     companion object {
         val SERIALIZERS = Triple(Unit.serializer(), ReleasesConfig.serializer(), MediaDetailsConfig.serializer())
