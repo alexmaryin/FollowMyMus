@@ -11,7 +11,7 @@ import org.koin.core.annotation.Single
 expect fun getDbMusicBrainzDbFactory(): MusicBrainzDbFactory
 
 @Module
-class DbModule() {
+class DbModule {
 
     @Single
     fun provideMusicBrainzDatabase(): MusicBrainzDatabase = getDbMusicBrainzDbFactory().create()

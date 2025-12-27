@@ -23,7 +23,7 @@ expect fun getHttpEngine(): HttpClientEngine
 
 @Module
 @ComponentScan("io.github.alexmaryin.followmymus.**")
-class AppModule() {
+class AppModule {
 
     private val ktorEngine by lazy { getHttpEngine() }
 
