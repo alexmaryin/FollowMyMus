@@ -106,4 +106,5 @@
     <string name="sort_date_today">Сегодня</string>
     <string name="sort_date_this_week">На этой неделе</string>
     <string name="sort_date_this_month">В этом месяце</string>
+    <string name="refresh_button">Обновить список релизов</string>
 </resources>

@@ -9,9 +9,9 @@ import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.getUiDescription
 import io.github.alexmaryin.followmymus.musicBrainz.domain.MediaRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
-import io.github.alexmaryin.followmymus.screens.mainScreen.domain.DefaultScaffoldSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.mediaPanel.ReleasePanelSlots
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -23,9 +23,9 @@ class MediaDetails(
     private val context: ComponentContext
 ) : Page, ComponentContext by context {
 
-    override val scaffoldSlots = DefaultScaffoldSlots
     override val events = Channel<SnackbarMsg>()
     override val key = "MediaDetails"
+    override val scaffoldSlots = ReleasePanelSlots(this)
 
     private val _state by saveableMutableValue(
         MediaDetailsState.serializer(),
@@ -47,7 +47,6 @@ class MediaDetails(
 
             scope.launch {
                 repository.workState.collect { working ->
-                    println(working)
                     _state.update { it.copy(isLoading = working == WorkState.LOADING) }
                 }
             }

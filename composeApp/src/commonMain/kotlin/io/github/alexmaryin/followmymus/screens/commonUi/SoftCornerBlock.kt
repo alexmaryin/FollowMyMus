@@ -1,4 +1,4 @@
-package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.ui.components
+package io.github.alexmaryin.followmymus.screens.commonUi
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

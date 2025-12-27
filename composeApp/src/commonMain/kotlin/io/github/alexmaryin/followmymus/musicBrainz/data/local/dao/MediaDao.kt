@@ -41,4 +41,7 @@ interface MediaDao {
 
     @Query("UPDATE MediaEntity SET previewCoverUrl = :previewUrl, fullCoverUrl = :largeUrl WHERE id = :mediaId")
     suspend fun updateMediaCovers(mediaId: String, previewUrl: String?, largeUrl: String?)
+
+    @Query("DELETE FROM MediaEntity")
+    suspend fun clearMedia()
 }

@@ -8,13 +8,13 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = MediaItemEntity::class,
+            entity = MediaEntity::class,
             parentColumns = ["id"],
-            childColumns = ["mediaItemId"],
+            childColumns = ["mediaId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("mediaItemId")]
+    indices = [Index("mediaId"), Index("mediaItemId")]
 )
 data class TrackEntity(
     @PrimaryKey(autoGenerate = false) val id: String,
@@ -22,5 +22,6 @@ data class TrackEntity(
     val mediaItemId: String,
     val position: Int,
     val title: String,
-    val lengthMs: Int?
+    val lengthMs: Long?,
+    val disambiguation: String? = null
 )

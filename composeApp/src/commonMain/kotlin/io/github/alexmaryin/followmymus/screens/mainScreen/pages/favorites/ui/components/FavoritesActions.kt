@@ -9,6 +9,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.refresh_button
 import followmymus.composeapp.generated.resources.refresh_icon
 import followmymus.composeapp.generated.resources.sort_artists_caption
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
@@ -69,7 +70,7 @@ fun FavoritesActions(
                     painter = painterResource(Res.drawable.refresh_icon),
                     contentDescription = null
                 )
-                Text(text = "Refresh releases list")
+                Text(text = stringResource(Res.string.refresh_button))
             }
         }
     }

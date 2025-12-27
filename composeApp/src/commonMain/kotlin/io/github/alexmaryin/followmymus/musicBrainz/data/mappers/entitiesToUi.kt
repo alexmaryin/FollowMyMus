@@ -82,5 +82,6 @@ internal fun TrackEntity.toTrack() = Track(
     id = id,
     position = position,
     title = title,
-    lengthMs = lengthMs
+    lengthMs = lengthMs,
+    disambiguation = disambiguation
 )

@@ -115,10 +115,11 @@ class FavoritesHost(
     }
 
     private fun onBack() {
-        if (state.value.releaseIdSelected != null)
+        if (state.value.releaseIdSelected != null) {
             panels.value.details?.instance(ReleasesListAction.DeselectRelease)
-        else if (state.value.artistIdSelected != null)
+        } else if (state.value.artistIdSelected != null) {
             panels.value.main.instance(FavoritesListAction.DeselectArtist)
+        }
         navigation.pop()
     }
 
@@ -131,10 +132,12 @@ class FavoritesHost(
 
             is FavoritesHostAction.ShowMediaDetails -> {
                 navigation.navigate { state ->
-                    state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(
-                        releaseId = action.releaseId,
-                        releaseName = action.releaseName
-                    ))
+                    state.copy(
+                        extra = FavoritesPanelConfig.MediaDetailsConfig(
+                            releaseId = action.releaseId,
+                            releaseName = action.releaseName
+                        )
+                    )
                 }
             }
 
@@ -144,13 +147,16 @@ class FavoritesHost(
                         details = FavoritesPanelConfig.ReleasesConfig(
                             artistId = action.artistId,
                             artistName = action.artistName
-                        )
+                        ),
+                        extra = null
                     )
                 }
             }
 
-            FavoritesHostAction.CloseReleases -> navigation.dismissDetails()
-
+            FavoritesHostAction.CloseReleases -> {
+                navigation.dismissExtra()
+                navigation.dismissDetails()
+            }
             FavoritesHostAction.CloseMediaDetails -> navigation.dismissExtra()
 
             FavoritesHostAction.RefreshReleases -> {

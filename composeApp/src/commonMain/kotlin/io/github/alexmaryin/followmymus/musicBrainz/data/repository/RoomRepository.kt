@@ -13,7 +13,8 @@ class RoomRepository(
     private val relationDao: ArtistRelationsDao,
     private val artistDao: ArtistDao,
     private val releasesDao: ReleasesDao,
-    private val resourceDao: ResourceDao
+    private val resourceDao: ResourceDao,
+    private val mediaDao: MediaDao
 ) : LocalDbRepository {
 
     override suspend fun insertArtist(artist: ArtistDto, transform: ArtistDto.() -> ArtistEntity) {
@@ -50,5 +51,6 @@ class RoomRepository(
         releasesDao.clear()
         resourceDao.clear()
         artistDao.clearArtists()
+        mediaDao.clearMedia()
     }
 }

@@ -84,8 +84,9 @@ fun TrackDto.toEntity(mediaId: String, mediaItemId: String) = TrackEntity(
     mediaId = mediaId,
     mediaItemId = mediaItemId,
     position = position,
-    title = title,
-    lengthMs = lengthMs
+    title = recording.title,
+    lengthMs = recording.length,
+    disambiguation = recording.disambiguation
 )
 
 fun ResourceDto.toMediaResourceEntity(mediaId: String) = MediaResourceEntity(
