@@ -24,6 +24,8 @@ class ApiMediaRepository(
 ) : MediaRepository {
     override val workState = MutableStateFlow(WorkState.IDLE)
 
+    override val mediaCount = MutableStateFlow<Int?>(null)
+
     private val _errors = Channel<ErrorType>()
     override val errors = _errors.receiveAsFlow()
 
@@ -32,10 +34,15 @@ class ApiMediaRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun fetchReleasesMedia(releaseId: String) {
-        println("Start fetching media for $releaseId")
         workState.update { WorkState.LOADING }
-        val remoteMedia = searchEngine.searchMedia(releaseId)
-        remoteMedia.forSuccess { mediaDto ->
+        mediaCount.update { null }
+
+        val remoteResponse = searchEngine.searchMedia(releaseId)
+        remoteResponse.forSuccess { response ->
+
+            mediaCount.update { response.count }
+            val mediaDto = response.releases
+
             mediaDao.insertMedia(
                 media = mediaDto.map { it.toEntity(releaseId) },
                 items = mediaDto.flatMap { media ->
@@ -55,7 +62,7 @@ class ApiMediaRepository(
                 }
             )
             workState.update { WorkState.COVERING }
-            mediaDto.asFlow().flatMapMerge(25) { media ->
+            mediaDto.asFlow().flatMapMerge(50) { media ->
                 flow {
                     emit(coversEngine.getMediaCovers(media.id) to media)
                 }
@@ -71,7 +78,7 @@ class ApiMediaRepository(
                 }
             }
         }
-        remoteMedia.forError { error ->
+        remoteResponse.forError { error ->
             _errors.send(error.type)
         }
         workState.update { WorkState.IDLE }

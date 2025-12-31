@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class MediaDetailsState(
     val releaseName: String,
     val isLoading: Boolean = false,
+    val mediaCount: Int = 0
 )

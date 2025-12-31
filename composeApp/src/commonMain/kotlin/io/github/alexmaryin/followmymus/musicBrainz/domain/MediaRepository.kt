@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface MediaRepository {
     val workState: StateFlow<WorkState>
+    val mediaCount: StateFlow<Int?>
     val errors: Flow<ErrorType>
 
     fun getReleaseMedia(releaseId: String): Flow<List<Media>>

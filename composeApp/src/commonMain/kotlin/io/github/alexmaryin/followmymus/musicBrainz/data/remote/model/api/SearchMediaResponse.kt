@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SearchMediaResponse(
-    @SerialName("release-count") val count: Int,
     val releases: List<MediaDto>,
+    @SerialName("release-count") val count: Int,
     @SerialName("release-offset") val offset: Int = 0
 )

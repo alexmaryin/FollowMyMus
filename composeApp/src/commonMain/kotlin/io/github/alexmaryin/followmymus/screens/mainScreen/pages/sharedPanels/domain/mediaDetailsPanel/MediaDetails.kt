@@ -40,8 +40,18 @@ class MediaDetails(
     init {
         lifecycle.doOnStart {
             scope.launch {
-                if (media.first().isEmpty()) {
+                val count = media.first().count()
+                if (count == 0) {
                     repository.fetchReleasesMedia(releaseId)
+                } else {
+                    _state.update { it.copy(mediaCount = count) }
+                }
+            }
+
+            scope.launch {
+                repository.mediaCount.collect { count ->
+                    println("New total count of media $count")
+                    _state.update { it.copy(mediaCount = count ?: 0) }
                 }
             }
 

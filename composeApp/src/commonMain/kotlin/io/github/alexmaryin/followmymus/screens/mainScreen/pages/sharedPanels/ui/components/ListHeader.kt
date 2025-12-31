@@ -15,14 +15,14 @@ import followmymus.composeapp.generated.resources.artists_search_header
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ListHeader(caption: String) {
+fun ListHeader(caption: String, modifier: Modifier = Modifier.fillMaxWidth()) {
     Surface {
         Text(
             text = caption,
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primaryFixedDim,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(6.dp)
+            modifier = modifier.padding(6.dp)
         )
     }
 }
