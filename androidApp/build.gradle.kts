@@ -1,7 +1,10 @@
+import io.kotzilla.gradle.ext.KotzillaKeyGeneration
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotzilla)
 }
 
 android {
@@ -13,6 +16,11 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         versionCode = libs.versions.android.versionCode.get().toInt()
         versionName = libs.versions.packageVersion.get()
+    }
+
+    kotzilla {
+        versionName = libs.versions.packageVersion.get()
+        composeInstrumentation = true
     }
 }
 
