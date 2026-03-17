@@ -1,5 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
 
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
@@ -14,10 +16,9 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.groupedBy
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -42,16 +43,22 @@ class FavoritesList(
     )
     val state: Value<FavoritesListState> = _state
 
-    val favoriteArtists = repository.getFavoriteArtists(state.asFlow().map { it.sortingType })
-        .onEach { grouped ->
-            val count = grouped.values.sumOf { it.size }
-            if (state.value.favoritesCount != count)
-                _state.update { it.copy(favoritesCount = count) }
+    val groupedFavoriteArtists = repository.getFavoriteArtists(state.asFlow().map { it.sortingType })
+        .cachedIn(scope)
+        .combine(state.asFlow().map { it.sortingType }) { pagingData, sortType ->
+            pagingData.groupedBy(sortType)
         }
+        .stateIn(scope, SharingStarted.Lazily, PagingData.empty())
+
 
     init {
+        repository.searchCount
+            .filterNotNull()
+            .onEach { size -> _state.update { state -> state.copy(favoritesCount = size) } }
+            .launchIn(scope)
+
         lifecycle.doOnStart {
-            startSync { favoriteArtists.first().isEmpty() }
+            startSync { state.value.favoritesCount == 0 }
 
             scope.launch {
                 syncRepository.syncStatus.collect { status ->

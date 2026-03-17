@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -11,24 +12,28 @@ interface FavoriteDao {
 
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true ORDER BY sortName COLLATE NOCASE")
-    fun getArtistsSortedByAbc(): Flow<List<ArtistWithRelations>>
+    fun getPagedArtistsSortedByAbc(): PagingSource<Int, ArtistWithRelations>
 
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true ORDER BY country, sortName COLLATE NOCASE")
-    fun getArtistsSortedByCountry(): Flow<List<ArtistWithRelations>>
+    fun getPagedArtistsSortedByCountry(): PagingSource<Int, ArtistWithRelations>
 
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true ORDER BY type")
-    fun getArtistsSortedByType(): Flow<List<ArtistWithRelations>>
+    fun getPagedArtistsSortedByType(): PagingSource<Int, ArtistWithRelations>
 
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true ORDER BY createdAt DESC")
-    fun getArtistsSortedByDate(): Flow<List<ArtistWithRelations>>
+    fun getPagedArtistsSortedByDate(): PagingSource<Int, ArtistWithRelations>
 
     @Transaction
     @Query("SELECT * FROM ArtistEntity WHERE isFavorite = true")
-    fun getArtists(): Flow<List<ArtistWithRelations>>
+    fun getPagedArtists(): PagingSource<Int, ArtistWithRelations>
 
+    @Transaction
     @Query("SELECT id FROM ArtistEntity WHERE isFavorite = true")
-    fun getFavoriteArtistIds(): Flow<List<String>>
+    fun getFavoriteArtistsIds(): Flow<List<String>>
+
+    @Query("SELECT COUNT(*) FROM ArtistEntity WHERE isFavorite = true")
+    fun getTotalCount(): Flow<Int>
 }

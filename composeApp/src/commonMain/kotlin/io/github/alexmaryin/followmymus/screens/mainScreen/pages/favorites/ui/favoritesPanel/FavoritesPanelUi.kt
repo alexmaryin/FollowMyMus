@@ -4,21 +4,22 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.favorite_artists_list_title
 import followmymus.composeapp.generated.resources.remove_artist_dialog_text
 import followmymus.composeapp.generated.resources.remove_artist_dialog_title
 import io.github.alexmaryin.followmymus.core.ui.PullToRefreshMobile
-import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortKeyType
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.caption
 import io.github.alexmaryin.followmymus.screens.commonUi.ConfirmationDialog
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel.FavoritesList
@@ -33,8 +34,11 @@ import org.jetbrains.compose.resources.stringResource
 fun FavoritesPanelUi(component: FavoritesList) {
     val state by component.state.subscribeAsState()
     val listState = rememberLazyListState()
-    val favoriteArtists by component.favoriteArtists.collectAsStateWithLifecycle(linkedMapOf())
-    val hideHeader by derivedStateOf { listState.firstVisibleItemIndex > 0 }
+    val hideHeader by derivedStateOf { listState.firstVisibleItemIndex > 1 }
+
+    // Collect grouped paging data as lazy paging items
+    val groupedPagingItems = component.groupedFavoriteArtists
+        .collectAsLazyPagingItems()
 
     if (state.isRemoveDialogVisible) {
         ConfirmationDialog(
@@ -45,7 +49,10 @@ fun FavoritesPanelUi(component: FavoritesList) {
         )
     }
 
-    if (state.favoritesCount == 0) {
+    // Handle loading states
+    val isLoading = groupedPagingItems.loadState.refresh is LoadState.Loading || state.isLoading
+
+    if (state.favoritesCount == 0 && !isLoading) {
         EmptyFavoritesPlaceholder()
     } else {
         PullToRefreshMobile(
@@ -64,20 +71,31 @@ fun FavoritesPanelUi(component: FavoritesList) {
                     modifier = Modifier.fillMaxWidth(),
                     state = listState,
                 ) {
-                    favoriteArtists.forEach { (key, favoriteArtists) ->
-                        if (key !is SortKeyType.None) {
-                            stickyHeader(key = key.key) {
-                                val caption = key.caption()
-                                ListHeader(caption)
+                    items(
+                        count = groupedPagingItems.itemCount,
+                        key = groupedPagingItems.itemKey { item ->
+                            when (item) {
+                                is GroupedFavoriteItem.Header -> item.uniqueId
+                                is GroupedFavoriteItem.Artist -> "artist_${item.artist.id}"
                             }
                         }
+                    ) { index ->
+                        when (val item = groupedPagingItems[index]) {
+                            is GroupedFavoriteItem.Header -> {
+                                ListHeader(item.key.caption())
+                            }
 
-                        items(favoriteArtists, key = { it.id }) { artist ->
-                            FavoriteListItem(
-                                artist = artist,
-                                isSelected = state.selectedArtist == artist.id,
-                                onAction = component::invoke
-                            )
+                            is GroupedFavoriteItem.Artist -> {
+                                FavoriteListItem(
+                                    artist = item.artist,
+                                    isSelected = state.selectedArtist == item.artist.id,
+                                    onAction = component::invoke
+                                )
+                            }
+
+                            else -> {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
                 }

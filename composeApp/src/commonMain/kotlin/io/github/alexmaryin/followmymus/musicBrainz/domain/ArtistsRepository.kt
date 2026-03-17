@@ -3,7 +3,6 @@ package io.github.alexmaryin.followmymus.musicBrainz.domain
 import androidx.paging.PagingData
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
-import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortKeyType
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface ArtistsRepository {
     val searchCount: StateFlow<Int?>
     fun searchArtists(query: String): Flow<PagingData<Artist>>
-    fun getFavoriteArtists(sort: Flow<SortArtists>): Flow<Map<out SortKeyType, List<FavoriteArtist>>>
+    fun getFavoriteArtists(sort: Flow<SortArtists>): Flow<PagingData<FavoriteArtist>>
     fun getFavoriteArtistsIds(): Flow<List<String>>
     suspend fun addToFavorite(artistId: String)
     suspend fun cacheArtist(artistId: String)

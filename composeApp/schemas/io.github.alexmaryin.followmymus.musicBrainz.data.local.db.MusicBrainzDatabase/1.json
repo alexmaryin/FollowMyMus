@@ -1,0 +1,638 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "bc065f712e3bbb385bb4ed67be55671f",
+    "entities": [
+      {
+        "tableName": "AreaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `sortName` TEXT NOT NULL, `area_lifespan_begin` TEXT, `area_lifespan_end` TEXT, `area_lifespan_ended` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortName",
+            "columnName": "sortName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lifeSpan.begin",
+            "columnName": "area_lifespan_begin",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeSpan.end",
+            "columnName": "area_lifespan_end",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeSpan.ended",
+            "columnName": "area_lifespan_ended",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "ArtistEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type` TEXT, `name` TEXT NOT NULL, `sortName` TEXT NOT NULL, `country` TEXT NOT NULL, `areaId` TEXT, `beginAreaId` TEXT, `disambiguation` TEXT, `isFavorite` INTEGER NOT NULL, `syncStatus` TEXT NOT NULL, `createdAt` TEXT NOT NULL DEFAULT '1970-01-01T00:00:00Z', `artist_lifespan_begin` TEXT, `artist_lifespan_end` TEXT, `artist_lifespan_ended` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortName",
+            "columnName": "sortName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "country",
+            "columnName": "country",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "areaId",
+            "columnName": "areaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "beginAreaId",
+            "columnName": "beginAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "disambiguation",
+            "columnName": "disambiguation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "isFavorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncStatus",
+            "columnName": "syncStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'1970-01-01T00:00:00Z'"
+          },
+          {
+            "fieldPath": "lifeSpan.begin",
+            "columnName": "artist_lifespan_begin",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeSpan.end",
+            "columnName": "artist_lifespan_end",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeSpan.ended",
+            "columnName": "artist_lifespan_ended",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ArtistEntity_sortName",
+            "unique": false,
+            "columnNames": [
+              "sortName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ArtistEntity_sortName` ON `${TABLE_NAME}` (`sortName`)"
+          },
+          {
+            "name": "index_ArtistEntity_country",
+            "unique": false,
+            "columnNames": [
+              "country"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ArtistEntity_country` ON `${TABLE_NAME}` (`country`)"
+          }
+        ]
+      },
+      {
+        "tableName": "TagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `artistId` TEXT NOT NULL, `count` INTEGER NOT NULL, `name` TEXT NOT NULL, FOREIGN KEY(`artistId`) REFERENCES `ArtistEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistId",
+            "columnName": "artistId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TagEntity_artistId",
+            "unique": false,
+            "columnNames": [
+              "artistId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TagEntity_artistId` ON `${TABLE_NAME}` (`artistId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ArtistEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "artistId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ResourceEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `url` TEXT NOT NULL, `artistId` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`artistId`) REFERENCES `ArtistEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistId",
+            "columnName": "artistId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ResourceEntity_artistId",
+            "unique": false,
+            "columnNames": [
+              "artistId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ResourceEntity_artistId` ON `${TABLE_NAME}` (`artistId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ArtistEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "artistId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ReleaseEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `artistId` TEXT NOT NULL, `title` TEXT NOT NULL, `disambiguation` TEXT, `firstReleaseDate` TEXT, `primaryType` TEXT NOT NULL, `secondaryTypes` TEXT, `previewCoverUrl` TEXT, `fullCoverUrl` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistId",
+            "columnName": "artistId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "disambiguation",
+            "columnName": "disambiguation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "firstReleaseDate",
+            "columnName": "firstReleaseDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "primaryType",
+            "columnName": "primaryType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secondaryTypes",
+            "columnName": "secondaryTypes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "previewCoverUrl",
+            "columnName": "previewCoverUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fullCoverUrl",
+            "columnName": "fullCoverUrl",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "MediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `releaseId` TEXT NOT NULL, `title` TEXT NOT NULL, `disambiguation` TEXT, `status` TEXT NOT NULL, `country` TEXT NOT NULL, `date` TEXT, `barcode` TEXT, `quality` TEXT, `previewCoverUrl` TEXT, `fullCoverUrl` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "releaseId",
+            "columnName": "releaseId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "disambiguation",
+            "columnName": "disambiguation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "country",
+            "columnName": "country",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "barcode",
+            "columnName": "barcode",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "quality",
+            "columnName": "quality",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "previewCoverUrl",
+            "columnName": "previewCoverUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fullCoverUrl",
+            "columnName": "fullCoverUrl",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "MediaItemEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `mediaId` TEXT NOT NULL, `position` INTEGER NOT NULL, `format` TEXT NOT NULL, `title` TEXT NOT NULL, `trackCount` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`mediaId`) REFERENCES `MediaEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "mediaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "format",
+            "columnName": "format",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackCount",
+            "columnName": "trackCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_MediaItemEntity_mediaId",
+            "unique": false,
+            "columnNames": [
+              "mediaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_MediaItemEntity_mediaId` ON `${TABLE_NAME}` (`mediaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "MediaEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "mediaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "TrackEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `mediaId` TEXT NOT NULL, `mediaItemId` TEXT NOT NULL, `position` INTEGER NOT NULL, `title` TEXT NOT NULL, `lengthMs` INTEGER, `disambiguation` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`mediaId`) REFERENCES `MediaEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "mediaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaItemId",
+            "columnName": "mediaItemId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lengthMs",
+            "columnName": "lengthMs",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "disambiguation",
+            "columnName": "disambiguation",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TrackEntity_mediaId",
+            "unique": false,
+            "columnNames": [
+              "mediaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TrackEntity_mediaId` ON `${TABLE_NAME}` (`mediaId`)"
+          },
+          {
+            "name": "index_TrackEntity_mediaItemId",
+            "unique": false,
+            "columnNames": [
+              "mediaItemId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TrackEntity_mediaItemId` ON `${TABLE_NAME}` (`mediaItemId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "MediaEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "mediaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "MediaResourceEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `url` TEXT NOT NULL, `mediaId` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`mediaId`) REFERENCES `MediaEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "mediaId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_MediaResourceEntity_mediaId",
+            "unique": false,
+            "columnNames": [
+              "mediaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_MediaResourceEntity_mediaId` ON `${TABLE_NAME}` (`mediaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "MediaEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "mediaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bc065f712e3bbb385bb4ed67be55671f')"
+    ]
+  }
+}

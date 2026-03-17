@@ -1,6 +1,5 @@
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import io.kotzilla.gradle.ext.KotzillaKeyGeneration
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.getLocalProperty
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -134,6 +133,7 @@ kotlin {
             implementation(libs.paging.compose)
             // Room
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
             implementation(libs.androidx.sqlite.bundled)
             // Coil
             implementation(libs.coil.compose)

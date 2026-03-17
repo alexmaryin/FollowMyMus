@@ -6,22 +6,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import followmymus.composeapp.generated.resources.Res
-import followmymus.composeapp.generated.resources.avatar
-import followmymus.composeapp.generated.resources.close_qr
-import followmymus.composeapp.generated.resources.logout
-import followmymus.composeapp.generated.resources.qr_code
+import followmymus.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -70,7 +61,7 @@ fun UserListItem(
             )
         }
     },
-    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent)
+    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
 )
 
 @Preview
