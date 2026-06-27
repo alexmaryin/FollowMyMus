@@ -11,9 +11,10 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.buildKonfig)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.koin.compiler)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -72,15 +73,11 @@ kotlin {
             implementation(libs.camera.lifecycle)
             implementation(libs.camera.view)
             implementation(libs.mlkit.barcode)
-            // Kotzilla Analytics
-            implementation(libs.kotzilla.sdk.compose)
         }
 
         iosMain.dependencies {
             // KTOR client
             implementation(libs.ktor.client.darwin)
-            // Kotzilla Analytics
-            implementation(libs.kotzilla.sdk.compose)
         }
 
         jvmMain.dependencies {
@@ -154,9 +151,20 @@ kotlin {
         }
     }
 
-    sourceSets.named("commonMain").configure {
-        kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-    }
+}
+
+koinCompiler {
+    userLogs = true
+    debugLogs = true
+    // The Koin compiler plugin's A4 call-site check runs per source set.
+    // In a KMP project, commonMain contains the get<>()/inject<>() call sites
+    // but not the startKoin<>() entry point (which lives in androidMain / iosMain
+    // / jvmMain). The plugin doesn't see the graph in commonMain and reports
+    // every call site as missing. Disable compile-time safety until that
+    // KMP source-set gap is fixed upstream; rely on runtime module.verify() for
+    // graph validation. Re-enable when startKoin<>() can be discovered cross-
+    // source-set.
+    compileSafety = false
 }
 
 room {
@@ -164,22 +172,8 @@ room {
 }
 
 dependencies {
-    // KOIN
-    add("kspCommonMainMetadata", libs.koin.ksp)
-    add("kspAndroid", libs.koin.ksp)
-    add("kspJvm", libs.koin.ksp)
-    add("kspIosSimulatorArm64", libs.koin.ksp)
-    add("kspIosArm64", libs.koin.ksp)
     // ROOM
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspJvm", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-}
-
-// Trigger Common Metadata Generation from Native tasks
-tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }.configureEach {
-    dependsOn("kspCommonMainKotlinMetadata")
+    ksp(libs.androidx.room.compiler)
 }
 
 compose.desktop {

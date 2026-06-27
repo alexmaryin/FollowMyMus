@@ -4,16 +4,15 @@ import android.app.Application
 import io.github.alexmaryin.followmymus.core.FollowMyMusApp
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.ksp.generated.startKoin
+import org.koin.plugin.module.dsl.startKoin
 
 class FollowMyMusAndroid : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        FollowMyMusApp.startKoin {
+        startKoin<FollowMyMusApp> {
             androidLogger()
             androidContext(this@FollowMyMusAndroid)
-            modules()
 //            analytics()
         }
     }

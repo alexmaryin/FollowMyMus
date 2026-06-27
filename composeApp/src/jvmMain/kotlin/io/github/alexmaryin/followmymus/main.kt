@@ -13,13 +13,12 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.github.alexmaryin.followmymus.core.FollowMyMusApp
 import io.github.alexmaryin.followmymus.rootNavigation.MainRootComponent
 import io.github.alexmaryin.followmymus.rootNavigation.ui.RootContent
-import org.koin.ksp.generated.startKoin
+import org.koin.plugin.module.dsl.startKoin
 
 fun main() {
 
-    FollowMyMusApp.startKoin {
+    startKoin<FollowMyMusApp> {
         printLogger()
-        modules()
     }
 
     val lifecycle = LifecycleRegistry()
