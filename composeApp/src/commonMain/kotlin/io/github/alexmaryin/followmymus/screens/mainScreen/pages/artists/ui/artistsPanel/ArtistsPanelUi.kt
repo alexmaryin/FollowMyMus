@@ -23,10 +23,10 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import followmymus.composeapp.generated.resources.*
+import io.github.alexmaryin.followmymus.core.paging.PagingError
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.core.ui.ObserveEvents
 import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
-import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SearchError
 import io.github.alexmaryin.followmymus.screens.commonUi.EmptyListPlaceholder
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.artistsListPanel.ArtistsListAction
@@ -86,55 +86,60 @@ fun ArtistsPanelUi(component: ArtistsList) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (state.isLoading) {
-            VinylLoadingIndicator(
-                modifier = Modifier.align(Alignment.Center).size(150.dp)
-            )
-        } else {
-            HandlePagingItems(artists) {
+        HandlePagingItems(
+            items = artists,
+            errorMapper = { throwable -> PagingError.Unknown(throwable.message) }
+        ) {
+            OnEmpty {
+                EmptyListPlaceholder()
+            }
 
-                OnEmpty { EmptyListPlaceholder() }
+            OnLoading {
+                if (state.isLoading) VinylLoadingIndicator(
+                    modifier = Modifier.align(Alignment.Center).size(150.dp)
+                )
+            }
 
-                OnRefresh { VinylLoadingIndicator(modifier = Modifier.align(Alignment.Center).size(150.dp)) }
+            OnError { error ->
+                val errorText = when (error) {
+                    PagingError.InvalidResponse ->
+                        stringResource(Res.string.invalid_response_api)
 
-                OnError { error ->
-                    val errorText = when (error) {
-                        SearchError.InvalidResponse ->
-                            stringResource(Res.string.invalid_response_api)
-
-                        is SearchError.NetworkError ->
-                            if (error.message != null) {
-                                stringResource(
-                                    Res.string.network_error_msg,
-                                    error.message
-                                )
-                            } else stringResource(Res.string.network_error)
-
-                        is SearchError.ServerError ->
+                    is PagingError.Network ->
+                        if (error.message != null) {
                             stringResource(
-                                Res.string.server_error_code,
-                                error.code, error.message
+                                Res.string.network_error_msg,
+                                error.message
                             )
-                    }
-                    ErrorPlaceholder(text = errorText) {
-                        component(ArtistsListAction.Retry)
-                    }
+                        } else stringResource(Res.string.network_error)
+
+                    is PagingError.Server ->
+                        stringResource(
+                            Res.string.server_error_code,
+                            error.code, error.message
+                        )
+
+                    is PagingError.Unknown ->
+                        error.message?.let { stringResource(Res.string.network_error_msg, it) }
+                            ?: stringResource(Res.string.network_error)
                 }
-                OnSuccess {
-                    LazyColumn(
-                        state = listState,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        state.searchResultsCount?.let {
-                            item { ListHeader(stringResource(Res.string.artists_search_header, it)) }
-                        }
-                        onPagingItems({ it.id }) { artist ->
-                            val isOpened = artist.id == state.openedArtistId
-                            ArtistListItem(artist, isOpened, component::invoke)
-                        }
-                        onAppendItem { LoadingIndicator(Modifier.padding(6.dp)) }
-                        onLastItem { }
+                ErrorPlaceholder(text = errorText) {
+                    component(ArtistsListAction.Retry)
+                }
+            }
+            OnContent {
+                LazyColumn(
+                    state = listState,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    state.searchResultsCount?.let {
+                        item { ListHeader(stringResource(Res.string.artists_search_header, it)) }
                     }
+                    onPagingItems(key = { it.id }) { artist ->
+                        val isOpened = artist.id == state.openedArtistId
+                        ArtistListItem(artist, isOpened, component::invoke)
+                    }
+                    onAppendLoading { LoadingIndicator(Modifier.padding(6.dp)) }
                 }
             }
         }

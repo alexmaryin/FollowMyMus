@@ -2,6 +2,9 @@ package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
 import androidx.paging.*
 import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.core.paging.NetworkPagingCount
+import io.github.alexmaryin.followmymus.core.paging.PagingDefaults
+import io.github.alexmaryin.followmymus.core.paging.RoomPagingCount
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toEntity
@@ -31,29 +34,20 @@ class ApiArtistsRepository(
     private val dbRepository: LocalDbRepository
 ) : ArtistsRepository, KoinComponent {
 
-    override val searchCount = MutableStateFlow<Int?>(null)
-    private fun emitNewCount(count: Int?) {
-        searchCount.update { count }
-    }
+    private val networkCount = NetworkPagingCount()
+    override val totalArtistCount: Flow<Int?> = networkCount.flow
 
-    override fun searchArtists(query: String): Flow<PagingData<Artist>> {
-        val pager = Pager(
-            config = PagingConfig(
-                pageSize = SearchEngine.LIMIT,
-                initialLoadSize = SearchEngine.LIMIT,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = {
-                get<PagingSource<Int, Artist>> { parametersOf(query, ::emitNewCount) }
-            }
-        )
-        return pager.flow
-    }
+    private val favoritesCount = RoomPagingCount { favoriteDao.getTotalCount() }
+    override val totalFavoritesCount: Flow<Int?> = favoritesCount.flow
+
+    override fun searchArtists(query: String): Flow<PagingData<Artist>> = Pager(
+        config = PagingDefaults.apiConfig(),
+        pagingSourceFactory = { get<ArtistsPagingSource> { parametersOf(query, networkCount) } }
+    ).flow
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getFavoriteArtists(sort: Flow<SortArtists>): Flow<PagingData<FavoriteArtist>> {
-
-        return sort.distinctUntilChanged().flatMapLatest { sortType ->
+    override fun getFavoriteArtists(sort: Flow<SortArtists>): Flow<PagingData<FavoriteArtist>> =
+        sort.distinctUntilChanged().flatMapLatest { sortType ->
             val pagingSourceFactory = when (sortType) {
                 SortArtists.NONE -> favoriteDao::getPagedArtists
                 SortArtists.DATE -> favoriteDao::getPagedArtistsSortedByDate
@@ -63,22 +57,12 @@ class ApiArtistsRepository(
             }
 
             Pager(
-                config = PagingConfig(
-                    pageSize = 20,
-                    initialLoadSize = 40,
-                    prefetchDistance = 20,
-                    enablePlaceholders = false,
-                    maxSize = 100
-                ),
+                config = PagingDefaults.roomConfig(),
                 pagingSourceFactory = pagingSourceFactory
-            ).flow.combine(favoriteDao.getTotalCount()) { pagingData, totalCount ->
-                emitNewCount(totalCount)
-                pagingData.map { artistWithRelations ->
-                    artistWithRelations.toFavoriteArtist()
-                }
+            ).flow.map { pagingData ->
+                pagingData.map { artistWithRelations -> artistWithRelations.toFavoriteArtist() }
             }
         }
-    }
 
     override fun getFavoriteArtistsIds(): Flow<List<String>> = favoriteDao.getFavoriteArtistsIds()
 

@@ -150,6 +150,7 @@ kotlin {
             implementation(libs.mockk)
             implementation(libs.mockk.agent)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 
@@ -200,8 +201,6 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.STRING, "projectId", project.getLocalProperty("projectId"))
         buildConfigField(FieldSpec.Type.STRING, "publishableKey", project.getLocalProperty("publishableKey"))
         buildConfigField(FieldSpec.Type.STRING, "secretKey", project.getLocalProperty("secretKey"))
-//        buildConfigField(FieldSpec.Type.STRING, "musicBrainzOpenAuth", project.getLocalProperty("musicBrainzOpenAuth"))
-//        buildConfigField(FieldSpec.Type.STRING, "musicBrainzSecret", project.getLocalProperty("musicBrainzSecret"))
         buildConfigField(FieldSpec.Type.STRING, "appVersion", libs.versions.packageVersion.get())
     }
 }

@@ -16,6 +16,7 @@
     <string name="network_error_msg">Network error: %1$s</string>
     <string name="timeout_error_msg">Timeout for response</string>
     <string name="no_cover_error_msg">Some releases have no cover art</string>
+    <string name="partial_sync_msg">Sync stopped early — only partial results loaded</string>
     <!--    Pages titles-->
     <string name="artists_page_title">Artists</string>
     <string name="releases_page_title">Releases</string>

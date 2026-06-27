@@ -8,9 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.alexmaryin.followmymus.core.ui.DeviceConfiguration
+import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.core.ui.PullToRefreshMobile
+import io.github.alexmaryin.followmymus.musicBrainz.domain.toPagingError
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.CoverView
@@ -23,29 +26,37 @@ fun ReleasesPanelUi(component: ReleasesList) {
     val deviceConfiguration = DeviceConfiguration.fromWindowSize(windowSize)
 
     val resources = component.resources.collectAsStateWithLifecycle(emptyMap())
-    val releases = component.releases.collectAsStateWithLifecycle(emptyMap())
+    val groupedReleases = component.releases.collectAsLazyPagingItems()
 
     val state by component.state.subscribeAsState()
 
-    PullToRefreshMobile(
-        isRefreshing = state.isLoading,
-        onRefresh = { component(ReleasesListAction.LoadFromRemote) },
-        modifier = Modifier.fillMaxWidth()
+    HandlePagingItems(
+        items = groupedReleases,
+        errorMapper = ::toPagingError
     ) {
-        when (deviceConfiguration) {
-            DeviceConfiguration.MOBILE_LANDSCAPE -> {
-                ReleasesPanelLandscape(
-                    resources = resources.value,
-                    releases = releases.value,
-                    actionHandler = component::invoke
-                )
-            }
-            else -> {
-                ReleasesPanelTall(
-                    resources = resources.value,
-                    releases = releases.value,
-                    actionHandler = component::invoke
-                )
+
+        OnContent { items ->
+            PullToRefreshMobile(
+                isRefreshing = state.isLoading,
+                onRefresh = { component(ReleasesListAction.LoadFromRemote) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                when (deviceConfiguration) {
+                    DeviceConfiguration.MOBILE_LANDSCAPE -> {
+                        ReleasesPanelLandscape(
+                            resources = resources.value,
+                            releases = items,
+                            actionHandler = component::invoke
+                        )
+                    }
+                    else -> {
+                        ReleasesPanelTall(
+                            resources = resources.value,
+                            releases = items,
+                            actionHandler = component::invoke
+                        )
+                    }
+                }
             }
         }
     }

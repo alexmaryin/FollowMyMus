@@ -29,12 +29,24 @@ internal fun List<ResourceEntity>.groupByType() =
     map { Resource(it.type, it.url) }
         .groupBy { it.resourceName }
 
-internal fun List<ReleaseEntity>.groupByCategories() = asSequence()
-    .map { it.toRelease() }
-    .sortedByDescending { it.firstReleaseDate }
-    .groupBy { (listOf(it.primaryType) + it.secondaryTypes).joinToString(" + ") }.toList()
-    .sortedWith(compareBy { it.first }).toList()
-    .toMap()
+internal fun io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.MediaDto.toMedia() = Media(
+    id = id,
+    title = title,
+    disambiguation = disambiguation,
+    status = status,
+    country = country,
+    date = date,
+    barcode = barcode,
+    quality = quality,
+    // Children require DTO→entity→domain mappers that the API path
+    // does not need today; this source is reserved for future use so
+    // we keep the surface narrow. The Room-backed path that the UI
+    // actually consumes uses `MediaWithData.toMedia()` above.
+    items = emptyList(),
+    resources = emptyList(),
+    previewCoverUrl = coverImages.firstOrNull()?.thumbnails?.firstOrNull()?.url,
+    fullCoverUrl = coverImages.lastOrNull()?.thumbnails?.lastOrNull()?.url
+)
 
 internal fun ReleaseEntity.toRelease() = Release(
     id = id,

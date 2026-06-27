@@ -74,7 +74,8 @@ internal class RootTest {
     }
 
     val mockArtists = mockk<ArtistsRepository> {
-        every { searchCount } returns MutableStateFlow(0)
+        every { totalArtistCount } returns flowOf(0)
+        every { totalFavoritesCount } returns flowOf(0)
         every { getFavoriteArtists(any()) } returns flow {  }
         every { getFavoriteArtistsIds() } returns flowOf(emptyList())
     }
