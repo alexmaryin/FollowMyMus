@@ -1,7 +1,13 @@
 package io.github.alexmaryin.followmymus
 
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.v2.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -68,8 +74,9 @@ internal class RootTest {
     }
 
     val mockArtists = mockk<ArtistsRepository> {
-        every { searchCount } returns MutableStateFlow(0)
-        every { getFavoriteArtists(any()) } returns flowOf(emptyMap())
+        every { totalArtistCount } returns flowOf(0)
+        every { totalFavoritesCount } returns flowOf(0)
+        every { getFavoriteArtists(any()) } returns flow {  }
         every { getFavoriteArtistsIds() } returns flowOf(emptyList())
     }
 

@@ -3,6 +3,8 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.u
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.LazyPagingItems
+import io.github.alexmaryin.followmymus.core.paging.GroupedItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Release
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Resource
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
@@ -13,7 +15,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui
 fun ReleasesPanelTall(
     modifier: Modifier = Modifier,
     resources: Map<String, List<Resource>>,
-    releases: Map<String, List<Release>>,
+    releases: LazyPagingItems<GroupedItem<Release, String>>,
     actionHandler: (ReleasesListAction) -> Unit
 ) {
     Column(modifier = modifier) {

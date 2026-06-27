@@ -1,26 +1,21 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.PagingSource
+import androidx.paging.*
 import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.core.paging.NetworkPagingCount
+import io.github.alexmaryin.followmymus.core.paging.PagingDefaults
+import io.github.alexmaryin.followmymus.core.paging.RoomPagingCount
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toFavoriteArtist
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.SyncStatus
-import io.github.alexmaryin.followmymus.musicBrainz.data.utils.sortAbcOrder
-import io.github.alexmaryin.followmymus.musicBrainz.data.utils.sortCountryOrder
-import io.github.alexmaryin.followmymus.musicBrainz.data.utils.sortDateCategoryGroups
-import io.github.alexmaryin.followmymus.musicBrainz.data.utils.sortTypeOrder
-import io.github.alexmaryin.followmymus.musicBrainz.data.utils.toDateCategory
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.LocalDbRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
-import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortKeyType
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.SortArtists
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.models.FavoriteArtist
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
 import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +25,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Factory(binds = [ArtistsRepository::class])
 class ApiArtistsRepository(
     private val artistDao: ArtistDao,
@@ -40,57 +34,37 @@ class ApiArtistsRepository(
     private val dbRepository: LocalDbRepository
 ) : ArtistsRepository, KoinComponent {
 
-    override val searchCount = MutableStateFlow<Int?>(null)
-    private fun emitNewCount(count: Int?) {
-        searchCount.update { count }
-    }
+    private val networkCount = NetworkPagingCount()
+    override val totalArtistCount: Flow<Int?> = networkCount.flow
 
-    override fun searchArtists(query: String): Flow<PagingData<Artist>> {
-        val pager = Pager(
-            config = PagingConfig(
-                pageSize = SearchEngine.LIMIT,
-                initialLoadSize = SearchEngine.LIMIT,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = {
-                get<PagingSource<Int, Artist>> { parametersOf(query, ::emitNewCount) }
-            }
-        )
-        return pager.flow
-    }
+    private val favoritesCount = RoomPagingCount { favoriteDao.getTotalCount() }
+    override val totalFavoritesCount: Flow<Int?> = favoritesCount.flow
 
-    override fun getFavoriteArtists(sort: Flow<SortArtists>) =
+    override fun searchArtists(query: String): Flow<PagingData<Artist>> = Pager(
+        config = PagingDefaults.apiConfig(),
+        pagingSourceFactory = { get<ArtistsPagingSource> { parametersOf(query, networkCount) } }
+    ).flow
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getFavoriteArtists(sort: Flow<SortArtists>): Flow<PagingData<FavoriteArtist>> =
         sort.distinctUntilChanged().flatMapLatest { sortType ->
-            val sortedFavorites = when (sortType) {
-                SortArtists.NONE -> favoriteDao.getArtists()
-                SortArtists.DATE -> favoriteDao.getArtistsSortedByDate()
-                SortArtists.COUNTRY -> favoriteDao.getArtistsSortedByCountry()
-                SortArtists.ABC -> favoriteDao.getArtistsSortedByAbc()
-                SortArtists.TYPE -> favoriteDao.getArtistsSortedByType()
-            }.map { flow ->
-                flow.map { it.toFavoriteArtist() }
+            val pagingSourceFactory = when (sortType) {
+                SortArtists.NONE -> favoriteDao::getPagedArtists
+                SortArtists.DATE -> favoriteDao::getPagedArtistsSortedByDate
+                SortArtists.COUNTRY -> favoriteDao::getPagedArtistsSortedByCountry
+                SortArtists.ABC -> favoriteDao::getPagedArtistsSortedByAbc
+                SortArtists.TYPE -> favoriteDao::getPagedArtistsSortedByType
             }
-            val groupedFavorites = sortedFavorites.map { favorites ->
-                when (sortType) {
-                    SortArtists.NONE -> mapOf(SortKeyType.None to favorites)
 
-                    SortArtists.DATE -> favorites.groupBy { it.createdAt.toDateCategory() }
-                        .sortDateCategoryGroups()
-
-                    SortArtists.COUNTRY -> favorites.groupBy { artist -> SortKeyType.Country(artist.country) }
-                        .sortCountryOrder()
-
-                    SortArtists.ABC -> favorites.groupBy { artist -> artist.sortName.first().titlecaseChar() }
-                        .sortAbcOrder()
-
-                    SortArtists.TYPE -> favorites.groupBy { artist -> SortKeyType.Type(artist.type) }
-                        .sortTypeOrder()
-                }
+            Pager(
+                config = PagingDefaults.roomConfig(),
+                pagingSourceFactory = pagingSourceFactory
+            ).flow.map { pagingData ->
+                pagingData.map { artistWithRelations -> artistWithRelations.toFavoriteArtist() }
             }
-            groupedFavorites
         }
 
-    override fun getFavoriteArtistsIds(): Flow<List<String>> = favoriteDao.getFavoriteArtistIds()
+    override fun getFavoriteArtistsIds(): Flow<List<String>> = favoriteDao.getFavoriteArtistsIds()
 
     override suspend fun cacheArtist(artistId: String) {
         if (artistDao.isArtistExists(artistId)) return

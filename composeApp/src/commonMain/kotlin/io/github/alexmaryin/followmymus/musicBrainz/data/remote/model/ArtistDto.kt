@@ -19,6 +19,7 @@ data class ArtistDto(
     @SerialName("life-span") val lifeSpan: LifeSpanDto?,
     val tags: List<TagDto> = emptyList(),
     @SerialName("relations") val resources: List<ResourceDto> = emptyList(),
-    @SerialName("release-groups") val releases: List<ReleaseDto> = emptyList()
+    @SerialName("release-groups") val releases: List<ReleaseDto> = emptyList(),
+    @SerialName("release-group-count") val releaseCount: Int = 0
 )
 

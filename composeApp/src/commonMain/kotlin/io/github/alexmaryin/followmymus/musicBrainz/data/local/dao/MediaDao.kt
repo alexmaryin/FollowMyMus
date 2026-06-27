@@ -1,5 +1,6 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -13,6 +14,13 @@ interface MediaDao {
     @Transaction
     @Query("SELECT * FROM MediaEntity WHERE releaseId = :releaseId")
     fun getReleaseMedia(releaseId: String): Flow<List<MediaWithData>>
+
+    @Transaction
+    @Query("SELECT * FROM MediaEntity WHERE releaseId = :releaseId ORDER BY id ASC")
+    fun getPagedReleaseMedia(releaseId: String): PagingSource<Int, MediaWithData>
+
+    @Query("SELECT COUNT(*) FROM MediaEntity WHERE releaseId = :releaseId")
+    fun getMediaCount(releaseId: String): Flow<Int>
 
     @Upsert
     suspend fun insertRawMedia(media: List<MediaEntity>)

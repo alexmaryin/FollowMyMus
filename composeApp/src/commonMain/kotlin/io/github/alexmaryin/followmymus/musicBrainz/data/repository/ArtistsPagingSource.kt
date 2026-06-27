@@ -2,16 +2,17 @@ package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import io.github.alexmaryin.followmymus.core.paging.NetworkPagingCount
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import org.koin.core.annotation.Factory
 
-@Factory(binds = [PagingSource::class])
+@Factory
 class ArtistsPagingSource(
     private val searchEngine: SearchEngine,
     private val query: String,
-    private val emitNewCount: (Int?) -> Unit
+    private val count: NetworkPagingCount,
 ) : PagingSource<Int, Artist>() {
 
     // Need to drop duplicates which could appear in API response with overlapping pages
@@ -22,13 +23,13 @@ class ArtistsPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Artist> {
-        emitNewCount(null)
+        count.update(null)
         val offset = params.key?.coerceAtLeast(0) ?: 0
         val limit = params.loadSize
 
         return try {
             val response = searchEngine.searchArtists(query, offset, limit)
-            emitNewCount(response.count)
+            count.update(response.count)
             val artists = response.artists.filter { it.id !in seenIds }.map { it.toArtist(false) }
             artists.forEach { artist -> addToSeenIds(artist.id) }
             LoadResult.Page(

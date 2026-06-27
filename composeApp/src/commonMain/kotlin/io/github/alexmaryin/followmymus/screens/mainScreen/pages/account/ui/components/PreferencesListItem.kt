@@ -47,7 +47,7 @@ fun PreferenceListItem(item: PreferencesItem) {
                 )
             }
         },
-        colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent)
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
     )
     if (item.withDivider) HorizontalDivider(
         modifier = Modifier.padding(horizontal = 28.dp),

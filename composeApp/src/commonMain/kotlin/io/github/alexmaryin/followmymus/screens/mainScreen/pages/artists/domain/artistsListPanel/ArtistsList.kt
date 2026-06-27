@@ -49,7 +49,7 @@ class ArtistsList(
         else hostAction(ArtistsHostAction.CloseReleases)
 
         scope.launch {
-            repository.searchCount.collect { total ->
+            repository.totalArtistCount.collect { total ->
                 _state.update { it.copy(searchResultsCount = total) }
             }
         }
@@ -92,13 +92,13 @@ class ArtistsList(
 
     private fun toggleFavorite(artistId: String, isFavorite: Boolean) = scope.launch {
         if (isFavorite) {
+            _state.update { it.copy(isFavoriteToggle = true) }
             repository.deleteFromFavorites(artistId)
         } else {
+            _state.update { it.copy(isFavoriteToggle = true) }
             repository.addToFavorite(artistId)
         }
-        if (state.value.openedArtistId != null) _state.update {
-            it.copy(isOpenedArtistFavorite = !isFavorite)
-        }
+        _state.update { it.copy(isFavoriteToggle = isFavorite, isOpenedArtistFavorite = !isFavorite) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

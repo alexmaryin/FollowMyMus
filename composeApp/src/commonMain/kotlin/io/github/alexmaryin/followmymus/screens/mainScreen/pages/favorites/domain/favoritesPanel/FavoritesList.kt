@@ -1,5 +1,7 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.favoritesPanel
 
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
@@ -7,6 +9,7 @@ import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
+import io.github.alexmaryin.followmymus.core.paging.groupedBy
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
@@ -14,10 +17,9 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHostAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.FavoritesPanelSlots
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.favoritesPanel.favoriteArtistKeySelector
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
@@ -41,17 +43,24 @@ class FavoritesList(
         FavoritesListState.serializer(), init = ::FavoritesListState
     )
     val state: Value<FavoritesListState> = _state
+    private val sortingType = state.asFlow().map { it.sortingType }.distinctUntilChanged()
 
-    val favoriteArtists = repository.getFavoriteArtists(state.asFlow().map { it.sortingType })
-        .onEach { grouped ->
-            val count = grouped.values.sumOf { it.size }
-            if (state.value.favoritesCount != count)
-                _state.update { it.copy(favoritesCount = count) }
+    val groupedFavoriteArtists = repository.getFavoriteArtists(state.asFlow().map { it.sortingType })
+        .cachedIn(scope)
+        .combine(sortingType) { pagingData, sortType ->
+            pagingData.groupedBy(favoriteArtistKeySelector(sortType))
         }
+        .stateIn(scope, SharingStarted.Lazily, PagingData.empty())
+
 
     init {
+        repository.totalFavoritesCount
+            .filterNotNull()
+            .onEach { size -> _state.update { state -> state.copy(favoritesCount = size) } }
+            .launchIn(scope)
+
         lifecycle.doOnStart {
-            startSync { favoriteArtists.first().isEmpty() }
+            startSync { state.value.favoritesCount == 0 }
 
             scope.launch {
                 syncRepository.syncStatus.collect { status ->

@@ -1,6 +1,5 @@
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import io.kotzilla.gradle.ext.KotzillaKeyGeneration
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.getLocalProperty
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -134,6 +133,7 @@ kotlin {
             implementation(libs.paging.compose)
             // Room
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
             implementation(libs.androidx.sqlite.bundled)
             // Coil
             implementation(libs.coil.compose)
@@ -150,6 +150,7 @@ kotlin {
             implementation(libs.mockk)
             implementation(libs.mockk.agent)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 
@@ -200,8 +201,6 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.STRING, "projectId", project.getLocalProperty("projectId"))
         buildConfigField(FieldSpec.Type.STRING, "publishableKey", project.getLocalProperty("publishableKey"))
         buildConfigField(FieldSpec.Type.STRING, "secretKey", project.getLocalProperty("secretKey"))
-//        buildConfigField(FieldSpec.Type.STRING, "musicBrainzOpenAuth", project.getLocalProperty("musicBrainzOpenAuth"))
-//        buildConfigField(FieldSpec.Type.STRING, "musicBrainzSecret", project.getLocalProperty("musicBrainzSecret"))
         buildConfigField(FieldSpec.Type.STRING, "appVersion", libs.versions.packageVersion.get())
     }
 }

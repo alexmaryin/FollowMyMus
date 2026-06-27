@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.LazyPagingItems
+import io.github.alexmaryin.followmymus.core.paging.GroupedItem
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Release
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Resource
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
@@ -14,7 +16,7 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui
 fun ReleasesPanelLandscape(
     modifier: Modifier = Modifier,
     resources: Map<String, List<Resource>>,
-    releases: Map<String, List<Release>>,
+    releases: LazyPagingItems<GroupedItem<Release, String>>,
     actionHandler: (ReleasesListAction) -> Unit
 ) {
     Row(modifier = modifier.fillMaxWidth()) {

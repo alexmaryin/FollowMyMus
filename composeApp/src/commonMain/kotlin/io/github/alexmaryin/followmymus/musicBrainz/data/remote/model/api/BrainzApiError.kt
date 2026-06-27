@@ -32,3 +32,5 @@ suspend fun ErrorType.getUiDescription() = when (this) {
 
     else -> null
 }
+
+suspend fun getPartialSyncMessage() = getString(Res.string.partial_sync_msg)
