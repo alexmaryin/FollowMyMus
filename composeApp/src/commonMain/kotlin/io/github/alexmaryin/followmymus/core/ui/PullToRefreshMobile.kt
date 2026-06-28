@@ -21,10 +21,12 @@ fun PullToRefreshMobile(
     val pullToRefreshState = rememberPullToRefreshState()
 
     when  {
-        isDesktop() && isRefreshing ->
+        isDesktop() && isRefreshing -> Box(modifier) {
+            content()
             Box(Modifier.fillMaxSize()) {
                 VinylLoadingIndicator(Modifier.align(Alignment.Center).size(100.dp))
             }
+        }
 
         isDesktop() && !isRefreshing -> Box(modifier) { content() }
 

@@ -13,7 +13,6 @@ class FollowMyMusAndroid : Application() {
         startKoin<FollowMyMusApp> {
             androidLogger()
             androidContext(this@FollowMyMusAndroid)
-//            analytics()
         }
     }
 }

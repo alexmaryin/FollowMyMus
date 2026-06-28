@@ -1,23 +1,21 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
 import androidx.paging.PagingSource
-import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.Result
 import io.github.alexmaryin.followmymus.core.UndefinedError
-import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.MediaDao
-import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ReleasesDao
-import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ResourceDao
-import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.TransactionalDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.model.*
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.CoverImageDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.RecordingDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ResourceDto
-import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.UrlDto
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.CoverArtResponse
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchMediaResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchReleaseGroupResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ReleaseType
 import io.github.alexmaryin.followmymus.musicBrainz.domain.CoversEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * In-memory fakes for the paging repository tests.
@@ -29,12 +27,15 @@ class FakePagingSearchEngine : SearchEngine {
 
     data class ReleasesCall(val offset: Int, val limit: Int)
     data class MediaCall(val offset: Int, val limit: Int)
+    data class ReleaseGroupsCall(val query: String, val offset: Int, val limit: Int)
 
     val releasesCalls = mutableListOf<ReleasesCall>()
     val mediaCalls = mutableListOf<MediaCall>()
+    val releaseGroupsCalls = mutableListOf<ReleaseGroupsCall>()
 
     val releasesQueue: ArrayDeque<Result<ArtistDto>> = ArrayDeque()
     val mediaQueue: ArrayDeque<Result<SearchMediaResponse>> = ArrayDeque()
+    val releaseGroupsQueue: ArrayDeque<Result<SearchReleaseGroupResponse>> = ArrayDeque()
 
     fun enqueueReleases(vararg responses: Result<ArtistDto>) {
         responses.forEach { releasesQueue.addLast(it) }
@@ -42,6 +43,10 @@ class FakePagingSearchEngine : SearchEngine {
 
     fun enqueueMedia(vararg responses: Result<SearchMediaResponse>) {
         responses.forEach { mediaQueue.addLast(it) }
+    }
+
+    fun enqueueReleaseGroups(vararg responses: Result<SearchReleaseGroupResponse>) {
+        responses.forEach { releaseGroupsQueue.addLast(it) }
     }
 
     override suspend fun searchArtists(query: String, offset: Int, limit: Int): io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchArtistResponse =
@@ -62,6 +67,12 @@ class FakePagingSearchEngine : SearchEngine {
         mediaCalls += MediaCall(offset, limit)
         return mediaQueue.removeFirstOrNull()
             ?: error("FakePagingSearchEngine: no queued media response for offset=$offset")
+    }
+
+    override suspend fun searchReleaseGroups(query: String, offset: Int, limit: Int): Result<SearchReleaseGroupResponse> {
+        releaseGroupsCalls += ReleaseGroupsCall(query, offset, limit)
+        return releaseGroupsQueue.removeFirstOrNull()
+            ?: error("FakePagingSearchEngine: no queued release-group response for offset=$offset")
     }
 }
 
@@ -185,16 +196,16 @@ class RecordingTransactionalDao : TransactionalDao {
         area: AreaEntity?,
         beginArea: AreaEntity?,
         tags: List<TagEntity>,
-        relationsDao: io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistRelationsDao,
-        artistDao: io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistDao
+        relationsDao: ArtistRelationsDao,
+        artistDao: ArtistDao
     ) = error("not used in paging tests")
 
     override suspend fun bulkInsertArtistsWithRelations(
         artists: List<ArtistEntity>,
         areas: List<AreaEntity>,
         tags: List<TagEntity>,
-        relationsDao: io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistRelationsDao,
-        artistDao: io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistDao
+        relationsDao: ArtistRelationsDao,
+        artistDao: ArtistDao
     ) = error("not used in paging tests")
 }
 
@@ -249,9 +260,84 @@ class RecordingMediaDao : MediaDao {
     override suspend fun clearMedia() = Unit
 }
 
+/**
+ * Recording fake for [NewReleasesDao]. Records every upsert and state-mark
+ * so tests can assert on the persisted data and the call sequence.
+ */
+class FakeNewReleasesDao : NewReleasesDao {
+    val upserted = mutableListOf<NewReleaseEntity>()
+    val seenMarks = mutableListOf<String>()
+    val dismissedMarks = mutableListOf<String>()
+
+    override fun getNewReleases(): PagingSource<Int, NewReleaseEntity> =
+        object : PagingSource<Int, NewReleaseEntity>() {
+            override fun getRefreshKey(state: androidx.paging.PagingState<Int, NewReleaseEntity>): Int? = null
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, NewReleaseEntity> =
+                LoadResult.Page(emptyList(), null, null)
+        }
+
+    override fun observeNewReleases(): Flow<List<NewReleaseEntity>> = flowOf(upserted.toList())
+
+    override fun getUnseenCount(): Flow<Int> = flowOf(0)
+
+    @androidx.room.Transaction
+    override suspend fun upsertNewReleases(releases: List<NewReleaseEntity>) {
+        upserted += releases
+    }
+
+    override suspend fun markSeen(releaseId: String) {
+        seenMarks += releaseId
+    }
+
+    override suspend fun markDismissed(releaseId: String) {
+        dismissedMarks += releaseId
+    }
+
+    override suspend fun insertNewReleases(releases: List<NewReleaseEntity>) {
+        // Override the default impl to record only — the @Transaction default
+        // would otherwise fan out into insert + per-row update.
+    }
+
+    override suspend fun updateMutableFields(
+        id: String,
+        artistId: String,
+        artistName: String,
+        title: String,
+        disambiguation: String?,
+        firstReleaseDate: String?,
+        primaryType: ReleaseType,
+        secondaryTypes: String?,
+        coverFrontUrl: String?,
+        discoveredAt: kotlin.time.Instant,
+    ) = Unit
+}
+
+/**
+ * Minimal [FavoriteDao] fake — only [getFavoriteArtistsIds] is used by
+ * the new-releases tests. All other methods throw "not used".
+ */
+class FakeFavoriteDao(initialIds: List<String> = emptyList()) : FavoriteDao {
+    private val ids = MutableStateFlow(initialIds)
+    fun setIds(value: List<String>) { ids.value = value }
+
+    override fun getFavoriteArtistsIds(): Flow<List<String>> = ids.asStateFlow()
+
+    override fun getPagedArtistsSortedByAbc(): PagingSource<Int, ArtistWithRelations> =
+        error("not used in new-releases tests")
+    override fun getPagedArtistsSortedByCountry(): PagingSource<Int, ArtistWithRelations> =
+        error("not used in new-releases tests")
+    override fun getPagedArtistsSortedByType(): PagingSource<Int, ArtistWithRelations> =
+        error("not used in new-releases tests")
+    override fun getPagedArtistsSortedByDate(): PagingSource<Int, ArtistWithRelations> =
+        error("not used in new-releases tests")
+    override fun getPagedArtists(): PagingSource<Int, ArtistWithRelations> =
+        error("not used in new-releases tests")
+    override fun getTotalCount(): Flow<Int> = flowOf(0)
+}
+
 // ---- DTO builders used by tests ----
 
-fun releaseDto(index: Int) = io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ReleaseDto(
+fun releaseDto(index: Int) = ReleaseDto(
     id = "rel-$index",
     title = "Release $index",
     firstReleaseDate = null
@@ -276,11 +362,11 @@ fun successReleases(index: Int, count: Int) = Result.Success(artistDtoWith(index
 fun errorResult(message: String? = null) = Result.Error(UndefinedError, message)
 
 fun mediaDto(index: Int, trackCount: Int = 1) =
-    io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.MediaDto(
+    MediaDto(
         id = "med-$index",
         title = "Media $index",
         items = listOf(
-            io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.MediaItemDto(
+            MediaItemDto(
                 id = "item-$index",
                 position = 1,
                 format = "CD",
@@ -288,7 +374,7 @@ fun mediaDto(index: Int, trackCount: Int = 1) =
                 trackCount = trackCount,
                 trackOffset = 0,
                 tracks = (1..trackCount).map { i ->
-                    io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.TrackDto(
+                    TrackDto(
                         id = "track-$index-$i",
                         position = i,
                         recording = RecordingDto(title = "Track $i", length = 1000L, disambiguation = null)
@@ -310,3 +396,55 @@ fun mediaResponseWith(index: Int, count: Int, trackCount: Int = 1) = Result.Succ
 )
 
 fun emptyMediaResponse() = Result.Success(SearchMediaResponse(releases = emptyList(), count = 0, offset = 0))
+
+/**
+ * Builders for the new-releases search response. `releaseGroupDto` makes a
+ * minimal release-group attributed to the given artist; `releaseGroupsResponse`
+ * wraps a list of them with a given `count`.
+ */
+fun releaseGroupDto(
+    id: String,
+    title: String,
+    artistId: String,
+    artistName: String,
+    firstReleaseDate: String? = null,
+    primaryType: ReleaseType = ReleaseType.ALBUM,
+): ReleaseGroupDto = ReleaseGroupDto(
+    id = id,
+    title = title,
+    firstReleaseDate = null,  // raw string, not parsed; the repo re-parses anyway
+    primaryType = primaryType,
+    artistCredit = listOf(
+        ArtistCreditDto(
+            name = artistName,
+            joinphrase = null,
+            artist = ArtistRefDto(
+                id = artistId,
+                name = artistName,
+                sortName = artistName,
+            )
+        )
+    )
+)
+
+fun releaseGroupsResponse(
+    groups: List<ReleaseGroupDto>,
+    count: Int = groups.size,
+): SearchReleaseGroupResponse = SearchReleaseGroupResponse(
+    count = count,
+    offset = 0,
+    releaseGroups = groups,
+)
+
+fun successReleaseGroups(
+    ids: List<String>,
+    artistId: String = "artist-A",
+    artistName: String = "Artist A",
+    firstReleaseDate: String? = null,
+    count: Int = ids.size,
+): Result<SearchReleaseGroupResponse> = Result.Success(
+    releaseGroupsResponse(
+        groups = ids.map { id -> releaseGroupDto(id, "Title $id", artistId, artistName, firstReleaseDate) },
+        count = count,
+    )
+)

@@ -4,6 +4,7 @@ import io.github.alexmaryin.followmymus.core.Result
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchArtistResponse
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchMediaResponse
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchReleaseGroupResponse
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -74,6 +75,25 @@ class ApiSearchEngine(
             url {
                 parameters.append("release-group", releaseId)
                 parameters.append("inc", "media+recordings+url-rels")
+                parameters.append("fmt", "json")
+                parameters.append("offset", offset.toString())
+                parameters.append("limit", limit.toString())
+            }
+            headers {
+                append("User-Agent", "FollowMyMus/1.0.0 (java.ul@gmail.com)")
+            }
+        }.body()
+        response
+    }
+
+    override suspend fun searchReleaseGroups(
+        query: String,
+        offset: Int,
+        limit: Int,
+    ): Result<SearchReleaseGroupResponse> = safeCall {
+        val response: SearchReleaseGroupResponse = httpClient.get("${SearchEngine.MB_BASE_URL}/release-group/") {
+            url {
+                parameters.append("query", query)
                 parameters.append("fmt", "json")
                 parameters.append("offset", offset.toString())
                 parameters.append("limit", limit.toString())

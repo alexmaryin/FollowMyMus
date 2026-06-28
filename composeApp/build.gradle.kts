@@ -22,25 +22,19 @@ kotlin {
     jvmToolchain(21)
 
     compilerOptions {
-        freeCompilerArgs.add("-Xwhen-guards")
         freeCompilerArgs.add("-Xexpect-actual-classes")
-        freeCompilerArgs.add("-Xcontext-parameters")
         optIn.add("kotlin.time.ExperimentalTime")
     }
 
     android {
         namespace = "io.github.alexmaryin.followmymus"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
-        packaging {
-            resources {
-                excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            }
+        androidResources {
+            enable = true
         }
-        androidResources.enable = true
     }
 
     listOf(

@@ -14,8 +14,7 @@ fun PreferencesHandler(
     state: RootState,
     actionHandler: (RootAction) -> Unit
 ) {
-    val datastore = rememberPrefs()
-    val preferences = rememberAppPreferences(datastore)
+    val preferences = rememberAppPreferences()
 
     val theme by preferences.getThemeMode().collectAsStateWithLifecycle(ThemeMode.SYSTEM)
     val systemDark = isSystemInDarkTheme()

@@ -2,15 +2,19 @@ package io.github.alexmaryin.followmymus.core.di
 
 import com.arkivanov.decompose.ComponentContext
 import io.github.alexmaryin.followmymus.BuildKonfig
+import io.github.alexmaryin.followmymus.core.network.RateLimitedApiQueue
 import io.github.alexmaryin.followmymus.core.paging.NetworkPagingCount
+import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.NewReleasesDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.ApiCoversEngine
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.ApiSearchEngine
+import io.github.alexmaryin.followmymus.musicBrainz.data.repository.ApiNewReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.data.repository.ArtistsPagingSource
 import io.github.alexmaryin.followmymus.musicBrainz.data.repository.MediaPagingSource
-import io.github.alexmaryin.followmymus.musicBrainz.domain.CoversEngine
-import io.github.alexmaryin.followmymus.musicBrainz.domain.LocalDbRepository
-import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
-import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.*
+import io.github.alexmaryin.followmymus.preferences.PreferenceSource
+import io.github.alexmaryin.followmymus.preferences.createDataStore
+import io.github.alexmaryin.followmymus.preferences.platformPrefsPath
 import io.github.alexmaryin.followmymus.screens.login.domain.CMPLoginComponent
 import io.github.alexmaryin.followmymus.screens.login.domain.LoginComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.MainPagerComponent
@@ -21,6 +25,8 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHost
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.pageHost.NewReleasesHost
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.panelsNavigation.NewReleasesHostComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.CMPSignUpComponent
 import io.github.alexmaryin.followmymus.screens.signUp.domain.SignUpComponent
 import io.github.alexmaryin.followmymus.sessionManager.data.SupabaseSessionManager
@@ -117,6 +123,25 @@ class AppModule {
     fun provideSearchEngine(httpClient: HttpClient): SearchEngine = ApiSearchEngine(httpClient)
 
     @Single
+    fun provideRateLimitedApiQueue(): RateLimitedApiQueue = RateLimitedApiQueue()
+
+    @Single
+    fun providePreferenceSource(): PreferenceSource = PreferenceSource(
+        createDataStore { platformPrefsPath() }
+    )
+
+    @Single
+    fun provideNewReleasesRepository(
+        searchEngine: SearchEngine,
+        rateLimitedApiQueue: RateLimitedApiQueue,
+        newReleasesDao: NewReleasesDao,
+        favoriteDao: FavoriteDao,
+        preferenceSource: PreferenceSource
+    ): NewReleasesRepository = ApiNewReleasesRepository(
+        searchEngine, rateLimitedApiQueue, newReleasesDao, favoriteDao, preferenceSource
+    )
+
+    @Single
     fun provideCoversEngine(httpClient: HttpClient): CoversEngine = ApiCoversEngine(httpClient)
 
     @Factory
@@ -166,6 +191,11 @@ class AppModule {
         @InjectedParam componentContext: ComponentContext,
         @InjectedParam nickname: String
     ): FavoritesHostComponent = FavoritesHost(syncRepository, componentContext, nickname)
+
+    @Factory
+    fun provideNewReleasesHost(
+        @InjectedParam componentContext: ComponentContext
+    ): NewReleasesHostComponent = NewReleasesHost(componentContext)
 
     @Factory
     fun provideAccountHost(

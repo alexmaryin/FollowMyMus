@@ -38,7 +38,7 @@ fun PreferencesUi(
     component: AccountHostComponent
 ) {
     val state by component.state.subscribeAsState()
-    val preferences = rememberAppPreferences(rememberPrefs())
+    val preferences = rememberAppPreferences()
     val theme by preferences.getThemeMode().collectAsStateWithLifecycle(ThemeMode.SYSTEM)
     val language by preferences.getLanguage().collectAsStateWithLifecycle(Language.SYSTEM)
     val dynamicMode by preferences.getAndroidDynamicMode().collectAsStateWithLifecycle(DynamicMode.ON)

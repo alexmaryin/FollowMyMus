@@ -1,6 +1,5 @@
 package io.github.alexmaryin.followmymus.preferences
 
-import androidx.compose.runtime.Composable
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -15,5 +14,4 @@ fun createDataStore(producePath: () -> String): Prefs =
 
 internal const val PREFS_FILE = ".preferences_pb"
 
-@Composable
-expect fun rememberPrefs(): Prefs
+expect fun platformPrefsPath(): String

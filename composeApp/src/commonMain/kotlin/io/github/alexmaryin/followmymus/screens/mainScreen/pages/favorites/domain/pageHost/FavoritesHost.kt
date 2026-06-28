@@ -19,6 +19,8 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domai
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesPanelConfig
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.FavoriteHostSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetailsConfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.getMediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,7 +50,7 @@ class FavoritesHost(
     override val scaffoldSlots = FavoriteHostSlots(this)
 
     private val navigation =
-        PanelsNavigation<FavoritesPanelConfig.ListConfig, FavoritesPanelConfig.ReleasesConfig, FavoritesPanelConfig.MediaDetailsConfig>()
+        PanelsNavigation<FavoritesPanelConfig.ListConfig, FavoritesPanelConfig.ReleasesConfig, MediaDetailsConfig>()
 
     private val _panels = childPanels(
         source = navigation,
@@ -133,7 +135,7 @@ class FavoritesHost(
             is FavoritesHostAction.ShowMediaDetails -> {
                 navigation.navigate { state ->
                     state.copy(
-                        extra = FavoritesPanelConfig.MediaDetailsConfig(
+                        extra = MediaDetailsConfig(
                             releaseId = action.releaseId,
                             releaseName = action.releaseName
                         )
@@ -181,11 +183,8 @@ class FavoritesHost(
             get(), config.artistId, config.artistName, context,
             openMedia = { releaseId, releaseName ->
                 navigation.navigate { state ->
-                    state.copy(extra = FavoritesPanelConfig.MediaDetailsConfig(releaseId, releaseName))
+                    state.copy(extra = MediaDetailsConfig(releaseId, releaseName))
                 }
             }
         )
-
-    private fun getMediaDetails(config: FavoritesPanelConfig.MediaDetailsConfig, context: ComponentContext) =
-        MediaDetails(config.releaseId, config.releaseName, get(), context)
 }

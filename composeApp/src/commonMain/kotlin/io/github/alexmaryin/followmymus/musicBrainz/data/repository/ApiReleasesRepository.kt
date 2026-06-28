@@ -5,6 +5,7 @@ import androidx.paging.map
 import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.forError
 import io.github.alexmaryin.followmymus.core.forSuccess
+import io.github.alexmaryin.followmymus.core.network.RateLimitedApiQueue
 import io.github.alexmaryin.followmymus.core.paging.PagingDefaults
 import io.github.alexmaryin.followmymus.core.paging.RoomPagingCount
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ReleasesDao
@@ -31,7 +32,8 @@ class ApiReleasesRepository(
     private val coversEngine: CoversEngine,
     private val releaseDao: ReleasesDao,
     private val resourceDao: ResourceDao,
-    private val transactionalDao: TransactionalDao
+    private val transactionalDao: TransactionalDao,
+    private val rateLimitedApiQueue: RateLimitedApiQueue,
 ) : ReleasesRepository {
 
     override val workState = MutableStateFlow(WorkState.IDLE)
@@ -102,7 +104,9 @@ class ApiReleasesRepository(
         ) {
             currentCoroutineContext().ensureActive()
 
-            val response = searchEngine.searchReleases(artistId, offset, PagingDefaults.API_PAGE)
+            val response = rateLimitedApiQueue.enqueue {
+                searchEngine.searchReleases(artistId, offset, PagingDefaults.API_PAGE)
+            }
 
             response.forError { error ->
                 _errors.send(error.type)

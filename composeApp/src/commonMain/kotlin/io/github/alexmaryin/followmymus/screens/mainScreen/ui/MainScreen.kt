@@ -19,7 +19,8 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsPageHostUi
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui.FavoritesPageHostUi
-import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui.SearchPage
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.panelsNavigation.NewReleasesHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui.NewReleasesPageHostUi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +70,7 @@ fun MainScreen(
             when (index) {
                 MainPages.ARTISTS.index -> ArtistsPageHostUi(page as ArtistsHostComponent)
                 MainPages.ACCOUNT.index -> AccountPageUi(page as AccountHostComponent)
-                MainPages.RELEASES.index -> SearchPage()
+                MainPages.RELEASES.index -> NewReleasesPageHostUi(page as NewReleasesHostComponent)
                 MainPages.FAVORITES.index -> FavoritesPageHostUi(page as FavoritesHostComponent)
             }
         }

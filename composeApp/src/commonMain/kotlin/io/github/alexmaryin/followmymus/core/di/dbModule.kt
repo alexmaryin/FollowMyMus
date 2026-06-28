@@ -1,6 +1,7 @@
 package io.github.alexmaryin.followmymus.core.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import io.github.alexmaryin.followmymus.core.network.RateLimitedApiQueue
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.*
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.db.MusicBrainzDatabase
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.db.MusicBrainzDbFactory
@@ -19,6 +20,7 @@ class DbModule {
     @Single
     fun provideMusicBrainzDatabase(): MusicBrainzDatabase = getDbMusicBrainzDbFactory().create()
         .setDriver(BundledSQLiteDriver())
+        .fallbackToDestructiveMigration(true)
         .build()
 
     @Factory
@@ -36,8 +38,11 @@ class DbModule {
         coversEngine: CoversEngine,
         releaseDao: ReleasesDao,
         resourceDao: ResourceDao,
-        transactionalDao: TransactionalDao
-    ): ReleasesRepository = ApiReleasesRepository(searchEngine, coversEngine, releaseDao, resourceDao, transactionalDao)
+        transactionalDao: TransactionalDao,
+        rateLimitedApiQueue: RateLimitedApiQueue,
+    ): ReleasesRepository = ApiReleasesRepository(
+        searchEngine, coversEngine, releaseDao, resourceDao, transactionalDao, rateLimitedApiQueue,
+    )
 
     @Single
     fun provideMediaRepository(
@@ -89,4 +94,7 @@ class DbModule {
 
     @Factory
     fun provideMediaDao(database: MusicBrainzDatabase): MediaDao = database.mediaDao
+
+    @Factory
+    fun provideNewReleasesDao(database: MusicBrainzDatabase): NewReleasesDao = database.newReleasesDao
 }

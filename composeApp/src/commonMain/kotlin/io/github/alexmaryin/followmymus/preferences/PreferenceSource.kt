@@ -1,7 +1,6 @@
 package io.github.alexmaryin.followmymus.preferences
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.Dispatchers
@@ -10,10 +9,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import org.koin.core.annotation.Single
 
 @Single
 class PreferenceSource(private val prefs: Prefs) {
+
+    /**
+     * Read-only accessor for the underlying [Prefs] used by the `AppSettings`
+     * extensions in `preferences/AppSettings.kt`. Internal so it can be read
+     * from the same module without leaking the field's mutability.
+     */
+    internal val preferences: Prefs get() = prefs
 
     fun getAndroidDynamicMode(): Flow<DynamicMode> {
         return prefs.data.map {
@@ -74,13 +81,7 @@ class PreferenceSource(private val prefs: Prefs) {
             }
         }
     }
-
-    companion object {
-        var instance: PreferenceSource? = null
-
-        fun get(prefs: Prefs) = instance ?: PreferenceSource(prefs).also { instance = it }
-    }
 }
 
 @Composable
-fun rememberAppPreferences(prefs: Prefs) = remember { PreferenceSource.get(prefs) }
+fun rememberAppPreferences(): PreferenceSource = koinInject()
