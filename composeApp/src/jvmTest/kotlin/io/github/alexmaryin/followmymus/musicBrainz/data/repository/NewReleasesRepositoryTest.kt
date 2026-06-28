@@ -24,6 +24,7 @@ class NewReleasesRepositoryTest {
     private lateinit var favoriteDao: FakeFavoriteDao
     private lateinit var search: FakePagingSearchEngine
     private lateinit var newReleasesDao: FakeNewReleasesDao
+    private lateinit var covers: FakeCoversEngine
     private val queue = RateLimitedApiQueue(intervalMs = 1L)
 
     @BeforeTest
@@ -36,6 +37,7 @@ class NewReleasesRepositoryTest {
         favoriteDao = FakeFavoriteDao()
         search = FakePagingSearchEngine()
         newReleasesDao = FakeNewReleasesDao()
+        covers = FakeCoversEngine()
     }
 
     @AfterTest
@@ -45,6 +47,7 @@ class NewReleasesRepositoryTest {
 
     private fun newRepo(): ApiNewReleasesRepository = ApiNewReleasesRepository(
         searchEngine = search,
+        coversEngine = covers,
         rateLimitedApiQueue = queue,
         newReleasesDao = newReleasesDao,
         favoriteDao = favoriteDao,
@@ -222,5 +225,28 @@ class NewReleasesRepositoryTest {
         assertTrue(start <= end, "range must never invert, got [$start TO $end]")
         assertEquals(today, start, "floor must be clamped to today on same-day re-open")
         assertEquals(today, end, "end must be today")
+    }
+
+    @Test
+    fun `7_2_k sync fetches front covers and persists the preview URL on each new release row`() = runTest {
+        favoriteDao.setIds(listOf("artist-1"))
+        search.enqueueReleaseGroups(
+            successReleaseGroups(ids = listOf("rg-1", "rg-2", "rg-3")),
+        )
+
+        val repo = newRepo()
+        repo.syncNewReleases()
+        awaitIdle(repo)
+
+        assertEquals(listOf("rg-1", "rg-2", "rg-3"), covers.calls)
+        assertEquals(3, newReleasesDao.coverUpdates.size)
+        assertEquals(
+            listOf(
+                "rg-1" to "https://covers/rg-1/front.jpg",
+                "rg-2" to "https://covers/rg-2/front.jpg",
+                "rg-3" to "https://covers/rg-3/front.jpg",
+            ),
+            newReleasesDao.coverUpdates.toList(),
+        )
     }
 }

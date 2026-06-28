@@ -78,6 +78,9 @@ interface NewReleasesDao {
         }
     }
 
+    @Query("UPDATE new_releases SET coverFrontUrl = :coverFrontUrl WHERE id = :id")
+    suspend fun updateCoverFrontUrl(id: String, coverFrontUrl: String?)
+
     @Query("UPDATE new_releases SET state = 'SEEN' WHERE id = :releaseId")
     suspend fun markSeen(releaseId: String)
 

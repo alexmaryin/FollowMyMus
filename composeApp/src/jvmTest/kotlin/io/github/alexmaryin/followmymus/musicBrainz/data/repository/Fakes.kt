@@ -268,6 +268,7 @@ class FakeNewReleasesDao : NewReleasesDao {
     val upserted = mutableListOf<NewReleaseEntity>()
     val seenMarks = mutableListOf<String>()
     val dismissedMarks = mutableListOf<String>()
+    val coverUpdates = mutableListOf<Pair<String, String?>>()
 
     override fun getNewReleases(): PagingSource<Int, NewReleaseEntity> =
         object : PagingSource<Int, NewReleaseEntity>() {
@@ -283,6 +284,10 @@ class FakeNewReleasesDao : NewReleasesDao {
     @androidx.room.Transaction
     override suspend fun upsertNewReleases(releases: List<NewReleaseEntity>) {
         upserted += releases
+    }
+
+    override suspend fun updateCoverFrontUrl(id: String, coverFrontUrl: String?) {
+        coverUpdates += id to coverFrontUrl
     }
 
     override suspend fun markSeen(releaseId: String) {

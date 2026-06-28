@@ -133,12 +133,13 @@ class AppModule {
     @Single
     fun provideNewReleasesRepository(
         searchEngine: SearchEngine,
+        coversEngine: CoversEngine,
         rateLimitedApiQueue: RateLimitedApiQueue,
         newReleasesDao: NewReleasesDao,
         favoriteDao: FavoriteDao,
         preferenceSource: PreferenceSource
     ): NewReleasesRepository = ApiNewReleasesRepository(
-        searchEngine, rateLimitedApiQueue, newReleasesDao, favoriteDao, preferenceSource
+        searchEngine, coversEngine, rateLimitedApiQueue, newReleasesDao, favoriteDao, preferenceSource
     )
 
     @Single

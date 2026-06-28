@@ -13,4 +13,7 @@ data class Release(
     val secondaryTypes: List<SecondaryType>,
     val previewCoverUrl: String?,
     val largeCoverUrl: String?
-)
+) {
+    val typeLabel: String =
+        (listOf(primaryType) + secondaryTypes).joinToString(separator = " + ")
+}

@@ -32,6 +32,7 @@ fun ReleaseListItem(
     release: Release,
     actionHandler: (ReleasesListAction) -> Unit,
     unseen: Boolean = false,
+    showType: Boolean = false,
 ) {
     ListItem(
         headlineContent = {
@@ -53,7 +54,16 @@ fun ReleaseListItem(
                 )
             }
         },
-        overlineContent = { Text(text = release.disambiguation ?: "") },
+        overlineContent = {
+            val typeLabel = if (showType) release.typeLabel else null
+            val dis = release.disambiguation
+            when {
+                typeLabel != null && !dis.isNullOrEmpty() -> Text(text = "$typeLabel  ·  $dis")
+                typeLabel != null -> Text(text = typeLabel)
+                !dis.isNullOrEmpty() -> Text(text = dis)
+                else -> Text(text = "")
+            }
+        },
         supportingContent = { Text(text = release.firstReleaseDate?.formatToDayMonthYear() ?: "") },
         trailingContent = {
             if (release.previewCoverUrl != null) {

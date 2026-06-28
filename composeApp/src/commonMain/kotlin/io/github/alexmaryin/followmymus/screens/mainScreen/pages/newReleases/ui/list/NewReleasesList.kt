@@ -130,7 +130,8 @@ private fun SwipeableNewRelease(
         ReleaseListItem(
             release = entity.toRelease(),
             actionHandler = adapter,
-            unseen = entity.state == NewReleaseState.UNSEEN
+            unseen = entity.state == NewReleaseState.UNSEEN,
+            showType = true
         )
     }
 }

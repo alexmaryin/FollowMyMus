@@ -12,9 +12,13 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.NewReleasesDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.model.NewReleaseEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.model.NewReleaseState
+import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.selectCover
+import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.selectPreview
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ReleaseGroupDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.BrainzApiError
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ReleaseType
+import io.github.alexmaryin.followmymus.musicBrainz.data.utils.httpsReplace
+import io.github.alexmaryin.followmymus.musicBrainz.domain.CoversEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.NewReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
@@ -22,10 +26,25 @@ import io.github.alexmaryin.followmymus.preferences.PreferenceSource
 import io.github.alexmaryin.followmymus.preferences.getAppSettings
 import io.github.alexmaryin.followmymus.preferences.setNewReleasesFloor
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.*
-import kotlinx.datetime.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -33,6 +52,7 @@ import kotlin.time.Instant
 @Single(binds = [NewReleasesRepository::class])
 class ApiNewReleasesRepository(
     private val searchEngine: SearchEngine,
+    private val coversEngine: CoversEngine,
     private val rateLimitedApiQueue: RateLimitedApiQueue,
     private val newReleasesDao: NewReleasesDao,
     private val favoriteDao: FavoriteDao,
@@ -137,12 +157,31 @@ class ApiNewReleasesRepository(
                 newReleasesDao.upsertNewReleases(
                     page.releaseGroups.toNewReleaseEntities(favoriteIdsSet, nowInstant()),
                 )
+                fetchPageCovers(page.releaseGroups)
                 offset += PagingDefaults.API_PAGE
                 if (offset >= page.count) break@updateLoop
             }
             pageResult.forError { error -> return error }
         }
         return Result.Success(Unit)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun fetchPageCovers(releases: List<ReleaseGroupDto>) {
+        releases
+            .asFlow()
+            .flatMapMerge(concurrency = PagingDefaults.API_PAGE) { release ->
+                flow { emit(coversEngine.getReleaseCovers(release.id) to release) }
+            }
+            .collect { (result, release) ->
+                result.forSuccess { coverDto ->
+                    val previewUrl = coverDto.images.selectCover { selectPreview() }?.httpsReplace()
+                    newReleasesDao.updateCoverFrontUrl(release.id, previewUrl)
+                }
+                result.forError { error ->
+                    _errors.tryEmit(error.type)
+                }
+            }
     }
 
     /**
@@ -163,8 +202,8 @@ class ApiNewReleasesRepository(
     /**
      * Attribute each release-group to the first `artist-credit` whose id is in
      * the user's favorites set, falling back to the first credit overall (so
-     * a collaboration between a favorited and a non-favorited artist is
-     * attributed to the favorited one). Releases with no artist credit at
+     * a collaboration between a favorite and a non-favorite artist is
+     * attributed to the favorite one). Releases with no artist credit at
      * all are skipped — they can't be denormalized safely.
      */
     private fun List<ReleaseGroupDto>.toNewReleaseEntities(
