@@ -19,13 +19,14 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.do
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import kotlinx.coroutines.channels.Channel
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Factory(binds = [ArtistsHostComponent::class])
 class ArtistsHost(
-    private val componentContext: ComponentContext
+    @InjectedParam private val componentContext: ComponentContext
 ) : ArtistsHostComponent, ComponentContext by componentContext, KoinComponent {
 
     private val _state by saveableMutableValue(ArtistsHostState.serializer(), init = ::ArtistsHostState)

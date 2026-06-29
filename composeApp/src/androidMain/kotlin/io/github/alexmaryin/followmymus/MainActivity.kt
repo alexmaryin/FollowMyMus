@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDeepLink(intent: Intent?) {
         val data = intent?.data ?: return
-        val channel by inject<RealtimeChannel> { parametersOf(data.getQueryParameter("id")) }
+        val id = data.getQueryParameter("id") ?: return
+        val channel by inject<RealtimeChannel> { parametersOf(id) }
         val sessionManager by inject<SessionManager>()
         lifecycleScope.launch { channel.transferSession(sessionManager) }
     }

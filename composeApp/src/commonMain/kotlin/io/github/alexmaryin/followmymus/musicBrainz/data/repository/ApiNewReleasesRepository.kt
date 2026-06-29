@@ -241,6 +241,14 @@ class ApiNewReleasesRepository(
         newReleasesDao.markDismissed(releaseId)
     }
 
+    override suspend fun markUnseen(releaseId: String) {
+        newReleasesDao.markUnseen(releaseId)
+    }
+
+    override suspend fun restoreAllDismissed() {
+        newReleasesDao.restoreAllDismissed()
+    }
+
     private fun today(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
     private fun nowInstant(): Instant = Clock.System.now()
 

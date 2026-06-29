@@ -1,6 +1,8 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
+import androidx.paging.PagingData
 import androidx.paging.PagingSource
+import io.github.alexmaryin.followmymus.core.ErrorType
 import io.github.alexmaryin.followmymus.core.Result
 import io.github.alexmaryin.followmymus.core.UndefinedError
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.*
@@ -11,8 +13,11 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.Search
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.SearchReleaseGroupResponse
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.ReleaseType
 import io.github.alexmaryin.followmymus.musicBrainz.domain.CoversEngine
+import io.github.alexmaryin.followmymus.musicBrainz.domain.NewReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -298,6 +303,17 @@ class FakeNewReleasesDao : NewReleasesDao {
         dismissedMarks += releaseId
     }
 
+    val unseenMarks = mutableListOf<String>()
+    var restoreAllCalls = 0
+
+    override suspend fun markUnseen(releaseId: String) {
+        unseenMarks += releaseId
+    }
+
+    override suspend fun restoreAllDismissed() {
+        restoreAllCalls++
+    }
+
     override suspend fun insertNewReleases(releases: List<NewReleaseEntity>) {
         // Override the default impl to record only — the @Transaction default
         // would otherwise fan out into insert + per-row update.
@@ -315,6 +331,38 @@ class FakeNewReleasesDao : NewReleasesDao {
         coverFrontUrl: String?,
         discoveredAt: kotlin.time.Instant,
     ) = Unit
+}
+
+/**
+ * Recording fake for [NewReleasesRepository] — records markDismissed,
+ * markUnseen, and restoreAllDismissed calls for action-handling tests.
+ */
+class FakeNewReleasesRepository : NewReleasesRepository {
+    override val workState = MutableStateFlow(WorkState.IDLE)
+    override val errors = MutableSharedFlow<ErrorType>()
+
+    val dismissedCalls = mutableListOf<String>()
+    val unseenCalls = mutableListOf<String>()
+    var restoreAllCalls = 0
+
+    override fun getNewReleases(): Flow<PagingData<NewReleaseEntity>> =
+        flowOf(PagingData.empty())
+
+    override suspend fun syncNewReleases(): Result<Unit> = Result.Success(Unit)
+
+    override suspend fun markSeen(releaseId: String) = Unit
+
+    override suspend fun markDismissed(releaseId: String) {
+        dismissedCalls += releaseId
+    }
+
+    override suspend fun markUnseen(releaseId: String) {
+        unseenCalls += releaseId
+    }
+
+    override suspend fun restoreAllDismissed() {
+        restoreAllCalls++
+    }
 }
 
 /**

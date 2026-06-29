@@ -150,14 +150,13 @@ kotlin {
 koinCompiler {
     userLogs = true
     debugLogs = true
-    // The Koin compiler plugin's A4 call-site check runs per source set.
-    // In a KMP project, commonMain contains the get<>()/inject<>() call sites
-    // but not the startKoin<>() entry point (which lives in androidMain / iosMain
-    // / jvmMain). The plugin doesn't see the graph in commonMain and reports
-    // every call site as missing. Disable compile-time safety until that
-    // KMP source-set gap is fixed upstream; rely on runtime module.verify() for
-    // graph validation. Re-enable when startKoin<>() can be discovered cross-
-    // source-set.
+    // The Koin compiler plugin's compile-time safety check runs per @Module.
+    // This project's graph spans two @Module classes (AppModule, DbModule), so
+    // any cross-module reference (e.g. AppModule-scanned repository needing
+    // a DbModule-provided DAO) is reported as a missing dependency even though
+    // the runtime graph resolves it via @KoinApplication. Keep compileSafety
+    // off and rely on runtime module.verify() for graph validation. Revisit
+    // when Koin's compile-time check becomes module-graph-aware.
     compileSafety = false
 }
 

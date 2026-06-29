@@ -228,6 +228,30 @@ class NewReleasesRepositoryTest {
     }
 
     @Test
+    fun `markUnseen records the release ID in the fake DAO`() = runTest {
+        val repo = newRepo()
+        repo.markUnseen("rg-42")
+        assertEquals(listOf("rg-42"), newReleasesDao.unseenMarks)
+    }
+
+    @Test
+    fun `restoreAllDismissed increments the call counter in the fake DAO`() = runTest {
+        val repo = newRepo()
+        repo.restoreAllDismissed()
+        assertEquals(1, newReleasesDao.restoreAllCalls)
+    }
+
+    @Test
+    fun `markUnseen then restoreAllDismissed records both calls in the fake DAO`() = runTest {
+        val repo = newRepo()
+        repo.markUnseen("rg-1")
+        repo.markUnseen("rg-2")
+        repo.restoreAllDismissed()
+        assertEquals(listOf("rg-1", "rg-2"), newReleasesDao.unseenMarks)
+        assertEquals(1, newReleasesDao.restoreAllCalls)
+    }
+
+    @Test
     fun `7_2_k sync fetches front covers and persists the preview URL on each new release row`() = runTest {
         favoriteDao.setIds(listOf("artist-1"))
         search.enqueueReleaseGroups(

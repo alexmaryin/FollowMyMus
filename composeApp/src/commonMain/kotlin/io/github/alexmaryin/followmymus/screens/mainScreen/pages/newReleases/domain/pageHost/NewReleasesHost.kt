@@ -24,13 +24,14 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class, ExperimentalCoroutinesApi::class)
 @Factory(binds = [NewReleasesHostComponent::class])
 class NewReleasesHost(
-    private val componentContext: ComponentContext,
+    @InjectedParam private val componentContext: ComponentContext,
 ) : NewReleasesHostComponent, ComponentContext by componentContext, KoinComponent {
 
     private val _state by saveableMutableValue(NewReleasesHostState.serializer(), init = ::NewReleasesHostState)

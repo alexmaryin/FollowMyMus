@@ -15,14 +15,15 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.panelsNavigation.NewReleasesHostComponent
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 @Factory(binds = [PagerComponent::class])
 class MainPagerComponent(
-    private val componentContext: ComponentContext,
-    nickName: String
+    @InjectedParam private val componentContext: ComponentContext,
+    @InjectedParam nickName: String
 ) : PagerComponent, ComponentContext by componentContext, KoinComponent {
 
     private val navigation = PagesNavigation<PagerConfig>()

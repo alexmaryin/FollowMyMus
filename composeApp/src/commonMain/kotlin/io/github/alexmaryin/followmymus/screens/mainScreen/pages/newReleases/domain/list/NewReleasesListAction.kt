@@ -5,4 +5,6 @@ sealed interface NewReleasesListAction {
     data class Dismiss(val releaseId: String) : NewReleasesListAction
     data object LoadFromRemote : NewReleasesListAction
     data class OnMediaOpened(val releaseId: String) : NewReleasesListAction
+    data object RestoreAllDismissed : NewReleasesListAction
+    data object UndoLastDismissal : NewReleasesListAction
 }

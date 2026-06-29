@@ -63,11 +63,42 @@ class NewReleasesList(
         }
     }
 
-    operator fun invoke(action: NewReleasesListAction) = when (action) {
-        is NewReleasesListAction.SelectRelease -> openMedia(action.releaseId, action.releaseName)
-        is NewReleasesListAction.Dismiss -> scope.launch { repository.markDismissed(action.releaseId) }
-        NewReleasesListAction.LoadFromRemote -> scope.launch { repository.syncNewReleases() }
-        is NewReleasesListAction.OnMediaOpened -> scope.launch { repository.markSeen(action.releaseId) }
+    operator fun invoke(action: NewReleasesListAction) {
+        when (action) {
+            is NewReleasesListAction.SelectRelease -> openMedia(action.releaseId, action.releaseName)
+            is NewReleasesListAction.Dismiss -> {
+                _state.update { it.copy(dismissHistory = it.dismissHistory.copy(
+                    dismissedIds = it.dismissHistory.dismissedIds + action.releaseId
+                )) }
+                scope.launch { repository.markDismissed(action.releaseId) }
+            }
+            NewReleasesListAction.LoadFromRemote -> scope.launch { repository.syncNewReleases() }
+            is NewReleasesListAction.OnMediaOpened -> scope.launch { repository.markSeen(action.releaseId) }
+            NewReleasesListAction.RestoreAllDismissed -> {
+                _state.update { it.copy(dismissHistory = it.dismissHistory.copy(restoreWasApplied = true)) }
+                scope.launch { repository.restoreAllDismissed() }
+            }
+            NewReleasesListAction.UndoLastDismissal -> {
+                val history = _state.value.dismissHistory
+                if (history.dismissedIds.isNotEmpty()) {
+                    val lastId = history.dismissedIds.last()
+                    val newIds = history.dismissedIds.dropLast(1)
+                    _state.update {
+                        it.copy(dismissHistory = DismissHistory(
+                            dismissedIds = newIds,
+                            restoreWasApplied = history.restoreWasApplied && newIds.isNotEmpty()
+                        ))
+                    }
+                    scope.launch {
+                        if (history.restoreWasApplied) {
+                            repository.markDismissed(lastId)
+                        } else {
+                            repository.markUnseen(lastId)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private class NewReleasesPager(

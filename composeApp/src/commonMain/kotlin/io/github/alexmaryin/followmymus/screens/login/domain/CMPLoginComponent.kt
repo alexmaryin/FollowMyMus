@@ -21,15 +21,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
 @Factory(binds = [LoginComponent::class])
 class CMPLoginComponent(
-    qrCode: String?,
-    private val componentContext: ComponentContext,
-    private val onSignUpClick: () -> Unit
+    @InjectedParam qrCode: String?,
+    @InjectedParam private val componentContext: ComponentContext,
+    @InjectedParam private val onSignUpClick: () -> Unit
 ) : LoginComponent, ComponentContext by componentContext, KoinComponent {
 
     private val _state by saveableMutableValue(LoginState.serializer(), init = ::LoginState)

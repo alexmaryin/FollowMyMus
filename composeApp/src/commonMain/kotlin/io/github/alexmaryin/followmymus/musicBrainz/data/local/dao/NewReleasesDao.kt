@@ -86,4 +86,10 @@ interface NewReleasesDao {
 
     @Query("UPDATE new_releases SET state = 'DISMISSED' WHERE id = :releaseId")
     suspend fun markDismissed(releaseId: String)
+
+    @Query("UPDATE new_releases SET state = 'UNSEEN' WHERE id = :releaseId")
+    suspend fun markUnseen(releaseId: String)
+
+    @Query("UPDATE new_releases SET state = 'UNSEEN' WHERE state = 'DISMISSED'")
+    suspend fun restoreAllDismissed()
 }

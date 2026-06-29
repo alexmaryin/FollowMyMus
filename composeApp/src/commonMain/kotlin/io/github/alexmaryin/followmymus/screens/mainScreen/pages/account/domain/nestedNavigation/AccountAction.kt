@@ -8,6 +8,7 @@ sealed interface AccountAction {
     data object ShowAbout : AccountAction
     data object ShowPrivacyPolicy : AccountAction
     data object ToggleQrView : AccountAction
+    data object LogoutClick : AccountAction
     data object Logout : AccountAction
     data object LanguageClick : AccountAction
     data object ThemeClick : AccountAction

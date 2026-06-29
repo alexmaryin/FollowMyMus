@@ -17,5 +17,6 @@ data class AccountPageState(
     val isThemeModalOpened: Boolean = false,
     val isLanguageModalOpened: Boolean = false,
     val isDynamicModalOpened: Boolean = false,
+    val isLogoutDialogOpened: Boolean = false,
     val sessionLogout: Boolean = false,
 )

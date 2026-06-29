@@ -7,12 +7,13 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toArtist
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 
 @Factory
 class ArtistsPagingSource(
     private val searchEngine: SearchEngine,
-    private val query: String,
-    private val count: NetworkPagingCount,
+    @InjectedParam private val query: String,
+    @InjectedParam private val count: NetworkPagingCount,
 ) : PagingSource<Int, Artist>() {
 
     // Need to drop duplicates which could appear in API response with overlapping pages

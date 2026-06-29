@@ -19,4 +19,8 @@ interface NewReleasesRepository {
     suspend fun markSeen(releaseId: String)
 
     suspend fun markDismissed(releaseId: String)
+
+    suspend fun markUnseen(releaseId: String)
+
+    suspend fun restoreAllDismissed()
 }
