@@ -103,16 +103,7 @@ private fun SwipeableNewRelease(
     onSelect: (releaseId: String, releaseName: String) -> Unit,
     onDismiss: (releaseId: String) -> Unit,
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart ||
-                value == SwipeToDismissBoxValue.StartToEnd
-            ) {
-                onDismiss(entity.id)
-                true
-            } else false
-        }
-    )
+    val dismissState = rememberSwipeToDismissBoxState()
 
     LaunchedEffect(entity.id) { if (entity.state == NewReleaseState.DISMISSED) dismissState.reset() }
 
@@ -126,6 +117,13 @@ private fun SwipeableNewRelease(
     SwipeToDismissBox(
         state = dismissState,
         backgroundContent = { /* tinted background only; v1 is no-op */ },
+        onDismiss = {
+            if (it == SwipeToDismissBoxValue.EndToStart ||
+                it == SwipeToDismissBoxValue.StartToEnd
+            ) {
+                onDismiss(entity.id)
+            }
+        },
     ) {
         ReleaseListItem(
             release = entity.toRelease(),

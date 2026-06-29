@@ -56,7 +56,7 @@ fun FavoritesPageHostUi(
         val mode = when {
             windowSize.isWidthAtLeastBreakpoint(
                 WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND
-            ) -> ChildPanelsMode.DUAL
+            ) && panels.details != null -> ChildPanelsMode.DUAL
 
             else -> ChildPanelsMode.SINGLE
         }

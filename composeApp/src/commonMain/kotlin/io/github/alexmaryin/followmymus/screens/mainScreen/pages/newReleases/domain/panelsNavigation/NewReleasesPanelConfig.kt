@@ -6,6 +6,6 @@ import kotlinx.serialization.builtins.serializer
 sealed interface NewReleasesPanelConfig {
 
     companion object {
-        val SERIALIZERS = Triple(Unit.serializer(), Unit.serializer(), MediaDetailsConfig.serializer())
+        val SERIALIZERS = Triple(Unit.serializer(), MediaDetailsConfig.serializer(), Unit.serializer())
     }
 }

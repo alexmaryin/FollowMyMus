@@ -41,7 +41,7 @@ class NewReleasesHost(
 
     private val scope = componentContext.coroutineScope()
 
-    private val navigation = PanelsNavigation<Unit, Unit, MediaDetailsConfig>()
+    private val navigation = PanelsNavigation<Unit, MediaDetailsConfig, Unit>()
 
     private val _panels = childPanels(
         source = navigation,
@@ -49,27 +49,27 @@ class NewReleasesHost(
         initialPanels = { Panels(main = Unit) },
         key = "NewReleasesPanels",
         onStateChanged = { new, _ ->
-            val backIsVisible = new.extra != null
+            val backIsVisible = new.details != null
             _state.update {
                 it.copy(
-                    releaseIdSelected = new.extra?.releaseId,
+                    releaseIdSelected = new.details?.releaseId,
                     backVisible = backIsVisible
                 )
             }
         },
         handleBackButton = true,
         mainFactory = { _, context -> getNewReleasesList(context) },
-        detailsFactory = { _, _ -> },
-        extraFactory = ::getMediaDetails
+        detailsFactory = ::getMediaDetails,
+        extraFactory = { _, _ -> }
     )
 
-    override val panels: Value<ChildPanels<*, NewReleasesList, *, Unit, *, MediaDetails>> = _panels
+    override val panels: Value<ChildPanels<*, NewReleasesList, *, MediaDetails, *, Unit>> = _panels
 
     init {
         panels.asFlow().flatMapLatest { update ->
             merge(
                 update.main.instance.scaffoldSlots.snackbarMessages,
-                update.extra?.instance?.scaffoldSlots?.snackbarMessages ?: emptyFlow()
+                update.details?.instance?.scaffoldSlots?.snackbarMessages ?: emptyFlow()
             )
         }
             .distinctUntilChanged()
@@ -91,11 +91,11 @@ class NewReleasesHost(
         when (action) {
             is NewReleasesHostAction.ShowMediaDetails -> {
                 navigation.navigate { state ->
-                    state.copy(extra = MediaDetailsConfig(action.releaseId, action.releaseName))
+                    state.copy(details = MediaDetailsConfig(action.releaseId, action.releaseName))
                 }
                 _panels.value.main.instance(NewReleasesListAction.OnMediaOpened(action.releaseId))
             }
-            NewReleasesHostAction.CloseMediaDetails -> navigation.dismissExtra()
+            NewReleasesHostAction.CloseMediaDetails -> navigation.dismissDetails()
             NewReleasesHostAction.Refresh -> _panels.value.main.instance(NewReleasesListAction.LoadFromRemote)
             is NewReleasesHostAction.SetMode -> navigation.navigate { state -> state.copy(mode = action.mode) }
             NewReleasesHostAction.OnBack -> onBack()

@@ -15,7 +15,7 @@ interface NewReleasesHostComponent : Page, BackHandlerOwner {
 
     override val key get() = "NewReleasesHost"
 
-    val panels: Value<ChildPanels<*, NewReleasesList, *, Unit, *, MediaDetails>>
+    val panels: Value<ChildPanels<*, NewReleasesList, *, MediaDetails, *, Unit>>
     val state: Value<NewReleasesHostState>
     operator fun invoke(action: NewReleasesHostAction)
 }

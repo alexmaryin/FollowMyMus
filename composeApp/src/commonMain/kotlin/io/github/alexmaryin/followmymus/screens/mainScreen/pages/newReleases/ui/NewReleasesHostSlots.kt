@@ -21,7 +21,7 @@ class NewReleasesHostSlots(
 
     override val titleContent = @Composable {
         val panelsState by component.panels.subscribeAsState()
-        val mediaPanel = panelsState.extra?.instance
+        val mediaPanel = panelsState.details?.instance
         val mainPanel = panelsState.main.instance
         val title = mediaPanel?.scaffoldSlots?.titleContent ?: mainPanel.scaffoldSlots.titleContent
         title()

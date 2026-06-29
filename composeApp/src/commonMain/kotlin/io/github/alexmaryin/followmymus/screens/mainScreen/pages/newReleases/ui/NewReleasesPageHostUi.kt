@@ -35,8 +35,8 @@ fun NewReleasesPageHostUi(component: NewReleasesHostComponent) {
         ChildPanels(
             panels = panels,
             mainChild = { NewReleasesList(it.instance) },
-            detailsChild = { },
-            extraChild = { MediaPanelUi(it.instance) },
+            detailsChild = { MediaPanelUi(it.instance) },
+            extraChild = { },
             layout = HorizontalChildPanelsLayout(dualWeights = 0.4f to 0.6f),
             secondPanelPlaceholder = { },
             animators = ChildPanelsAnimators(single = fade() + scale(), dual = fade() to fade()),
@@ -52,7 +52,7 @@ fun NewReleasesPageHostUi(component: NewReleasesHostComponent) {
         val mode = when {
             windowSize.isWidthAtLeastBreakpoint(
                 WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND
-            ) -> ChildPanelsMode.DUAL
+            ) && panels.details != null -> ChildPanelsMode.DUAL
             else -> ChildPanelsMode.SINGLE
         }
 

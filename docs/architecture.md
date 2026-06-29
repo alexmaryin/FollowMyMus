@@ -122,7 +122,7 @@ After successful auth, the root pushes `Config.MainScreen(nickname)` and the use
     - `Artists`   → `get<ArtistsHostComponent>(context)` (Koin DI)
     - `Favorites` → `get<FavoritesHostComponent>(context, state.value.nickname)`
     - `Account`   → `get<AccountHostComponent>(context, state.value.nickname)`
-    - `Releases`  → `DummyPage` (TODO: not implemented yet — see line 60 + line 81)
+    - `Releases`  → `get<NewReleasesHostComponent>(context)` (Koin DI)
   - `MainScreenAction.SelectPage(index)` updates `state.activePageIndex` and calls `navigation.select(index)` — both stay in sync
 
 ### 5.2 The Pager Composable
@@ -141,7 +141,7 @@ MainScreen(component: PagerComponent)
             when (index) {
                 ARTISTS   -> ArtistsPageHostUi(page as ArtistsHostComponent)
                 FAVORITES -> FavoritesPageHostUi(page as FavoritesHostComponent)
-                RELEASES  -> SearchPage()                  // preview-only stub
+                RELEASES  -> NewReleasesPageHostUi(page as NewReleasesHostComponent)
                 ACCOUNT   -> AccountPageUi(page as AccountHostComponent)
             }
         }
@@ -159,14 +159,14 @@ Two important things:
 
 ## 6. The four pages and their hosts
 
-There are **two different host shapes** under the pager:
+There are **three different host shapes** under the pager:
 
 | Page | Host shape | Reason |
 |---|---|---|
 | Artists | Adaptive **panels** (main + details + extra) | Drill-down: list → releases → media |
 | Favorites | Adaptive **panels** (main + details + extra) | Same drill-down, from a different starting list |
 | Account | Nested **stack** (Account ⇄ About ⇄ Privacy) | Sub-screens with their own back stack |
-| Releases | Stub (placeholder) | Not implemented yet |
+| Releases | Adaptive **panels** (main + details) | Panel host: list → media details |
 
 The `Page` interface (`screens/mainScreen/domain/mainScreenPager/Page.kt:7`) is the contract every host satisfies:
 
@@ -222,6 +222,8 @@ Each host (Artists, Favorites, Account, plus the inner panels) has a `*HostSlots
 - `pages/artists/ui/artistsPanel/ArtistsPanelSlots.kt:14` — overrides `titleContent` (search bar) and `trailingIcon` (favorite icon for the open artist). Constructed in `ArtistsList.kt:32`.
 - `pages/favorites/ui/favoritesPanel/FavoritesPanelSlots.kt:11` — overrides `titleContent` (sorting + refresh of the *open* artist). Note the `onRefreshReleases` parameter — it forwards to the host action.
 - `pages/account/ui/AccountPageSlots.kt:10` — overrides only `leadingIcon` (Back icon). Constructed in `AccountPage.kt:49`.
+- `pages/newReleases/ui/NewReleasesHostSlots.kt:16` — same delegation pattern as Artists/Favorites but only two panels. Constructed in `NewReleasesHost.kt:33`.
+- `pages/newReleases/ui/NewReleasesPanelSlots.kt:11` — overrides `titleContent` with release page title + "Last synced" subtitle. Constructed in `NewReleasesList.kt:34`.
 
 **Rule of thumb**: every component that implements `Page` constructs its `*HostSlots` and exposes it as `scaffoldSlots`. The pager's outer Scaffold picks the active page's slots and renders them. This is how the TopAppBar changes from "search bar" on Artists to "sorting" on Favorites to "release name" on Media details, with no per-screen Scaffold.
 
@@ -327,7 +329,7 @@ ArtistsHostComponent (Page)                                  ← pages/artists/d
 
 ### 8.6 Per-list components
 
-Each list component (`ArtistsList`, `ReleasesList`, `MediaDetails`, `FavoritesList`) follows the same shape:
+Each list component (`ArtistsList`, `ReleasesList`, `MediaDetails`, `FavoritesList`, `NewReleasesList`) follows the same shape:
 
 ```
 class XxxList(...) : Page, ComponentContext by context {
@@ -393,9 +395,29 @@ The Account page does **not** use panels. It uses a small **inner stack** for "P
 
 ---
 
-## 11. The Releases page (stub)
+## 11. The Releases page — panel host (main + details)
 
-`pages/newReleases/ui/SearchPage.kt:27` is a `@Preview`-only stub that renders 300 fake `Artist`s in a `LazyColumn`. `MainPagerComponent.kt:60` shows `DummyPage` (a `Page` with no events and default slots) instead of a real component. This is where the next feature goes.
+`pages/newReleases/domain/panelsNavigation/NewReleasesHostComponent.kt:15` is the `Page` interface for the Releases tab. It follows the same panels pattern as Artists/Favorites but with only two slots: **main** (the grouped release list) and **details** (media details).
+
+### Component hierarchy
+
+```
+NewReleasesHostComponent (Page)                                ← pages/newReleases/domain/panelsNavigation/NewReleasesHostComponent.kt:15
+ └─ Panels<Unit, MediaDetailsConfig, Unit>                     ← 2 active slots: main / details (extra is Unit)
+     ├─ main -> NewReleasesList                                ← domain/list/NewReleasesList.kt:26
+     │   └─ Pager<GroupedItem<Release, ...>> + swipeable cards
+     └─ details (optional) -> MediaDetails                     ← sharedPanels/domain/mediaDetailsPanel/MediaDetails.kt:21
+         └─ Pager<Media> + staggered grid
+```
+
+### Key differences from Artists/Favorites
+
+- **Two panels, not three**: only main (list) and details (media). No extra panel.
+- **Swipeable items**: each release row uses `SwipeToDismissBox` to mark releases as `DISMISSED` (one-way state: `UNSEEN → SEEN → DISMISSED`).
+- **Auto-sync on first open**: `NewReleasesList.init` triggers `syncNewReleases()` which batches all favorite artist IDs (batch of 50), builds a Lucene `firstreleasedate:[floor TO today]` query, and paginates through MusicBrainz. The floor advances each sync so only new releases are fetched.
+- **Grouped by artist name**: the paged stream uses `groupedBy { it.artistName }` so the LazyColumn shows artist-name headers above each group.
+- **No trailing icon**: the host slots only override `titleContent` (delegating to the active panel) and `leadingIcon` (Back when details is open). The list panel slots show a "Last synced" subtitle.
+- **WorkState and errors**: collected from the repository, surfaced as snackbars in the host's `events` channel.
 
 ---
 
@@ -447,7 +469,7 @@ The Composable is **stateless**: it `subscribeAsState()`s the `Value<XxxState>`,
 - `@KoinApplication` on `FollowMyMusApp` (`core/FollowMyMusApp.kt:7`) declares the global modules.
 - `@Module` declares DI modules (`AppModule`, `DbModule`).
 - `@Single` → application-scoped singleton (e.g. `SupabaseClient`, repositories)
-- `@Factory` → new instance per resolve (e.g. `MainPagerComponent`, `ArtistsHost`, `FavoritesHost`, `AccountPage`)
+- `@Factory` → new instance per resolve (e.g. `MainPagerComponent`, `ArtistsHost`, `FavoritesHost`, `NewReleasesHost`, `AccountPage`)
 - `KoinComponent` + `inject<T>()` or `get<T> { parametersOf(...) }` to resolve in the constructor / factory function
 - `parametersOf(...)` is how Decompose passes `ComponentContext` (and any other params) into a `KoinComponent`-aware factory
 
@@ -498,7 +520,16 @@ composeApp/src/commonMain/kotlin/io/github/alexmaryin/followmymus/
 │           │           ├── ArtistsPanelSlots.kt     ← inner slots
 │           │           └── components/...
 │           ├── favorites/          ← PANEL HOST (same shape as artists, starts with sync)
-│           ├── newReleases/        ← STUB (SearchPage.kt)
+│           ├── newReleases/        ← PANEL HOST (main + details, swipeable grouped list)
+│           │   ├── domain/
+│           │   │   ├── pageHost/NewReleasesHost.kt (impl) + Action + State
+│           │   │   ├── list/NewReleasesList.kt + Action + State
+│           │   │   ├── panelsNavigation/NewReleasesHostComponent.kt + NewReleasesPanelConfig.kt
+│           │   └── ui/
+│           │       ├── NewReleasesPageHostUi.kt         ← ChildPanels
+│           │       ├── NewReleasesHostSlots.kt          ← outer slots
+│           │       ├── NewReleasesPanelSlots.kt         ← inner slots
+│           │       └── list/NewReleasesList.kt          ← grouped paged + swipeable cards
 │           ├── account/            ← NESTED STACK
 │           │   ├── domain/AccountPage.kt + AccountPageState.kt
 │           │   ├── domain/nestedNavigation/AccountHostComponent.kt + AccountAction.kt + AccountPageConfig.kt
@@ -547,7 +578,7 @@ composeApp/src/commonMain/kotlin/io/github/alexmaryin/followmymus/
 
 5. **Slots**: implement `XxxHostSlots` (or `XxxPanelSlots` for inner panels) as `: ScaffoldSlots by DefaultScaffoldSlots` — only override what the screen contributes. Construct it in the component impl: `override val scaffoldSlots = XxxHostSlots(this)`.
 
-6. **If it's a panel host** (panels: main + details + extra): use `childPanels(source, serializers, initialPanels, mainFactory, detailsFactory, extraFactory)` with `*PanelConfig` triple. Add a `SetMode` action and a `DisposableEffect(windowSize)` to drive `ChildPanelsMode`.
+6. **If it's a panel host** (panels: main + details +/- extra): use `childPanels(source, serializers, initialPanels, mainFactory, detailsFactory, extraFactory)` with `*PanelConfig` triple. Set `extraFactory` to `null` for 2-panel hosts like NewReleases. Add a `SetMode` action and a `DisposableEffect(windowSize)` to drive `ChildPanelsMode`.
 
 7. **If it has a nested stack**: use `childStack(source, serializer, initialConfiguration, factory)` with `@Serializable` configs and `bringToFront` for navigation. Example: `AccountPage`.
 
@@ -564,6 +595,7 @@ composeApp/src/commonMain/kotlin/io/github/alexmaryin/followmymus/
 | `Page` | `screens/mainScreen/domain/mainScreenPager/Page.kt` | Contract every pager child satisfies |
 | `ScaffoldSlots` | `screens/mainScreen/domain/ScaffoldSlots.kt` | Contract for slots the outer Scaffold reads |
 | `ArtistsHostComponent` / `FavoritesHostComponent` | `pages/{artists,favorites}/domain/panelsNavigation/` | Panel hosts (main + details + extra) |
+| `NewReleasesHostComponent` | `pages/newReleases/domain/panelsNavigation/` | Panel host (main + details) |
 | `AccountHostComponent` | `pages/account/domain/nestedNavigation/` | Nested stack host (Account/About/Privacy) |
 | `MainPages` | `screens/mainScreen/domain/mainScreenPager/PagerConfig.kt:34` | The four tab entries (enum, with resources) |
 | `PagerConfig` | same file:21 | The sealed serialised pager config |
@@ -577,8 +609,8 @@ composeApp/src/commonMain/kotlin/io/github/alexmaryin/followmymus/
 
 - **Decompose owns the back stack.** Back button handling is per-stack (`handleBackButton = true` on every `childStack` and `childPanels`).
 - **`handleBackButton = true` on the pager** (`MainPagerComponent.kt:49`) — that's the phone back button on the bottom nav.
-- **Predictive back gesture** is wired in `ArtistsPageHostUi.kt:46` (and `FavoritesPageHostUi.kt:46`) via `PredictiveBackParams`.
-- **The slots pattern is recursive.** The outer Scaffold reads `currentPage.scaffoldSlots`; the host slots delegate to whichever sub-panel is active. The leaf-level slots (`ArtistsPanelSlots`, `ReleasesPanelSlots`, `MediaPanelSlots`, `FavoritesPanelSlots`) provide the actual UI.
+- **Predictive back gesture** is wired in `ArtistsPageHostUi.kt:46`, `FavoritesPageHostUi.kt:46`, and `NewReleasesPageHostUi.kt:46` via `PredictiveBackParams`.
+- **The slots pattern is recursive.** The outer Scaffold reads `currentPage.scaffoldSlots`; the host slots delegate to whichever sub-panel is active. The leaf-level slots (`ArtistsPanelSlots`, `ReleasesPanelSlots`, `MediaPanelSlots`, `FavoritesPanelSlots`, `NewReleasesPanelSlots`) provide the actual UI.
 - **Every `Page` is also a `ComponentContext`**. Use `context.coroutineScope()` for lifecycles, `lifecycle.doOnStart { ... }` for one-shot startup effects, and `saveableMutableValue(...)` for state.
 - **Snackbars travel up the host chain.** Each inner panel has its own `events` channel; the host either relays them through its own `events` (Favorites) or just re-exposes them via `slots.snackbarMessages` (Artists). The outer Scaffold's `LaunchedEffect(currentPage?.key)` collects them.
 - **All UI state is `@Serializable`.** Process death restoration works because every state is saved through Decompose + `saveableMutableValue`, and every navigation config is serialised.
