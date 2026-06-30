@@ -7,4 +7,5 @@ sealed interface NewReleasesListAction {
     data class OnMediaOpened(val releaseId: String) : NewReleasesListAction
     data object RestoreAllDismissed : NewReleasesListAction
     data object UndoLastDismissal : NewReleasesListAction
+    data object RestoreLastMonth : NewReleasesListAction
 }

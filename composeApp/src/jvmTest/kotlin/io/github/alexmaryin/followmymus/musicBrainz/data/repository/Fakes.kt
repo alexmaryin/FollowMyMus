@@ -345,11 +345,15 @@ class FakeNewReleasesRepository : NewReleasesRepository {
     val dismissedCalls = mutableListOf<String>()
     val unseenCalls = mutableListOf<String>()
     var restoreAllCalls = 0
+    var syncCalls = 0
 
     override fun getNewReleases(): Flow<PagingData<NewReleaseEntity>> =
         flowOf(PagingData.empty())
 
-    override suspend fun syncNewReleases(): Result<Unit> = Result.Success(Unit)
+    override suspend fun syncNewReleases(): Result<Unit> {
+        syncCalls++
+        return Result.Success(Unit)
+    }
 
     override suspend fun markSeen(releaseId: String) {
         seenCalls += releaseId
@@ -366,6 +370,7 @@ class FakeNewReleasesRepository : NewReleasesRepository {
     override suspend fun restoreAllDismissed() {
         restoreAllCalls++
     }
+
 }
 
 /**

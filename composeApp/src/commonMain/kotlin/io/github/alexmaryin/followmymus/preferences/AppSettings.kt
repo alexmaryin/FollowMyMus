@@ -59,3 +59,15 @@ suspend fun PreferenceSource.setNewReleasesFloor(day: LocalDate, now: Instant) {
         }
     }
 }
+
+suspend fun PreferenceSource.clearNewReleasesFloor() {
+    try {
+        preferences.edit { p ->
+            p.remove(KEY_NEW_RELEASES_LAST_OPENED_DAY)
+            p.remove(KEY_NEW_RELEASES_LAST_SYNC_COMPLETED_AT)
+        }
+    } catch (e: Exception) {
+        println("FAILED TO SAVE APP SETTINGS ON THE DISK!")
+        e.printStackTrace()
+    }
+}

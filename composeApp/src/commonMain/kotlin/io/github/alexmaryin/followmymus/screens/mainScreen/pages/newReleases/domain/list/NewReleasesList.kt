@@ -17,6 +17,8 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.getPar
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.api.getUiDescription
 import io.github.alexmaryin.followmymus.musicBrainz.domain.NewReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
+import io.github.alexmaryin.followmymus.preferences.PreferenceSource
+import io.github.alexmaryin.followmymus.preferences.clearNewReleasesFloor
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui.NewReleasesPanelSlots
@@ -32,9 +34,11 @@ import org.koin.core.component.KoinComponent
 
 class NewReleasesList(
     private val repository: NewReleasesRepository,
+    private val preferenceSource: PreferenceSource,
     private val context: ComponentContext,
     private val openMedia: (releaseId: String, releaseName: String) -> Unit,
 ) : Page, ComponentContext by context, KoinComponent {
+
 
     override val key = "NewReleasesList"
     override val events = Channel<SnackbarMsg>()
@@ -99,12 +103,20 @@ class NewReleasesList(
                     _state.update { it.copy(dismissedIds = _state.value.dismissedIds.dropLast(1)) }
                 }
             }
+
+            NewReleasesListAction.RestoreLastMonth -> {
+                scope.launch {
+                    preferenceSource.clearNewReleasesFloor()
+                    repository.syncNewReleases()
+                    repository.restoreAllDismissed()
+                }
+            }
         }
     }
 }
 
 private class NewReleasesPager(
-    private val repository: NewReleasesRepository
+    repository: NewReleasesRepository
 ) : InstanceKeeper.Instance {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)

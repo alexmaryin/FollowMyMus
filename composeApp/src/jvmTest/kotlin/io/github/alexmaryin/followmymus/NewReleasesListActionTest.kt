@@ -6,6 +6,8 @@ import com.arkivanov.essenty.lifecycle.start
 import io.github.alexmaryin.followmymus.musicBrainz.data.repository.FakeNewReleasesRepository
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.list.NewReleasesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.list.NewReleasesListAction
+import io.github.alexmaryin.followmymus.preferences.PreferenceSource
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -23,6 +25,7 @@ class NewReleasesListActionTest {
     private lateinit var repository: FakeNewReleasesRepository
     private lateinit var component: NewReleasesList
     private val openMediaCalls = mutableListOf<Pair<String, String>>()
+    private val mockPrefs: PreferenceSource = mockk(relaxed = true)
 
     @BeforeTest
     fun setUp() {
@@ -33,6 +36,7 @@ class NewReleasesListActionTest {
             repository = repository,
             context = DefaultComponentContext(lifecycle),
             openMedia = { id, name -> openMediaCalls += id to name },
+            preferenceSource = mockPrefs,
         )
     }
 
@@ -139,5 +143,13 @@ class NewReleasesListActionTest {
         component(NewReleasesListAction.OnMediaOpened("rg-1"))
 
         assertEquals(listOf("rg-1"), repository.seenCalls)
+    }
+
+    @Test
+    fun `RestoreLastMonth clears floor syncs and restores all dismissed`() = runTest {
+        component(NewReleasesListAction.RestoreLastMonth)
+
+        assertEquals(1, repository.syncCalls)
+        assertEquals(1, repository.restoreAllCalls)
     }
 }

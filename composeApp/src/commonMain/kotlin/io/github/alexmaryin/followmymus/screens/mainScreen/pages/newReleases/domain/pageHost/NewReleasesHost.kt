@@ -10,6 +10,7 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.musicBrainz.domain.NewReleasesRepository
+import io.github.alexmaryin.followmymus.preferences.PreferenceSource
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.list.NewReleasesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.list.NewReleasesListAction
@@ -106,6 +107,7 @@ class NewReleasesHost(
     private fun getNewReleasesList(context: ComponentContext) =
         NewReleasesList(
             repository = get<NewReleasesRepository>(),
+            preferenceSource = get<PreferenceSource>(),
             context = context,
             openMedia = { releaseId, releaseName ->
                 invoke(NewReleasesHostAction.ShowMediaDetails(releaseId, releaseName))
