@@ -20,9 +20,14 @@ import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPager.Page
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui.NewReleasesPanelSlots
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
 class NewReleasesList(
@@ -35,7 +40,10 @@ class NewReleasesList(
     override val events = Channel<SnackbarMsg>()
     override val scaffoldSlots = NewReleasesPanelSlots(this)
 
-    private val _state by saveableMutableValue(NewReleasesListState.serializer(), init = ::NewReleasesListState)
+    private val _state by saveableMutableValue(
+        NewReleasesListState.serializer(),
+        init = ::NewReleasesListState
+    )
     val state: Value<NewReleasesListState> = _state
 
     private val pager = retainedInstance { NewReleasesPager(repository) }
@@ -65,60 +73,49 @@ class NewReleasesList(
 
     operator fun invoke(action: NewReleasesListAction) {
         when (action) {
-            is NewReleasesListAction.SelectRelease -> openMedia(action.releaseId, action.releaseName)
+            is NewReleasesListAction.SelectRelease -> openMedia(
+                action.releaseId,
+                action.releaseName
+            )
+
             is NewReleasesListAction.Dismiss -> {
-                _state.update { it.copy(dismissHistory = it.dismissHistory.copy(
-                    dismissedIds = it.dismissHistory.dismissedIds + action.releaseId
-                )) }
                 scope.launch { repository.markDismissed(action.releaseId) }
+                _state.update { it.copy(dismissedIds = it.dismissedIds + action.releaseId) }
             }
+
             NewReleasesListAction.LoadFromRemote -> scope.launch { repository.syncNewReleases() }
+
             is NewReleasesListAction.OnMediaOpened -> scope.launch { repository.markSeen(action.releaseId) }
+
             NewReleasesListAction.RestoreAllDismissed -> {
-                _state.update { it.copy(dismissHistory = it.dismissHistory.copy(restoreWasApplied = true)) }
                 scope.launch { repository.restoreAllDismissed() }
+                _state.update { it.copy(dismissedIds = emptyList()) }
             }
+
             NewReleasesListAction.UndoLastDismissal -> {
-                val history = _state.value.dismissHistory
-                if (history.dismissedIds.isNotEmpty()) {
-                    val lastId = history.dismissedIds.last()
-                    val newIds = history.dismissedIds.dropLast(1)
-                    _state.update {
-                        it.copy(dismissHistory = DismissHistory(
-                            dismissedIds = newIds,
-                            restoreWasApplied = history.restoreWasApplied && newIds.isNotEmpty()
-                        ))
-                    }
-                    scope.launch {
-                        if (history.restoreWasApplied) {
-                            repository.markDismissed(lastId)
-                        } else {
-                            repository.markUnseen(lastId)
-                        }
-                    }
+                if (_state.value.hasDismissals) {
+                    val lastId = _state.value.dismissedIds.last()
+                    scope.launch { repository.markUnseen(lastId) }
+                    _state.update { it.copy(dismissedIds = _state.value.dismissedIds.dropLast(1)) }
                 }
             }
-        }
-    }
-
-    private class NewReleasesPager(
-        repository: NewReleasesRepository
-    ) : InstanceKeeper.Instance {
-
-        private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
-        val releases: Flow<PagingData<GroupedItem<NewReleaseEntity, String>>> = repository.getNewReleases()
-            .let { source ->
-                kotlinx.coroutines.flow.flow {
-                    source.collect { pagingData ->
-                        emit(pagingData.groupedBy { it.artistName })
-                    }
-                }
-            }
-            .cachedIn(scope)
-
-        override fun onDestroy() {
-            scope.cancel()
         }
     }
 }
+
+private class NewReleasesPager(
+    private val repository: NewReleasesRepository
+) : InstanceKeeper.Instance {
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    val releases: Flow<PagingData<GroupedItem<NewReleaseEntity, String>>> =
+        repository.getNewReleases()
+            .map { page -> page.groupedBy { it.artistName } }
+            .cachedIn(scope)
+
+    override fun onDestroy() {
+        scope.cancel()
+    }
+}
+

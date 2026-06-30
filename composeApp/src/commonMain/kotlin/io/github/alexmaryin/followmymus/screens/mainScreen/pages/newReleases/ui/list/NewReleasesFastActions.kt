@@ -1,7 +1,6 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -67,8 +66,7 @@ fun NewReleasesFastActions(
                         contentDescription = "restore all dismissed",
                         modifier = Modifier.size(24.dp),
                     )
-                },
-                enabled = hasDismissals,
+                }
             )
         }
     }

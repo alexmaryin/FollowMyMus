@@ -341,6 +341,7 @@ class FakeNewReleasesRepository : NewReleasesRepository {
     override val workState = MutableStateFlow(WorkState.IDLE)
     override val errors = MutableSharedFlow<ErrorType>()
 
+    val seenCalls = mutableListOf<String>()
     val dismissedCalls = mutableListOf<String>()
     val unseenCalls = mutableListOf<String>()
     var restoreAllCalls = 0
@@ -350,7 +351,9 @@ class FakeNewReleasesRepository : NewReleasesRepository {
 
     override suspend fun syncNewReleases(): Result<Unit> = Result.Success(Unit)
 
-    override suspend fun markSeen(releaseId: String) = Unit
+    override suspend fun markSeen(releaseId: String) {
+        seenCalls += releaseId
+    }
 
     override suspend fun markDismissed(releaseId: String) {
         dismissedCalls += releaseId

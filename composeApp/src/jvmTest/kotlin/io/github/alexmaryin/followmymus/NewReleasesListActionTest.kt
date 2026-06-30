@@ -37,22 +37,23 @@ class NewReleasesListActionTest {
     }
 
     @Test
-    fun `Dismiss appends ID to dismissHistory and calls repository`() = runTest {
+    fun `Dismiss appends ID to dismissedIds and calls repository`() = runTest {
         component(NewReleasesListAction.Dismiss("rg-1"))
 
-        assertEquals(listOf("rg-1"), component.state.value.dismissHistory.dismissedIds)
+        assertEquals(listOf("rg-1"), component.state.value.dismissedIds)
         assertEquals(listOf("rg-1"), repository.dismissedCalls)
+        assertTrue(component.state.value.hasDismissals)
     }
 
     @Test
-    fun `Multiple Dismiss calls accumulate in order`() = runTest {
+    fun `Multiple Dismiss calls accumulate in insertion order`() = runTest {
         component(NewReleasesListAction.Dismiss("rg-1"))
         component(NewReleasesListAction.Dismiss("rg-2"))
         component(NewReleasesListAction.Dismiss("rg-3"))
 
         assertEquals(
             listOf("rg-1", "rg-2", "rg-3"),
-            component.state.value.dismissHistory.dismissedIds,
+            component.state.value.dismissedIds,
         )
         assertEquals(
             listOf("rg-1", "rg-2", "rg-3"),
@@ -61,29 +62,15 @@ class NewReleasesListActionTest {
     }
 
     @Test
-    fun `RestoreAllDismissed preserves history and sets restoreWasApplied`() = runTest {
+    fun `RestoreAllDismissed clears dismissedIds and calls repository`() = runTest {
         component(NewReleasesListAction.Dismiss("rg-1"))
         component(NewReleasesListAction.Dismiss("rg-2"))
 
         component(NewReleasesListAction.RestoreAllDismissed)
 
-        assertEquals(listOf("rg-1", "rg-2"), component.state.value.dismissHistory.dismissedIds)
-        assertTrue(component.state.value.dismissHistory.restoreWasApplied)
+        assertTrue(component.state.value.dismissedIds.isEmpty())
+        assertFalse(component.state.value.hasDismissals)
         assertEquals(1, repository.restoreAllCalls)
-    }
-
-    @Test
-    fun `UndoLastDismissal after RestoreAllDismissed calls markDismissed on last ID`() = runTest {
-        component(NewReleasesListAction.Dismiss("rg-1"))
-        component(NewReleasesListAction.Dismiss("rg-2"))
-
-        component(NewReleasesListAction.RestoreAllDismissed)
-        component(NewReleasesListAction.UndoLastDismissal)
-
-        assertEquals(listOf("rg-1"), component.state.value.dismissHistory.dismissedIds)
-        assertTrue(component.state.value.dismissHistory.restoreWasApplied)
-        assertEquals(listOf("rg-2"), repository.dismissedCalls.drop(2))
-        assertTrue(repository.unseenCalls.isEmpty())
     }
 
     @Test
@@ -96,8 +83,9 @@ class NewReleasesListActionTest {
 
         assertEquals(
             listOf("rg-1", "rg-2"),
-            component.state.value.dismissHistory.dismissedIds,
+            component.state.value.dismissedIds,
         )
+        assertTrue(component.state.value.hasDismissals)
         assertEquals(listOf("rg-3"), repository.unseenCalls)
     }
 
@@ -105,28 +93,51 @@ class NewReleasesListActionTest {
     fun `UndoLastDismissal on empty history is a no-op`() = runTest {
         component(NewReleasesListAction.UndoLastDismissal)
 
-        assertTrue(component.state.value.dismissHistory.dismissedIds.isEmpty())
+        assertTrue(component.state.value.dismissedIds.isEmpty())
+        assertFalse(component.state.value.hasDismissals)
         assertTrue(repository.unseenCalls.isEmpty())
     }
 
     @Test
-    fun `multiple UndoLastDismissal after RestoreAllDismissed re-dismisses each item`() = runTest {
+    fun `Multiple UndoLastDismissal pops in reverse order and clears hasDismissals`() = runTest {
+        component(NewReleasesListAction.Dismiss("rg-1"))
+        component(NewReleasesListAction.Dismiss("rg-2"))
+        component(NewReleasesListAction.Dismiss("rg-3"))
+
+        component(NewReleasesListAction.UndoLastDismissal)
+        component(NewReleasesListAction.UndoLastDismissal)
+        component(NewReleasesListAction.UndoLastDismissal)
+
+        assertTrue(component.state.value.dismissedIds.isEmpty())
+        assertFalse(component.state.value.hasDismissals)
+        assertEquals(listOf("rg-3", "rg-2", "rg-1"), repository.unseenCalls)
+    }
+
+    @Test
+    fun `UndoLastDismissal after RestoreAllDismissed is a no-op`() = runTest {
         component(NewReleasesListAction.Dismiss("rg-1"))
         component(NewReleasesListAction.Dismiss("rg-2"))
 
         component(NewReleasesListAction.RestoreAllDismissed)
         component(NewReleasesListAction.UndoLastDismissal)
-        component(NewReleasesListAction.UndoLastDismissal)
 
-        assertTrue(component.state.value.dismissHistory.dismissedIds.isEmpty())
-        assertFalse(component.state.value.dismissHistory.restoreWasApplied)
-        assertEquals(listOf("rg-2", "rg-1"), repository.dismissedCalls.drop(2))
+        assertTrue(component.state.value.dismissedIds.isEmpty())
+        assertFalse(component.state.value.hasDismissals)
+        assertTrue(repository.unseenCalls.isEmpty())
+        assertEquals(1, repository.restoreAllCalls)
     }
 
     @Test
-    fun `SelectRelease calls openMedia`() = runTest {
+    fun `SelectRelease calls openMedia with id and name`() = runTest {
         component(NewReleasesListAction.SelectRelease("rg-1", "Test Release"))
 
         assertEquals(listOf("rg-1" to "Test Release"), openMediaCalls)
+    }
+
+    @Test
+    fun `OnMediaOpened calls repository markSeen`() = runTest {
+        component(NewReleasesListAction.OnMediaOpened("rg-1"))
+
+        assertEquals(listOf("rg-1"), repository.seenCalls)
     }
 }

@@ -33,7 +33,7 @@ class NewReleasesPanelSlots(
         val settings by preferences.getAppSettings().collectAsStateWithLifecycle(AppSettings(null, null))
         Row {
             NewReleasesFastActions(
-                hasDismissals = state.dismissHistory.hasDismissals,
+                hasDismissals = state.hasDismissals,
                 onAction = component::invoke,
             )
             Column {

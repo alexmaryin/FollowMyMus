@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -105,7 +109,9 @@ private fun SwipeableNewRelease(
 ) {
     val dismissState = rememberSwipeToDismissBoxState()
 
-    LaunchedEffect(entity.id) { if (entity.state == NewReleaseState.DISMISSED) dismissState.reset() }
+    LaunchedEffect(entity.state) {
+        if (entity.state != NewReleaseState.DISMISSED) dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+    }
 
     val adapter: (ReleasesListAction) -> Unit = { action ->
         when (action) {

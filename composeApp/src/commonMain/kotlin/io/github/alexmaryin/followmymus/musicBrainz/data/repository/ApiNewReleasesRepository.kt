@@ -59,16 +59,18 @@ class ApiNewReleasesRepository(
     private val preferenceSource: PreferenceSource
 ) : NewReleasesRepository {
 
+    private val pager = Pager(
+        config = PagingDefaults.roomConfig(),
+        pagingSourceFactory = { newReleasesDao.getNewReleases() },
+    )
+
     private val _workState = MutableStateFlow(WorkState.IDLE)
     override val workState: StateFlow<WorkState> = _workState
 
     private val _errors = MutableSharedFlow<ErrorType>(extraBufferCapacity = 16)
     override val errors: Flow<ErrorType> = _errors.asSharedFlow()
 
-    override fun getNewReleases(): Flow<PagingData<NewReleaseEntity>> = Pager(
-        config = PagingDefaults.apiConfig(),
-        pagingSourceFactory = { newReleasesDao.getNewReleases() },
-    ).flow
+    override fun getNewReleases(): Flow<PagingData<NewReleaseEntity>> = pager.flow
 
     override suspend fun syncNewReleases(): Result<Unit> {
         _workState.value = WorkState.LOADING
@@ -87,15 +89,6 @@ class ApiNewReleasesRepository(
         }
     }
 
-    /**
-     * Combine [PreferenceSource.getAppSettings] with
-     * [FavoriteDao.getFavoriteArtistsIds] and derive the date floor. Pure
-     * (no side effects): same inputs → same `(floor, ids)`.
-     *
-     * The floor is clamped to `today()` so a same-day re-open cannot produce
-     * an inverted `[X TO Y]` range when `X > Y` — MB matches everything in
-     * that case, flooding the loop with irrelevant pages.
-     */
     private suspend fun readSyncInputs(): Pair<LocalDate, List<String>> =
         combine(
             preferenceSource.getAppSettings(),
@@ -108,12 +101,6 @@ class ApiNewReleasesRepository(
             floor to ids
         }.first()
 
-    /**
-     * Pure fold over the batched favorite ids. The accumulator is just
-     * `partial: Boolean` — the state stays `LOADING` during the loop and is
-     * assigned only at the end. `forError` on the project's [Result] is the
-     * idiomatic error-handling extension (no try/catch repetition).
-     */
     private suspend fun syncBatches(
         dateFloor: LocalDate,
         favoriteIds: List<String>,
