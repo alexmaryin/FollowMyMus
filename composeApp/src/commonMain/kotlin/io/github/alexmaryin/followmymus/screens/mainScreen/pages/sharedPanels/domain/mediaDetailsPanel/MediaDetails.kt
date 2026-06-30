@@ -17,13 +17,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class MediaDetails(
     private val releaseId: String,
     private val releaseName: String,
-    private val repository: MediaRepository,
     private val context: ComponentContext
-) : Page, ComponentContext by context {
+) : Page, ComponentContext by context, KoinComponent {
+
+    private val repository by inject<MediaRepository>()
 
     override val events = Channel<SnackbarMsg>()
     override val key = "MediaDetails"

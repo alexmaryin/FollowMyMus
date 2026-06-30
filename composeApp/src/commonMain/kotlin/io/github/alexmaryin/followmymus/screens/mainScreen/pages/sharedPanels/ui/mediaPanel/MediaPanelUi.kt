@@ -46,6 +46,11 @@ fun MediaPanelUi(component: MediaDetails) {
         Box(Modifier.fillMaxSize()) { VinylLoadingIndicator(Modifier.align(Alignment.Center)) }
     } else {
         HandlePagingItems(items = media) {
+            OnLoading {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    VinylLoadingIndicator()
+                }
+            }
             OnContent { items ->
                 Column {
                     ListHeader(caption = "${state.releaseName} · ${state.mediaCount}")

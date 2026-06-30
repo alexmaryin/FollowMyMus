@@ -9,6 +9,7 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toMedia
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SearchEngine
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.models.Media
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 
 /**
  * Network-backed [PagingSource] for release media.
@@ -25,7 +26,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class MediaPagingSource(
     private val searchEngine: SearchEngine,
-    private val releaseId: String,
+    @InjectedParam private val releaseId: String,
 ) : PagingSource<Int, Media>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Media> {

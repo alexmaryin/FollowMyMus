@@ -2,7 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -32,7 +32,7 @@ fun ArtistsPageHostUi(
     component: ArtistsHostComponent
 ) {
     val panels by component.panels.subscribeAsState()
-    val windowSize = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSize = currentWindowAdaptiveInfoV2().windowSizeClass
 
     Box(modifier = Modifier.fillMaxSize()) {
         ChildPanels(
@@ -55,7 +55,7 @@ fun ArtistsPageHostUi(
         val mode = when {
             windowSize.isWidthAtLeastBreakpoint(
                 WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND
-            ) -> ChildPanelsMode.DUAL
+            ) && panels.details != null -> ChildPanelsMode.DUAL
 
             else -> ChildPanelsMode.SINGLE
         }

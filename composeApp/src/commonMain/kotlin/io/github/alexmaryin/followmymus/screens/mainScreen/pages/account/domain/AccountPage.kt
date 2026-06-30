@@ -1,13 +1,11 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
+import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.musicBrainz.domain.LocalDbRepository
@@ -23,9 +21,12 @@ import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -37,8 +38,8 @@ import kotlin.uuid.Uuid
 class AccountPage(
     private val sessionManager: SessionManager,
     private val repository: LocalDbRepository,
-    private val componentContext: ComponentContext,
-    private val nickname: String,
+    @InjectedParam private val componentContext: ComponentContext,
+    @InjectedParam private val nickname: String,
 ) : AccountHostComponent, ComponentContext by componentContext, KoinComponent {
     private val _state by saveableMutableValue(
         AccountPageState.serializer(),
@@ -68,18 +69,20 @@ class AccountPage(
         }
     }
 
+    init {
+        childStack.asFlow()
+            .onEach { stack -> _state.update { it.copy(backVisible = stack.items.size > 1) } }
+            .launchIn(scope)
+    }
 
     override fun invoke(action: AccountAction) {
         when (action) {
-            AccountAction.ShowAbout -> {
-                _state.update { it.copy(backVisible = true) }
-                navigation.bringToFront(AccountPageConfig.About)
-            }
+            AccountAction.ShowAbout -> navigation.pushNew(AccountPageConfig.About)
 
-            AccountAction.ShowPrivacyPolicy -> {
-                _state.update { it.copy(backVisible = true) }
-                navigation.bringToFront(AccountPageConfig.PrivacyPolicy)
-            }
+            AccountAction.ShowPrivacyPolicy -> navigation.pushNew(AccountPageConfig.PrivacyPolicy)
+
+            AccountAction.LogoutClick ->
+                _state.update { it.copy(isLogoutDialogOpened = !state.value.isLogoutDialogOpened) }
 
             AccountAction.Logout -> scope.launch {
                 _state.update { it.copy(sessionLogout = true) }
@@ -106,10 +109,7 @@ class AccountPage(
 
             is AccountAction.DownloadQR -> scope.launch { FileHandler().saveQR(action.image) }
 
-            AccountAction.OnBack -> {
-                _state.update { it.copy(backVisible = false) }
-                navigation.bringToFront(AccountPageConfig.Account(nickname))
-            }
+            AccountAction.OnBack -> navigation.pop()
         }
     }
 

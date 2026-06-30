@@ -38,22 +38,20 @@ fun PreferencesUi(
     component: AccountHostComponent
 ) {
     val state by component.state.subscribeAsState()
-    val preferences = rememberAppPreferences(rememberPrefs())
+    val preferences = rememberAppPreferences()
     val theme by preferences.getThemeMode().collectAsStateWithLifecycle(ThemeMode.SYSTEM)
     val language by preferences.getLanguage().collectAsStateWithLifecycle(Language.SYSTEM)
     val dynamicMode by preferences.getAndroidDynamicMode().collectAsStateWithLifecycle(DynamicMode.ON)
     val scope = rememberCoroutineScope()
 
-    var logoutDialogVisible by remember { mutableStateOf(false) }
-
-    if (logoutDialogVisible) ConfirmationDialog(
+    if (state.isLogoutDialogOpened) ConfirmationDialog(
         title = stringResource(Res.string.logout_dialog_title),
         text = stringResource(Res.string.logout_dialog_text),
         onConfirm = {
-            logoutDialogVisible = false
+            component(AccountAction.LogoutClick)
             component(AccountAction.Logout)
         },
-        onDismiss = { logoutDialogVisible = false }
+        onDismiss = { component(AccountAction.LogoutClick) }
     )
 
     ThemeModalUi(
@@ -101,7 +99,7 @@ fun PreferencesUi(
                 nickname = state.nickname,
                 isQrOpened = state.deepLink != null,
                 onQrToggle = { component(AccountAction.ToggleQrView) },
-                onLogout = { logoutDialogVisible = true }
+                onLogout = { component(AccountAction.LogoutClick) }
             )
             AnimatedVisibility(visible = state.deepLink != null) {
                 state.deepLink?.let {

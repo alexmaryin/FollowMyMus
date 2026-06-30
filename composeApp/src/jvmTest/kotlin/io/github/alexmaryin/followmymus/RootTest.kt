@@ -18,8 +18,10 @@ import com.arkivanov.essenty.lifecycle.start
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.empty_favorites_placeholder
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.NewReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
+import io.github.alexmaryin.followmymus.musicBrainz.domain.models.WorkState
 import io.github.alexmaryin.followmymus.rootNavigation.MainRootComponent
 import io.github.alexmaryin.followmymus.rootNavigation.RootComponent
 import io.github.alexmaryin.followmymus.rootNavigation.ui.RootContent
@@ -32,6 +34,8 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.domain.mainScreenPage
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.pageHost.FavoritesHost
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.panelsNavigation.FavoritesHostComponent
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.pageHost.NewReleasesHost
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.panelsNavigation.NewReleasesHostComponent
 import io.github.alexmaryin.followmymus.screens.splash.SplashScreen
 import io.github.alexmaryin.followmymus.sessionManager.domain.SessionManager
 import io.github.alexmaryin.followmymus.sessionManager.domain.model.Credentials
@@ -80,6 +84,13 @@ internal class RootTest {
         every { getFavoriteArtistsIds() } returns flowOf(emptyList())
     }
 
+    val mockNewReleases = mockk<NewReleasesRepository>(relaxed = true) {
+        every { workState } returns MutableStateFlow(WorkState.IDLE)
+        every { errors } returns emptyFlow()
+        every { getNewReleases() } returns flowOf()
+        coEvery { syncNewReleases() } returns io.github.alexmaryin.followmymus.core.Result.Success(Unit)
+    }
+
     val mockSessionStatus = mockk<SessionStatus.Authenticated> {
         every { session.user } returns mockk<UserInfo> {
             every { email } returns "mockk" + Credentials.SUFFIX
@@ -101,13 +112,13 @@ internal class RootTest {
                     single<SessionManager> { mockkSession }
                     factory<LoginComponent> { loginComponent }
                     factory<PagerComponent> { MainPagerComponent(context, "mockk") }
-                    factory<FavoritesHostComponent> {
-                        FavoritesHost(
-                            mockRepository,
-                            context,
-                            "mockk"
-                        )
+                    factory<FavoritesHostComponent> { params ->
+                        FavoritesHost(mockRepository, params.get(), params.get())
                     }
+                    factory<NewReleasesHostComponent> { params ->
+                        NewReleasesHost(params.get())
+                    }
+                    single<NewReleasesRepository> { mockNewReleases }
                     factory<ArtistsRepository> { mockArtists }
                     factory<AccountHostComponent> { mockk() }
                 }

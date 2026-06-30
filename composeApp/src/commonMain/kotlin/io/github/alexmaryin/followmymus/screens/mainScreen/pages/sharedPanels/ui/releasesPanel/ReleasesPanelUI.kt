@@ -1,11 +1,15 @@
 package io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel
 
+import ErrorPlaceholder
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -13,10 +17,12 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.alexmaryin.followmymus.core.ui.DeviceConfiguration
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.core.ui.PullToRefreshMobile
+import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
 import io.github.alexmaryin.followmymus.musicBrainz.domain.toPagingError
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.CoverView
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.ui.releasesPanel.components.ReleasesPlaceholder
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -34,6 +40,28 @@ fun ReleasesPanelUi(component: ReleasesList) {
         items = groupedReleases,
         errorMapper = ::toPagingError
     ) {
+        OnLoading {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                VinylLoadingIndicator()
+            }
+        }
+
+        OnEmpty {
+            if (state.isLoading) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    VinylLoadingIndicator()
+                }
+            } else {
+                ReleasesPlaceholder()
+            }
+        }
+
+        OnError { error ->
+            ErrorPlaceholder(
+                text = error.toString(),
+                onRestart = { component(ReleasesListAction.LoadFromRemote) }
+            )
+        }
 
         OnContent { items ->
             PullToRefreshMobile(

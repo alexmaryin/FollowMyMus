@@ -21,8 +21,9 @@ import io.github.alexmaryin.followmymus.musicBrainz.data.local.model.convertors.
         MediaItemEntity::class,
         TrackEntity::class,
         MediaResourceEntity::class,
+        NewReleaseEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(InstantConverter::class)
@@ -37,6 +38,7 @@ abstract class MusicBrainzDatabase : RoomDatabase(){
     abstract val syncDao: SyncDao
     abstract val favoriteDao: FavoriteDao
     abstract val mediaDao: MediaDao
+    abstract val newReleasesDao: NewReleasesDao
 
     companion object {
         const val DB_NAME = "musicbrainz.db"

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "56881b5582457f424c774ae413a2802e",
+    "identityHash": "f7006ca2106c7b2553588b4eccbc6470",
     "entities": [
       {
         "tableName": "AreaEntity",
@@ -486,7 +486,7 @@
       },
       {
         "tableName": "TrackEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `mediaId` TEXT NOT NULL, `mediaItemId` TEXT NOT NULL, `position` INTEGER NOT NULL, `title` TEXT NOT NULL, `lengthMs` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`mediaItemId`) REFERENCES `MediaItemEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `mediaId` TEXT NOT NULL, `mediaItemId` TEXT NOT NULL, `position` INTEGER NOT NULL, `title` TEXT NOT NULL, `lengthMs` INTEGER, `disambiguation` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`mediaId`) REFERENCES `MediaEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -521,8 +521,12 @@
           {
             "fieldPath": "lengthMs",
             "columnName": "lengthMs",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "disambiguation",
+            "columnName": "disambiguation",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -532,6 +536,15 @@
           ]
         },
         "indices": [
+          {
+            "name": "index_TrackEntity_mediaId",
+            "unique": false,
+            "columnNames": [
+              "mediaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TrackEntity_mediaId` ON `${TABLE_NAME}` (`mediaId`)"
+          },
           {
             "name": "index_TrackEntity_mediaItemId",
             "unique": false,
@@ -544,11 +557,11 @@
         ],
         "foreignKeys": [
           {
-            "table": "MediaItemEntity",
+            "table": "MediaEntity",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "mediaItemId"
+              "mediaId"
             ],
             "referencedColumns": [
               "id"
@@ -615,11 +628,85 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "new_releases",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `artistId` TEXT NOT NULL, `artistName` TEXT NOT NULL, `title` TEXT NOT NULL, `disambiguation` TEXT, `firstReleaseDate` TEXT, `primaryType` TEXT NOT NULL, `secondaryTypes` TEXT, `coverFrontUrl` TEXT, `state` TEXT NOT NULL, `discoveredAt` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistId",
+            "columnName": "artistId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artistName",
+            "columnName": "artistName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "disambiguation",
+            "columnName": "disambiguation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "firstReleaseDate",
+            "columnName": "firstReleaseDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "primaryType",
+            "columnName": "primaryType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secondaryTypes",
+            "columnName": "secondaryTypes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "coverFrontUrl",
+            "columnName": "coverFrontUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "discoveredAt",
+            "columnName": "discoveredAt",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '56881b5582457f424c774ae413a2802e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f7006ca2106c7b2553588b4eccbc6470')"
     ]
   }
 }

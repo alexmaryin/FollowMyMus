@@ -9,13 +9,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 /**
  * Pagination tests for [ApiMediaRepository.fetchReleasesMedia].
@@ -154,7 +148,7 @@ class ApiMediaRepositoryTest {
         // first media page processed, second page is now blocked on mediaGate
         job.cancel()
         advanceUntilIdle()
-        gated.mediaGate.complete(kotlin.Unit)
+        gated.mediaGate.complete(Unit)
         advanceUntilIdle()
 
         assertTrue(search.mediaCalls.size <= 2, "expected at most 2 search calls, got ${search.mediaCalls.size}")

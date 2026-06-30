@@ -13,17 +13,20 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.panelsNavigation.ArtistsPanelConfig
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.ui.ArtistsHostSlots
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetails
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.MediaDetailsConfig
+import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.mediaDetailsPanel.getMediaDetails
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesList
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.sharedPanels.domain.releasesPanel.ReleasesListAction
 import kotlinx.coroutines.channels.Channel
 import org.koin.core.annotation.Factory
+import org.koin.core.annotation.InjectedParam
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Factory(binds = [ArtistsHostComponent::class])
 class ArtistsHost(
-    private val componentContext: ComponentContext
+    @InjectedParam private val componentContext: ComponentContext
 ) : ArtistsHostComponent, ComponentContext by componentContext, KoinComponent {
 
     private val _state by saveableMutableValue(ArtistsHostState.serializer(), init = ::ArtistsHostState)
@@ -33,7 +36,7 @@ class ArtistsHost(
     override val scaffoldSlots = ArtistsHostSlots(this)
 
     private val navigation =
-        PanelsNavigation<Unit, ArtistsPanelConfig.ReleasesConfig, ArtistsPanelConfig.MediaDetailsConfig>()
+        PanelsNavigation<Unit, ArtistsPanelConfig.ReleasesConfig, MediaDetailsConfig>()
 
     private val _panels = childPanels(
         source = navigation,
@@ -67,13 +70,10 @@ class ArtistsHost(
             get(), config.artistId, config.artistName, context,
             openMedia = { releaseId, releaseName ->
                 navigation.navigate { state ->
-                    state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(releaseId, releaseName))
+                    state.copy(extra = MediaDetailsConfig(releaseId, releaseName))
                 }
             }
         )
-
-    private fun getMediaDetails(config: ArtistsPanelConfig.MediaDetailsConfig, context: ComponentContext) =
-        MediaDetails(config.releaseId, config.releaseName, get(), context)
 
     private fun onBack() {
         if (state.value.releaseIdSelected != null)
@@ -106,7 +106,7 @@ class ArtistsHost(
 
             is ArtistsHostAction.ShowMediaDetails -> {
                 navigation.navigate { state ->
-                    state.copy(extra = ArtistsPanelConfig.MediaDetailsConfig(action.releaseId, action.releaseName))
+                    state.copy(extra = MediaDetailsConfig(action.releaseId, action.releaseName))
                 }
             }
 

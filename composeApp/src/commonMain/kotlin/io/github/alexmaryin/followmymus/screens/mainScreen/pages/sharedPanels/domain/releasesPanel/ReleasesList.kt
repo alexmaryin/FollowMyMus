@@ -43,9 +43,7 @@ class ReleasesList(
     val resources = repository.getArtistResources(artistId)
 
     val releases = repository.getArtistReleases(artistId).map {
-        it.groupedBy { release ->
-            (listOf(release.primaryType) + release.secondaryTypes).joinToString(separator = " + ")
-        }
+        it.groupedBy { release -> release.typeLabel }
     }
 
     val totalReleasesCount = repository.getArtistReleasesCount(artistId)

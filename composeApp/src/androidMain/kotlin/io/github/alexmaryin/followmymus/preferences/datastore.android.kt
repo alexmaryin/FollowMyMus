@@ -1,15 +1,9 @@
 package io.github.alexmaryin.followmymus.preferences
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import org.koin.java.KoinJavaComponent.get
 
-@Composable
-actual fun rememberPrefs(): Prefs {
-    val context = LocalContext.current
-    return remember {
-        createDataStore {
-            context.filesDir.resolve(PREFS_FILE).absolutePath
-        }
-    }
+actual fun platformPrefsPath(): String {
+    val context: Context = get(Context::class.java)
+    return context.filesDir.resolve(PREFS_FILE).absolutePath
 }
