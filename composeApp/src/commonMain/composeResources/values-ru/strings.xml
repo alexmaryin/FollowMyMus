@@ -107,4 +107,9 @@
     <string name="sort_date_this_week">На этой неделе</string>
     <string name="sort_date_this_month">В этом месяце</string>
     <string name="refresh_button">Обновить список релизов</string>
+    <!--    New Releases Fast Actions-->
+    <string name="last_synced">Последнее обновление: %1$s</string>
+    <string name="undo_last_dismissal">Отменить удаление</string>
+    <string name="restore_all_dismissed">Восстановить все скрытые</string>
+    <string name="last_month">Прошлый месяц</string>
 </resources>

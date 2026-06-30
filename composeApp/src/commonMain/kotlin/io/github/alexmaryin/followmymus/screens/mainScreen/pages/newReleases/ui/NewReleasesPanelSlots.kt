@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.last_synced
 import followmymus.composeapp.generated.resources.releases_page_title
 import io.github.alexmaryin.followmymus.preferences.AppSettings
 import io.github.alexmaryin.followmymus.preferences.getAppSettings
@@ -31,7 +32,7 @@ class NewReleasesPanelSlots(
             Text(text = stringResource(Res.string.releases_page_title))
             settings.newReleasesLastSyncCompletedAt?.let { lastSync ->
                 Text(
-                    text = "Last synced: ${lastSync.toString().take(16).replace('T', ' ')}",
+                    text = stringResource(Res.string.last_synced, lastSync.toString().take(16).replace('T', ' ')),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

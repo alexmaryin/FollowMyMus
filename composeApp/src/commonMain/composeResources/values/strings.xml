@@ -111,4 +111,9 @@
     <string name="sort_date_this_week">This week</string>
     <string name="sort_date_this_month">This month</string>
     <string name="refresh_button">Refresh releases list</string>
+    <!--    New Releases Fast Actions-->
+    <string name="last_synced">Last synced: %1$s</string>
+    <string name="undo_last_dismissal">Undo last dismissal</string>
+    <string name="restore_all_dismissed">Restore all dismissed</string>
+    <string name="last_month">Last month</string>
 </resources>

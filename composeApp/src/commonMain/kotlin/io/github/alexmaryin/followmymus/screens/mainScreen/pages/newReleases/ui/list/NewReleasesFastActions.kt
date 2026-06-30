@@ -11,11 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import followmymus.composeapp.generated.resources.Res
+import followmymus.composeapp.generated.resources.last_month
+import followmymus.composeapp.generated.resources.restore_all_dismissed
 import followmymus.composeapp.generated.resources.restore_month
 import followmymus.composeapp.generated.resources.revert
 import followmymus.composeapp.generated.resources.undo
+import followmymus.composeapp.generated.resources.undo_last_dismissal
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.domain.list.NewReleasesListAction
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NewReleasesActions(
@@ -30,7 +34,7 @@ fun NewReleasesActions(
         shape = RoundedCornerShape(28.dp),
     ) {
         DropdownMenuItem(
-            text = { Text("Undo last dismissal") },
+            text = { Text(stringResource(Res.string.undo_last_dismissal)) },
             onClick = {
                 onDismiss()
                 onAction(NewReleasesListAction.UndoLastDismissal)
@@ -45,7 +49,7 @@ fun NewReleasesActions(
             },
         )
         DropdownMenuItem(
-            text = { Text("Restore all dismissed") },
+            text = { Text(stringResource(Res.string.restore_all_dismissed)) },
             onClick = {
                 onDismiss()
                 onAction(NewReleasesListAction.RestoreAllDismissed)
@@ -60,7 +64,7 @@ fun NewReleasesActions(
         )
         HorizontalDivider()
         DropdownMenuItem(
-            text = { Text("Last month") },
+            text = { Text(stringResource(Res.string.last_month)) },
             onClick = {
                 onDismiss()
                 onAction(NewReleasesListAction.RestoreLastMonth)
