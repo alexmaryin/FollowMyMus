@@ -16,9 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import followmymus.composeapp.generated.resources.Res
-import followmymus.composeapp.generated.resources.refresh_icon
-import followmymus.composeapp.generated.resources.sync_menu_item
+import followmymus.composeapp.generated.resources.*
 import io.github.alexmaryin.followmymus.core.ui.modifiers.animatedShimmerBrush
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domain.nicknameAvatar.AvatarState
 import org.jetbrains.compose.resources.painterResource
@@ -29,7 +27,11 @@ fun Avatar(
     state: AvatarState,
     modifier: Modifier = Modifier,
     size: Dp = 48.dp,
-    onSyncRequest: () -> Unit
+    onSyncRequest: () -> Unit,
+    onImportRequest: () -> Unit = {},
+    onExportRequest: () -> Unit = {},
+    isImporting: Boolean = false,
+    isExporting: Boolean = false
 ) {
     val avatarColor = remember(state.nickname) { avatarColor(state.nickname) }
     val avatarTextColor = remember { avatarTextColor(avatarColor) }
@@ -91,6 +93,44 @@ fun Avatar(
                     leadingIconColor = avatarTextColor
                 )
             )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.favorites_import_menu_item)) },
+                onClick = {
+                    showActions = false
+                    onImportRequest()
+                },
+                enabled = !isImporting,
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.download),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                colors = MenuDefaults.itemColors(
+                    textColor = avatarTextColor,
+                    leadingIconColor = avatarTextColor
+                )
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.favorites_export_menu_item)) },
+                onClick = {
+                    showActions = false
+                    onExportRequest()
+                },
+                enabled = !isExporting,
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.forward),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                colors = MenuDefaults.itemColors(
+                    textColor = avatarTextColor,
+                    leadingIconColor = avatarTextColor
+                )
+            )
         }
     }
 }
@@ -108,9 +148,9 @@ fun AvatarPreview() {
             modifier = Modifier.height(56.dp).padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Avatar(state = state) {}
-            Avatar(state.copy(hasPending = true)) {}
-            Avatar(state.copy(isSyncing = true)) {}
+            Avatar(state = state, onSyncRequest =  {})
+            Avatar(state.copy(hasPending = true), onSyncRequest =  {})
+            Avatar(state.copy(isSyncing = true), onSyncRequest =  {})
         }
     }
 }

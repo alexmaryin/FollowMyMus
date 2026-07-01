@@ -95,6 +95,8 @@
     <string name="error_restart_option">Try again</string>
     <string name="search_placeholder">enter artist, genre or description</string>
     <string name="sync_menu_item">Update</string>
+    <string name="favorites_import_menu_item">Import favorites</string>
+    <string name="favorites_export_menu_item">Export favorites</string>
     <string name="remove_artist_dialog_title">Remove from favorites</string>
     <string name="remove_artist_dialog_text">Are you sure you want to remove %1$s from your favorites?</string>
     <string name="favorite_artists_list_title">Your favorite artists count: %1$d</string>
@@ -116,4 +118,16 @@
     <string name="undo_last_dismissal">Undo last dismissal</string>
     <string name="restore_all_dismissed">Restore all dismissed</string>
     <string name="last_month">Last month</string>
+    <!--    Favorites import/export-->
+    <string name="favorites_export_success">Exported %d favorites</string>
+    <string name="favorites_export_error_data_read">Failed to export: cannot read favorites</string>
+    <string name="favorites_import_success_clean">Imported %1$d favorites, skipped %2$d already present</string>
+    <string name="favorites_import_success_with_failures">Imported %1$d favorites, skipped %2$d already present — %3$d failed to fetch</string>
+    <string name="favorites_import_error_malformed">Failed to import: file is not valid JSON</string>
+    <string name="favorites_import_error_unsupported_format">Failed to import: Unsupported file format</string>
+    <string name="favorites_import_error_unsupported_version">Failed to import: Unsupported file version (got %d, expected 1)</string>
+    <string name="favorites_import_error_missing_artists">Failed to import: missing artists field</string>
+    <string name="favorites_import_error_empty_artist_entry">Failed to import: empty artist entry at index %d</string>
+    <string name="favorites_import_error_network">Failed to import: no network connection, please try again</string>
+    <string name="favorites_import_error_unknown">Failed to import: unexpected error</string>
 </resources>

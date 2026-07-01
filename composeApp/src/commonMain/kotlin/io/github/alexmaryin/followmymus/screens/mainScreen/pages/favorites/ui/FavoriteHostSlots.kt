@@ -53,7 +53,11 @@ class FavoriteHostSlots(
         Avatar(
             state = avatarState.value,
             modifier = Modifier.padding(4.dp),
-            onSyncRequest = { component(FavoritesHostAction.SyncRequested) }
+            onSyncRequest = { component(FavoritesHostAction.SyncRequested) },
+            onImportRequest = { component(FavoritesHostAction.ImportRequested) },
+            onExportRequest = { component(FavoritesHostAction.ExportRequested) },
+            isImporting = state.isImporting,
+            isExporting = state.isExporting
         )
     }
 }

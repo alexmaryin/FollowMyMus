@@ -62,6 +62,12 @@ class FakePagingSearchEngine : SearchEngine {
     override suspend fun fetchArtistsById(ids: List<String>): Result<List<ArtistDto>> =
         error("not used in paging tests")
 
+    override suspend fun getArtistById(artistId: String): io.github.alexmaryin.followmymus.screens.mainScreen.pages.artists.domain.models.Artist? =
+        error("not used in paging tests")
+
+    override suspend fun searchArtistsByIdBatch(ids: List<String>): List<ArtistDto> =
+        error("not used in paging tests")
+
     override suspend fun searchReleases(artistId: String, offset: Int, limit: Int): Result<ArtistDto> {
         releasesCalls += ReleasesCall(offset, limit)
         return releasesQueue.removeFirstOrNull()
