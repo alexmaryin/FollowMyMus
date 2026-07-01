@@ -115,7 +115,7 @@ internal class RootTest {
                     factory<LoginComponent> { loginComponent }
                     factory<PagerComponent> { MainPagerComponent(context, "mockk") }
                     factory<FavoritesHostComponent> { params ->
-                        FavoritesHost(mockRepository, mockk(), mockk(), params.get(), params.get())
+                        FavoritesHost(mockRepository, mockk(), params.get(), params.get())
                     }
                     factory<NewReleasesHostComponent> { params ->
                         NewReleasesHost(params.get())

@@ -4,7 +4,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -33,7 +33,7 @@ fun FavoritesPageHostUi(
     component: FavoritesHostComponent
 ) {
     val panels by component.panels.subscribeAsState()
-    val windowSize = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSize = currentWindowAdaptiveInfoV2().windowSizeClass
 
     Box(modifier = Modifier.fillMaxSize()) {
         ChildPanels(

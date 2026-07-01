@@ -46,7 +46,6 @@ import kotlin.time.Clock
 @Factory(binds = [FavoritesHostComponent::class])
 class FavoritesHost(
     private val syncRepository: SyncRepository,
-    private val fileHandler: FileHandler,
     private val favoritesImportExportRepository: FavoritesImportExportRepository,
     @InjectedParam private val componentContext: ComponentContext,
     @InjectedParam nickname: String
@@ -193,7 +192,7 @@ class FavoritesHost(
             val result = favoritesImportExportRepository.serializeExport()
             result.forSuccess { payload ->
                 val suggestedName = "favorites-${today()}.json"
-                val path = fileHandler.saveFile(suggestedName, "application/json", payload.bytes)
+                val path = FileHandler().saveFile(suggestedName, "application/json", payload.bytes)
                 if (path != null) {
                     events.send(
                         SnackbarMsg(
@@ -226,7 +225,7 @@ class FavoritesHost(
     private fun importFavorites() = scope.launch {
         _state.update { it.copy(isImporting = true) }
         try {
-            val picked = fileHandler.openFile("application/json") ?: return@launch
+            val picked = FileHandler().openFile("application/json") ?: return@launch
             val (path, bytes) = picked
             val result = favoritesImportExportRepository.importFromBytes(bytes, sourceName = path)
             result.forSuccess { summary ->

@@ -2,6 +2,7 @@ package io.github.alexmaryin.followmymus.musicBrainz.domain
 
 import io.github.alexmaryin.followmymus.core.Result
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
@@ -116,7 +117,10 @@ class FavoritesImportExportRepository(
         val chunks = newIds.chunked(SearchEngine.BATCH_LIMIT)
         var firstError: String? = null
 
-        val total = coroutineScope {
+        val allFoundDtos = mutableListOf<ArtistDto>()
+        var totalNotFound = 0
+
+        coroutineScope {
             chunks.asFlow().flatMapMerge(concurrency = 50) { chunk ->
                 flow {
                     val dtos = try {
@@ -125,29 +129,31 @@ class FavoritesImportExportRepository(
                         if (firstError == null) firstError = e.message
                         null
                     }
-
-                    if (dtos == null) {
-                        emit(chunk.size to 0)
-                    } else {
-                        val foundIds = dtos.map { it.id }.toSet()
-                        val notFound = chunk.count { it !in foundIds }
-                        var importedHere = 0
-                        for (dto in dtos) {
-                            try {
-                                artistsRepository.addToFavorite(dto.id)
-                                importedHere++
-                            } catch (_: Exception) {
-                            }
-                        }
-                        emit(notFound to importedHere)
-                    }
+                    emit(dtos to chunk)
                 }
-            }.fold(0 to 0) { (accFailed, accImported), (notFound, importedHere) ->
-                (accFailed + notFound) to (accImported + importedHere)
+            }.collect { (dtos, chunk) ->
+                if (dtos == null) {
+                    totalNotFound += chunk.size
+                } else {
+                    val foundIds = dtos.map { it.id }.toSet()
+                    totalNotFound += chunk.count { it !in foundIds }
+                    allFoundDtos.addAll(dtos)
+                }
             }
         }
 
-        val (failed, imported) = total
+        val imported = if (allFoundDtos.isNotEmpty()) {
+            try {
+                artistsRepository.addToFavoritesBulk(allFoundDtos)
+                allFoundDtos.size
+            } catch (e: Exception) {
+                if (firstError == null) firstError = e.message
+                totalNotFound += allFoundDtos.size
+                0
+            }
+        } else 0
+
+        val failed = totalNotFound
 
         if (imported == 0 && skipped == 0 && failed > 0) {
             return Result.Error(

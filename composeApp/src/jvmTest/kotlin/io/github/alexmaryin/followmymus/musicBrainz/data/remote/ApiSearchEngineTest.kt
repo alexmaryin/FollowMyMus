@@ -13,6 +13,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -23,6 +24,11 @@ class ApiSearchEngineTest {
     private val httpClient = mockk<HttpClient>()
     private val queue = RateLimitedApiQueue(intervalMs = 1L)
     private val engine = ApiSearchEngine(httpClient, queue)
+
+    @AfterTest
+    fun tearDown() {
+        queue.cancel()
+    }
 
     @Test
     fun `getArtistById returns Artist on 200`() = runTest {

@@ -8,6 +8,7 @@ import io.github.alexmaryin.followmymus.core.paging.NetworkPagingCount
 import io.github.alexmaryin.followmymus.core.paging.PagingDefaults
 import io.github.alexmaryin.followmymus.core.paging.RoomPagingCount
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toFavoriteArtist
@@ -87,6 +88,15 @@ class ApiArtistsRepository(
         val remoteAdd = supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
         remoteAdd.forSuccess {
             artistDao.updateSyncStatus(artist.id, SyncStatus.OK)
+        }
+    }
+
+    override suspend fun addToFavoritesBulk(artists: List<ArtistDto>) {
+        if (artists.isEmpty()) return
+        dbRepository.bulkInsertArtists(artists) { toEntity(true, SyncStatus.PendingRemoteAdd) }
+        val remoteResult = supabaseDb.bulkAddFavoriteArtists(artists.map { it.toRemote() })
+        remoteResult.forSuccess {
+            artists.forEach { artistDao.updateSyncStatus(it.id, SyncStatus.OK) }
         }
     }
 

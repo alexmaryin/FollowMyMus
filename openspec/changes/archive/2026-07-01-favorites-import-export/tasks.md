@@ -93,13 +93,17 @@
 
 ## 12. Build and verification
 
-- [ ] 12.1 Run `./gradlew clean :composeApp:assembleDebug` to ensure KSP processes the new `@Single` annotation, regenerates `AppModule.module` / `DbModule.module`, and compiles cleanly across all three source sets (commonMain, androidMain, iosMain, jvmMain).
-- [ ] 12.2 Run `./gradlew :composeApp:jvmTest` to verify the unit tests pass.
-- [ ] 12.3 Run `./gradlew :composeApp:lint` to check for any lint issues introduced by the change.
-- [ ] 12.4 Manual smoke test on each platform:
+- [x] 12.1 Run `./gradlew clean :composeApp:assembleDebug` to ensure KSP processes the new `@Single` annotation, regenerates `AppModule.module` / `DbModule.module`, and compiles cleanly across all three source sets (commonMain, androidMain, iosMain, jvmMain).
+- [x] 12.2 Run `./gradlew :composeApp:jvmTest` to verify the unit tests pass.
+- [x] 12.3 Run `./gradlew :androidApp:lint` to check for any lint issues introduced by the change.
+- [x] 12.4 Manual smoke test on each platform:
   - **Android**: tap avatar → "Export favorites" → pick a Downloads location → file appears. Tap avatar → "Import favorites" → pick the file → favorites appear in the list.
   - **iOS**: same flow on iPhone / iPad simulator.
   - **JVM**: same flow on desktop. Verify the suggested filename is `favorites-2026-07-01.json` and the file filter shows only `.json`.
-- [ ] 12.5 Verify the existing `AccountPage.DownloadQR` action still works (the `saveQR` actuals are unchanged, but the shared `FileHandler` class is modified — confirm no regression).
-- [ ] 12.6 Verify the existing `search page → star an uncached artist` flow now triggers a network fetch (previously a silent no-op). The artist should appear as a favorite after the fetch completes.
+- [x] 12.5 Verify the existing `AccountPage.DownloadQR` action still works (the `saveQR` actuals are unchanged, but the shared `FileHandler` class is modified — confirm no regression).
+- [x] 12.6 Verify the existing `search page → star an uncached artist` flow now triggers a network fetch (previously a silent no-op). The artist should appear as a favorite after the fetch completes.
+
+### Bug fixes discovered during manual testing
+- **Logout now clears ALL Room tables**: `RoomRepository.clearLocalData()` now also clears `new_releases`, `MediaItemEntity`, `TrackEntity`, and `MediaResourceEntity` (previously leaked across logins). Added `NewReleasesDao.clear()` and clear methods for media child entities to `MediaDao`.
+- **Import uses batch operations**: Replaced per-DTO `addToFavorite()` calls in `FavoritesImportExportRepository.importFromBytes()` with a single `addToFavoritesBulk()` call after all DTOs are fetched. The new `ArtistsRepository.addToFavoritesBulk(artists)` uses `LocalDbRepository.bulkInsertArtists()` + `SupabaseDb.bulkAddFavoriteArtists()` — one Room transaction + one Supabase upsert instead of N individual calls.
 

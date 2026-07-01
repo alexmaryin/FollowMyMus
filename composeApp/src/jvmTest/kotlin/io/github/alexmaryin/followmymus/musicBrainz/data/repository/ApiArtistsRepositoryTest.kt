@@ -17,13 +17,16 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class ApiArtistsRepositoryTest {
 
     private val artistDao = mockk<ArtistDao>()
-    private val favoriteDao = mockk<FavoriteDao>()
+    private val favoriteDao = mockk<FavoriteDao>().apply {
+        every { getTotalCount() } returns flowOf(0)
+    }
     private val supabaseDb = mockk<SupabaseDb>()
     private val searchEngine = mockk<SearchEngine>()
     private val dbRepository = mockk<LocalDbRepository>()

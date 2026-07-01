@@ -1,29 +1,27 @@
 package io.github.alexmaryin.followmymus.core.system
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.qr_share_title
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.resume
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
-import kotlin.coroutines.resume
 
 actual class FileHandler actual constructor() : KoinComponent {
 
     private val context: Context by inject()
 
     companion object {
-        private var currentActivity: Activity? = null
+        private var currentActivity: ComponentActivity? = null
 
-        fun bindActivity(activity: Activity) {
+        fun bindActivity(activity: ComponentActivity) {
             currentActivity = activity
         }
     }
@@ -63,9 +61,9 @@ actual class FileHandler actual constructor() : KoinComponent {
                     activity.contentResolver.openOutputStream(uri)?.use { output ->
                         output.write(data)
                     }
-                    cont.resume(uri.toString())
+                    cont.resume(uri.toString(), onCancellation = null)
                 } else {
-                    cont.resume(null)
+                    cont.resume(null, onCancellation = null)
                 }
             }
             activity.runOnUiThread { launcher.launch(suggestedName) }
@@ -83,9 +81,9 @@ actual class FileHandler actual constructor() : KoinComponent {
                     val bytes = activity.contentResolver.openInputStream(uri)?.use { stream ->
                         stream.readBytes()
                     }
-                    cont.resume(bytes?.let { Pair(uri.toString(), it) })
+                    cont.resume(bytes?.let { Pair(uri.toString(), it) }, onCancellation = null)
                 } else {
-                    cont.resume(null)
+                    cont.resume(null, onCancellation = null)
                 }
             }
             activity.runOnUiThread { launcher.launch(arrayOf(mimeType)) }

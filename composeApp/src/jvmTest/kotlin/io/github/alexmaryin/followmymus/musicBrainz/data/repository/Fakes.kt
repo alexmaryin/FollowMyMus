@@ -269,6 +269,12 @@ class RecordingMediaDao : MediaDao {
     }
 
     override suspend fun clearMedia() = Unit
+
+    override suspend fun clearMediaItems() = Unit
+
+    override suspend fun clearTracks() = Unit
+
+    override suspend fun clearMediaResources() = Unit
 }
 
 /**
@@ -337,6 +343,8 @@ class FakeNewReleasesDao : NewReleasesDao {
         coverFrontUrl: String?,
         discoveredAt: kotlin.time.Instant,
     ) = Unit
+
+    override suspend fun clear() = Unit
 }
 
 /**

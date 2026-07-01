@@ -119,15 +119,15 @@
     <string name="restore_all_dismissed">Restore all dismissed</string>
     <string name="last_month">Last month</string>
     <!--    Favorites import/export-->
-    <string name="favorites_export_success">Exported %d favorites</string>
+    <string name="favorites_export_success">Exported %1$d favorites</string>
     <string name="favorites_export_error_data_read">Failed to export: cannot read favorites</string>
     <string name="favorites_import_success_clean">Imported %1$d favorites, skipped %2$d already present</string>
     <string name="favorites_import_success_with_failures">Imported %1$d favorites, skipped %2$d already present — %3$d failed to fetch</string>
     <string name="favorites_import_error_malformed">Failed to import: file is not valid JSON</string>
     <string name="favorites_import_error_unsupported_format">Failed to import: Unsupported file format</string>
-    <string name="favorites_import_error_unsupported_version">Failed to import: Unsupported file version (got %d, expected 1)</string>
+    <string name="favorites_import_error_unsupported_version">Failed to import: Unsupported file version (got %1$d, expected 1)</string>
     <string name="favorites_import_error_missing_artists">Failed to import: missing artists field</string>
-    <string name="favorites_import_error_empty_artist_entry">Failed to import: empty artist entry at index %d</string>
+    <string name="favorites_import_error_empty_artist_entry">Failed to import: empty artist entry at index %1$d</string>
     <string name="favorites_import_error_network">Failed to import: no network connection, please try again</string>
     <string name="favorites_import_error_unknown">Failed to import: unexpected error</string>
 </resources>

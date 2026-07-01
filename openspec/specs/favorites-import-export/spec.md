@@ -413,7 +413,7 @@ The system MUST validate the imported JSON file structurally before processing i
 
 The system MUST NOT validate the MBID against MusicBrainz during validation — that fetch happens during the merge step. Validation is purely structural and runs without any network call.
 
-The host MUST route `Result.Error(FavoritesImportExportError.Xxx)` from `importFromBytes` to a snackbar (see "Import and export surface success and error snackbars"). The host MUST NOT crash on a malformed file; the `Result.Error` path is the application's normal error-handling flow, not an exception.
+The host MUST route `Result.Error(FavoritesImportExportError.Xxx)` from `importFromBytes` to a snackbar (see "Import and export surface success and error snackbars via Res.string"). The host MUST NOT crash on a malformed file; the `Result.Error` path is the application's normal error-handling flow, not an exception.
 
 #### Scenario: User imports a non-JSON file
 
@@ -676,4 +676,3 @@ The import MUST NOT trigger an automatic `syncRepository.syncRemote()` call afte
 
 - **WHEN** the user imports 5 MBIDs
 - **THEN** no Supabase call is made as part of the import
-- **AND** the user can navigate away or close the app without any network call being triggered by the import

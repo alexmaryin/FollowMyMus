@@ -91,7 +91,7 @@ class FavoritesImportExportRepositoryTest {
 
         every { favoriteDao.getFavoriteArtistsIds() } returns flowOf(emptyList())
         coEvery { searchEngine.searchArtistsByIdBatch(any()) } returns ids.map { makeDto(it) }
-        coEvery { artistsRepository.addToFavorite(any()) } just runs
+        coEvery { artistsRepository.addToFavoritesBulk(any()) } just runs
 
         val result = repository.importFromBytes(bytes)
         val summary = assertIs<Result.Success<ImportSummary>>(result)
@@ -99,7 +99,7 @@ class FavoritesImportExportRepositoryTest {
         assertEquals(0, summary.value.skipped)
         assertEquals(0, summary.value.failed)
 
-        coVerify(exactly = 5) { artistsRepository.addToFavorite(any()) }
+        coVerify(exactly = 1) { artistsRepository.addToFavoritesBulk(match { it.size == 5 }) }
     }
 
     @Test
@@ -114,7 +114,7 @@ class FavoritesImportExportRepositoryTest {
         assertEquals(0, summary.value.failed)
 
         coVerify(exactly = 0) { searchEngine.searchArtistsByIdBatch(any()) }
-        coVerify(exactly = 0) { artistsRepository.addToFavorite(any()) }
+        coVerify(exactly = 0) { artistsRepository.addToFavoritesBulk(any()) }
     }
 
     @Test
@@ -123,7 +123,7 @@ class FavoritesImportExportRepositoryTest {
         val bytes = makeValidV1File(listOf("mbid-1", "mbid-2", "mbid-3", "mbid-4", "mbid-5"))
 
         coEvery { searchEngine.searchArtistsByIdBatch(any()) } returns listOf("mbid-3", "mbid-4", "mbid-5").map { makeDto(it) }
-        coEvery { artistsRepository.addToFavorite(any()) } just runs
+        coEvery { artistsRepository.addToFavoritesBulk(any()) } just runs
 
         val result = repository.importFromBytes(bytes)
         val summary = assertIs<Result.Success<ImportSummary>>(result)
@@ -131,7 +131,7 @@ class FavoritesImportExportRepositoryTest {
         assertEquals(2, summary.value.skipped)
         assertEquals(0, summary.value.failed)
 
-        coVerify(exactly = 3) { artistsRepository.addToFavorite(any()) }
+        coVerify(exactly = 1) { artistsRepository.addToFavoritesBulk(match { it.size == 3 }) }
     }
 
     @Test
@@ -141,7 +141,7 @@ class FavoritesImportExportRepositoryTest {
 
         val returnedDtos = listOf("mbid-1", "mbid-3", "mbid-5").map { makeDto(it) }
         coEvery { searchEngine.searchArtistsByIdBatch(any()) } returns returnedDtos
-        coEvery { artistsRepository.addToFavorite(any()) } just runs
+        coEvery { artistsRepository.addToFavoritesBulk(any()) } just runs
 
         val result = repository.importFromBytes(bytes)
         val summary = assertIs<Result.Success<ImportSummary>>(result)
@@ -156,7 +156,7 @@ class FavoritesImportExportRepositoryTest {
         val bytes = makeValidV1File(listOf("mbid-1", "mbid-2"))
 
         coEvery { searchEngine.searchArtistsByIdBatch(any()) } returns emptyList()
-        coEvery { artistsRepository.addToFavorite(any()) } just runs
+        coEvery { artistsRepository.addToFavoritesBulk(any()) } just runs
 
         val result = repository.importFromBytes(bytes)
         val err = assertIs<Result.Error>(result)
@@ -238,7 +238,7 @@ class FavoritesImportExportRepositoryTest {
             val ids = firstArg<List<String>>()
             ids.map { makeDto(it) }
         }
-        coEvery { artistsRepository.addToFavorite(any()) } just runs
+        coEvery { artistsRepository.addToFavoritesBulk(any()) } just runs
 
         val result = repository.importFromBytes(bytes)
         val summary = assertIs<Result.Success<ImportSummary>>(result)
@@ -257,7 +257,7 @@ class FavoritesImportExportRepositoryTest {
             batchSizes += ids.size
             ids.map { makeDto(it) }
         }
-        coEvery { artistsRepository.addToFavorite(any()) } just runs
+        coEvery { artistsRepository.addToFavoritesBulk(any()) } just runs
 
         val result = repository.importFromBytes(bytes)
         val summary = assertIs<Result.Success<ImportSummary>>(result)

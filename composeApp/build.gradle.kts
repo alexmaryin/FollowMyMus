@@ -177,6 +177,12 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.alexmaryin.followmymus"
             packageVersion = libs.versions.packageVersion.get()
+            macOS {
+                iconFile.set(project.file("composeResources/drawable/icon.icns"))
+            }
+            linux {
+                iconFile.set(project.file("composeResources/drawable/icon.png"))
+            }
         }
     }
 }
