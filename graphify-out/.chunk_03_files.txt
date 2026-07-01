@@ -1,6 +1,0 @@
-/Users/java73/AndroidStudioProjects/FollowMyMus/composeApp/src/commonMain/composeResources/drawable/music-brainz.png
-/Users/java73/AndroidStudioProjects/FollowMyMus/composeApp/src/commonMain/composeResources/drawable/music-logo.png
-/Users/java73/AndroidStudioProjects/FollowMyMus/composeApp/src/commonMain/composeResources/drawable/vinyl_fallback.png
-/Users/java73/AndroidStudioProjects/FollowMyMus/composeApp/src/commonMain/composeResources/drawable/vinyl_loading.png
-/Users/java73/AndroidStudioProjects/FollowMyMus/composeApp/src/commonMain/composeResources/drawable/vinyl_placeholder.png
-/Users/java73/AndroidStudioProjects/FollowMyMus/iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/app-icon-1024.png
