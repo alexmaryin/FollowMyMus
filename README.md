@@ -217,7 +217,7 @@ This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
 ```
 FollowMyMus — Music artist tracker and discovery app
-Copyright (C) 2024-2026 Alex Maryin
+Copyright (C) 2025-2026 Alex Maryin
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
