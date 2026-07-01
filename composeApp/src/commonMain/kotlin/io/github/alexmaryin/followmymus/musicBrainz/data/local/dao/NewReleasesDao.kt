@@ -92,4 +92,7 @@ interface NewReleasesDao {
 
     @Query("UPDATE new_releases SET state = 'UNSEEN' WHERE state = 'DISMISSED'")
     suspend fun restoreAllDismissed()
+
+    @Query("DELETE FROM new_releases")
+    suspend fun clear()
 }

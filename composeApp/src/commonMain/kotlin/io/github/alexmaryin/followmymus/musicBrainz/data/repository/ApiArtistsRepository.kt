@@ -1,11 +1,14 @@
 package io.github.alexmaryin.followmymus.musicBrainz.data.repository
 
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingData
+import androidx.paging.map
 import io.github.alexmaryin.followmymus.core.forSuccess
 import io.github.alexmaryin.followmymus.core.paging.NetworkPagingCount
 import io.github.alexmaryin.followmymus.core.paging.PagingDefaults
 import io.github.alexmaryin.followmymus.core.paging.RoomPagingCount
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.ArtistDao
+import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.ArtistDto
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.dao.FavoriteDao
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.mappers.toFavoriteArtist
@@ -19,7 +22,10 @@ import io.github.alexmaryin.followmymus.screens.mainScreen.pages.favorites.domai
 import io.github.alexmaryin.followmymus.supabase.data.mappers.toRemote
 import io.github.alexmaryin.followmymus.supabase.domain.SupabaseDb
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -75,11 +81,22 @@ class ApiArtistsRepository(
     }
 
     override suspend fun addToFavorite(artistId: String) {
-        val artist = searchEngine.getArtistFromCache(artistId) ?: return
+        val artist = searchEngine.getArtistFromCache(artistId)
+            ?: searchEngine.getArtistById(artistId)?.dtoSource
+            ?: return
         dbRepository.insertArtist(artist) { toEntity(true, SyncStatus.PendingRemoteAdd) }
         val remoteAdd = supabaseDb.addRemoteFavoriteArtist(artist.toRemote())
         remoteAdd.forSuccess {
             artistDao.updateSyncStatus(artist.id, SyncStatus.OK)
+        }
+    }
+
+    override suspend fun addToFavoritesBulk(artists: List<ArtistDto>) {
+        if (artists.isEmpty()) return
+        dbRepository.bulkInsertArtists(artists) { toEntity(true, SyncStatus.PendingRemoteAdd) }
+        val remoteResult = supabaseDb.bulkAddFavoriteArtists(artists.map { it.toRemote() })
+        remoteResult.forSuccess {
+            artists.forEach { artistDao.updateSyncStatus(it.id, SyncStatus.OK) }
         }
     }
 

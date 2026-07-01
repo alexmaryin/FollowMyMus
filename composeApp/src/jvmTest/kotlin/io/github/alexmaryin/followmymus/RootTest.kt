@@ -17,7 +17,9 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.essenty.lifecycle.start
 import followmymus.composeapp.generated.resources.Res
 import followmymus.composeapp.generated.resources.empty_favorites_placeholder
+import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.musicBrainz.domain.ArtistsRepository
+import io.github.alexmaryin.followmymus.musicBrainz.domain.FavoritesImportExportRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.NewReleasesRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.SyncRepository
 import io.github.alexmaryin.followmymus.musicBrainz.domain.models.RemoteSyncStatus
@@ -113,7 +115,7 @@ internal class RootTest {
                     factory<LoginComponent> { loginComponent }
                     factory<PagerComponent> { MainPagerComponent(context, "mockk") }
                     factory<FavoritesHostComponent> { params ->
-                        FavoritesHost(mockRepository, params.get(), params.get())
+                        FavoritesHost(mockRepository, mockk(), params.get(), params.get())
                     }
                     factory<NewReleasesHostComponent> { params ->
                         NewReleasesHost(params.get())

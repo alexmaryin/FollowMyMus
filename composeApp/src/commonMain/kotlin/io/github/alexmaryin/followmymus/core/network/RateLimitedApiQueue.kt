@@ -48,6 +48,10 @@ class RateLimitedApiQueue(
      * Throws the same exception the block threw (via [Result.fold] semantics
      * on [CompletableDeferred.completeWith]).
      */
+    fun cancel() {
+        scope.cancel()
+    }
+
     suspend fun <T> enqueue(block: suspend () -> T): T = coroutineScope {
         val deferred = CompletableDeferred<T>()
         val wrapped: suspend () -> Unit = {

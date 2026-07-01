@@ -9,6 +9,8 @@ import io.github.alexmaryin.followmymus.core.data.asFlow
 import io.github.alexmaryin.followmymus.core.data.saveableMutableValue
 import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.musicBrainz.domain.LocalDbRepository
+import io.github.alexmaryin.followmymus.preferences.PreferenceSource
+import io.github.alexmaryin.followmymus.preferences.clearNewReleasesFloor
 import io.github.alexmaryin.followmymus.screens.mainScreen.domain.SnackbarMsg
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountAction
 import io.github.alexmaryin.followmymus.screens.mainScreen.pages.account.domain.nestedNavigation.AccountHostComponent
@@ -38,6 +40,7 @@ import kotlin.uuid.Uuid
 class AccountPage(
     private val sessionManager: SessionManager,
     private val repository: LocalDbRepository,
+    private val preferenceSource: PreferenceSource,
     @InjectedParam private val componentContext: ComponentContext,
     @InjectedParam private val nickname: String,
 ) : AccountHostComponent, ComponentContext by componentContext, KoinComponent {
@@ -86,6 +89,7 @@ class AccountPage(
 
             AccountAction.Logout -> scope.launch {
                 _state.update { it.copy(sessionLogout = true) }
+                preferenceSource.clearNewReleasesFloor()
                 repository.clearLocalData()
                 sessionManager.signOut()
             }

@@ -112,4 +112,16 @@
     <string name="undo_last_dismissal">Отменить удаление</string>
     <string name="restore_all_dismissed">Восстановить все скрытые</string>
     <string name="last_month">Прошлый месяц</string>
+    <!--    Favorites import/export-->
+    <string name="favorites_export_success">Экспортировано %1$d избранных</string>
+    <string name="favorites_export_error_data_read">Не удалось экспортировать: невозможно прочитать избранное</string>
+    <string name="favorites_import_success_clean">Импортировано %1$d, пропущено %2$d уже имеющихся</string>
+    <string name="favorites_import_success_with_failures">Импортировано %1$d, пропущено %2$d уже имеющихся — %3$d не удалось загрузить</string>
+    <string name="favorites_import_error_malformed">Не удалось импортировать: файл не является валидным JSON</string>
+    <string name="favorites_import_error_unsupported_format">Не удалось импортировать: неподдерживаемый формат файла</string>
+    <string name="favorites_import_error_unsupported_version">Не удалось импортировать: неподдерживаемая версия файла (получена %1$d, ожидалась 1)</string>
+    <string name="favorites_import_error_missing_artists">Не удалось импортировать: отсутствует поле artists</string>
+    <string name="favorites_import_error_empty_artist_entry">Не удалось импортировать: пустая запись исполнителя на позиции %1$d</string>
+    <string name="favorites_import_error_network">Не удалось импортировать: нет подключения к сети, попробуйте снова</string>
+    <string name="favorites_import_error_unknown">Не удалось импортировать: непредвиденная ошибка</string>
 </resources>

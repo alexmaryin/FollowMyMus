@@ -2,6 +2,7 @@ package io.github.alexmaryin.followmymus.screens.mainScreen.pages.newReleases.ui
 
 import ErrorPlaceholder
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import io.github.alexmaryin.followmymus.core.paging.GroupedItem
 import io.github.alexmaryin.followmymus.core.ui.HandlePagingItems
 import io.github.alexmaryin.followmymus.core.ui.PullToRefreshMobile
+import io.github.alexmaryin.followmymus.core.ui.VinylLoadingIndicator
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.model.NewReleaseEntity
 import io.github.alexmaryin.followmymus.musicBrainz.data.local.model.NewReleaseState
 import io.github.alexmaryin.followmymus.musicBrainz.data.remote.model.enums.SecondaryType
@@ -42,7 +45,20 @@ fun NewReleasesList(component: NewReleasesList) {
     val items = component.releases.collectAsLazyPagingItems()
 
     HandlePagingItems(items = items) {
-        OnEmpty { EmptyListPlaceholder(modifier = Modifier.fillMaxSize()) }
+        OnLoading {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                VinylLoadingIndicator()
+            }
+        }
+        OnEmpty {
+            if (state.isLoading) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    VinylLoadingIndicator()
+                }
+            } else {
+                EmptyListPlaceholder(modifier = Modifier.fillMaxSize())
+            }
+        }
         OnError { error ->
             ErrorPlaceholder(text = error.toString())
         }

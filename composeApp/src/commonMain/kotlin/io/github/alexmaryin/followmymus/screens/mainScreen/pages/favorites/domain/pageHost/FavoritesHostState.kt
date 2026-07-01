@@ -8,5 +8,7 @@ data class FavoritesHostState(
     val artistIdSelected: String? = null,
     val releaseIdSelected: String? = null,
     val backVisible: Boolean = false,
-    val avatar: AvatarState = AvatarState()
+    val avatar: AvatarState = AvatarState(),
+    val isImporting: Boolean = false,
+    val isExporting: Boolean = false
 )

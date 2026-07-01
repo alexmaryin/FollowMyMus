@@ -52,4 +52,13 @@ interface MediaDao {
 
     @Query("DELETE FROM MediaEntity")
     suspend fun clearMedia()
+
+    @Query("DELETE FROM MediaItemEntity")
+    suspend fun clearMediaItems()
+
+    @Query("DELETE FROM TrackEntity")
+    suspend fun clearTracks()
+
+    @Query("DELETE FROM MediaResourceEntity")
+    suspend fun clearMediaResources()
 }

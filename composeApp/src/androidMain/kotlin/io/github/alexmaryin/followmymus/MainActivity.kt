@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
+import io.github.alexmaryin.followmymus.core.system.FileHandler
 import io.github.alexmaryin.followmymus.rootNavigation.MainRootComponent
 import io.github.alexmaryin.followmymus.rootNavigation.ui.RootContent
 import io.github.alexmaryin.followmymus.sessionManager.data.qrcode.transferSession
@@ -29,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        FileHandler.bindActivity(this)
 
         val root = MainRootComponent(defaultComponentContext())
 
